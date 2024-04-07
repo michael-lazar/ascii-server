@@ -161,5 +161,5 @@ cython_debug/
 
 data/textmode.sqlite3
 data/media/
+data/spiders/
 TODO.md
-textmode/spiders/**/data/

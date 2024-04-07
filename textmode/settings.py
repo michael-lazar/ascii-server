@@ -9,6 +9,8 @@ env.smart_cast = False
 
 BASE_DIR = os.path.dirname(__file__)
 
+DATA_ROOT = os.path.normpath(os.path.join(BASE_DIR, "..", "data"))
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", True)
 
@@ -33,6 +35,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "textmode.core",
+    "textmode.fundan",
 ]
 
 MIDDLEWARE = [
@@ -68,7 +71,7 @@ WSGI_APPLICATION = "textmode.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "..", "data", "textmode.sqlite3"),
+        "NAME": os.path.join(DATA_ROOT, "textmode.sqlite3"),
     }
 }
 
@@ -124,5 +127,5 @@ LOGGING = {
     },
 }
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "..", "data", "media")
+MEDIA_ROOT = os.path.join(DATA_ROOT, "media")
 MEDIA_URL = "/media/"
