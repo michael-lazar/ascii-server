@@ -1,0 +1,30 @@
+exclude: "^docs/|^.idea/"
+default_stages: [commit]
+
+default_language_version:
+  python: python3.11
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: file-contents-sorter
+        files: requirements/.*\.in
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.2.2
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  - repo: https://github.com/psf/black
+    rev: 24.2.0
+    hooks:
+      - id: black
+
+ci:
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false

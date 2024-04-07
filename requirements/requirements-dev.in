@@ -1,0 +1,10 @@
+-r requirements.txt
+django-stubs
+django_coverage_plugin
+factory-boy
+freezegun
+mypy
+pip-tools
+pytest
+pytest-django
+types-requests
