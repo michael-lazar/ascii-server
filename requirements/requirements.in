@@ -3,4 +3,6 @@ django-admin-interface
 django-environ
 django-extensions
 gunicorn
+lxml
 requests
+scrapy
