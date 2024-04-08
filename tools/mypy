@@ -5,4 +5,4 @@ set -o pipefail
 set -o nounset
 
 source venv/bin/activate
-mypy "${@-textmode}"
+mypy "${@-ascii}"

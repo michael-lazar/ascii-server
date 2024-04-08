@@ -159,7 +159,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-data/textmode.sqlite3
+data/ascii.sqlite3
 data/media/
 data/spiders/
 TODO.md

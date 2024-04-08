@@ -34,8 +34,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
-    "textmode.core",
-    "textmode.fundan",
+    "ascii.core",
+    "ascii.fundan",
 ]
 
 MIDDLEWARE = [
@@ -47,7 +47,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "textmode.urls"
+ROOT_URLCONF = "ascii.urls"
 
 TEMPLATES = [
     {
@@ -65,13 +65,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "textmode.wsgi.application"
+WSGI_APPLICATION = "ascii.wsgi.application"
 
 # Database
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(DATA_ROOT, "textmode.sqlite3"),
+        "NAME": os.path.join(DATA_ROOT, "ascii.sqlite3"),
     }
 }
 

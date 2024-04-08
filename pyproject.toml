@@ -15,10 +15,10 @@ plugins = ["mypy_django_plugin.main"]
 exclude = [".*tests/"]
 
 [tool.django-stubs]
-django_settings_module = "textmode.settings"
+django_settings_module = "ascii.settings"
 
 [tool.pytest.ini_options]
-addopts = "--ds=textmode.settings --reuse-db -v"
+addopts = "--ds=ascii.settings --reuse-db -v"
 python_files = ["tests.py", "test_*.py"]
 
 [tool.ruff]
@@ -48,4 +48,4 @@ ignore = [
 "*/migrations/*" = ["I"]
 
 [tool.ruff.lint.isort]
-known-first-party = ['textmode']
+known-first-party = ['ascii']
