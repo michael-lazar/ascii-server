@@ -49,3 +49,6 @@ ignore = [
 
 [tool.ruff.lint.isort]
 known-first-party = ['ascii']
+
+[tool.isort]
+known_first_party = ['ascii']
