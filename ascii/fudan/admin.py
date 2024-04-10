@@ -51,10 +51,10 @@ class MenuAdmin(admin.ModelAdmin):
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
     list_display = ["id", "path"]
-    readonly_fields = ["get_data", "get_source_url", "get_display_url"]
+    readonly_fields = ["get_data", "get_source_url", "get_preview_url"]
     fields = [
         "get_source_url",
-        "get_display_url",
+        "get_preview_url",
         "path",
         "get_data",
         "html",
@@ -68,10 +68,10 @@ class DocumentAdmin(admin.ModelAdmin):
     def get_source_url(self, obj: Document) -> str:
         return format_html("<a href={}>{}</a>", obj.source_url, obj.source_url)
 
-    @admin.display(description="Display")
-    def get_display_url(self, obj: Document) -> str:
+    @admin.display(description="Preview")
+    def get_preview_url(self, obj: Document) -> str:
         url = reverse("fudan-documents", args=[obj.path])
-        return format_html("<a href={}>{}</a>", url, url)
+        return format_html("<iframe class='fudan-ansi' src={}></a>", url)
 
 
 @admin.register(MenuLink)

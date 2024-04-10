@@ -1,15 +1,20 @@
-from django.http import HttpRequest, HttpResponse
+from typing import Any
+
 from django.shortcuts import get_object_or_404
-from django.views import View
+from django.views.generic import TemplateView
 
 from ascii.fudan.ansi import ANSIParser
 from ascii.fudan.models import Document
 
 
-class FundanDocumentView(View):
-    def get(self, request: HttpRequest, path: str) -> HttpResponse:
+class FundanDocumentView(TemplateView):
+
+    template_name = "fundan/ansi_document.html"
+
+    def get_context_data(self, path: str) -> dict[str, Any]:
         document = get_object_or_404(Document, path=path)
 
         parser = ANSIParser()
-        html = parser.to_html(document.data)
-        return HttpResponse(html)
+        ansi = parser.to_html(document.data)
+
+        return {"ansi": ansi}
