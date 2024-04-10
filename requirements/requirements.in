@@ -1,4 +1,5 @@
 Django>=4.2,<5.0
+ansi2html
 django-admin-interface
 django-environ
 django-extensions
@@ -6,3 +7,4 @@ gunicorn
 lxml
 requests
 scrapy
+stransi

@@ -1,5 +1,6 @@
 from django.db import models
 
+from ascii.core.utils import reverse
 from ascii.fundan.choices import MenuLinkType
 
 
@@ -39,13 +40,21 @@ class MenuLink(models.Model):
     def data(self) -> bytes:
         return self.text.encode("gb18030")
 
-    @property
-    def source_url(self) -> str | None:
+    def get_source_url(self) -> str | None:
         match self.type:
             case MenuLinkType.DIRECTORY:
                 return f"https://bbs.fudan.edu.cn/bbs/0an?path={self.path}"
             case MenuLinkType.FILE:
                 return f"https://bbs.fudan.edu.cn/bbs/anc?path={self.path}"
+            case _:
+                return None
+
+    def get_admin_url(self) -> str | None:
+        match self.type:
+            case MenuLinkType.DIRECTORY:
+                return reverse("admin:fundan_menu_changelist", qs={"path": self.path})
+            case MenuLinkType.FILE:
+                return reverse("admin:fundan_document_changelist", qs={"path": self.path})
             case _:
                 return None
 

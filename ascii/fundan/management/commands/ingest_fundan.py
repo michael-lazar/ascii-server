@@ -41,8 +41,8 @@ class Command(BaseCommand):
         with open(filepath, "rb") as fp:
             data = fp.read()
 
-        path = "/" + os.path.relpath(filepath, DATA_PATH)
-        bbs_path = os.path.dirname(path)
+        bbs_path = "/" + os.path.relpath(filepath, DATA_PATH)
+        bbs_path = os.path.dirname(bbs_path)
 
         root = parse_xml(data)
         menu = Menu.objects.create(path=bbs_path)
@@ -80,14 +80,14 @@ class Command(BaseCommand):
         with open(filepath, "rb") as fp:
             data = fp.read()
 
-        path = "/" + os.path.relpath(filepath, DATA_PATH)
-        bbs_path, _ = os.path.splitext(path)
+        bbs_path = "/" + os.path.relpath(filepath, DATA_PATH)
+        bbs_path, _ = os.path.splitext(bbs_path)
 
         data = parse_xml_re(data)
         data = unescape_xml_bytes(data)
 
         document = Document.objects.create(
-            path=path,
+            path=bbs_path,
             data=data,
             html="",
         )

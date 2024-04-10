@@ -1,14 +1,21 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
+from ascii.core.utils import reverse
 from ascii.fundan.models import Document, Menu, MenuLink
 
 
 class MenuLinkInline(admin.TabularInline):
     model = MenuLink
     extra = 0
-    show_change_link = True
-    fields = ["menu", "path", "order", "organizer", "time", "type", "text"]
+    fields = ["menu", "get_admin_url", "order", "organizer", "time", "type", "text"]
+    readonly_fields = ["get_admin_url"]
+
+    @admin.display(description="path")
+    def get_admin_url(self, obj: MenuLink) -> str | None:
+        url = obj.get_admin_url()
+        if url:
+            return format_html("<a href={}>{}</a>", url, obj.path)
 
     def has_change_permission(self, request, obj=None):
         return False
@@ -36,7 +43,7 @@ class MenuAdmin(admin.ModelAdmin):
     def get_data(self, obj: Menu) -> str:
         return obj.get_data().decode("gb18030", errors="replace")
 
-    @admin.display(description="Source URL")
+    @admin.display(description="Source")
     def get_source_url(self, obj: Menu) -> str:
         return format_html("<a href={}>{}</a>", obj.source_url, obj.source_url)
 
@@ -44,9 +51,10 @@ class MenuAdmin(admin.ModelAdmin):
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
     list_display = ["id", "path"]
-    readonly_fields = ["get_data", "get_source_url"]
+    readonly_fields = ["get_data", "get_source_url", "get_display_url"]
     fields = [
         "get_source_url",
+        "get_display_url",
         "path",
         "get_data",
         "html",
@@ -56,9 +64,14 @@ class DocumentAdmin(admin.ModelAdmin):
     def get_data(self, obj: Document) -> str:
         return obj.data.decode("gb18030", errors="replace")
 
-    @admin.display(description="Source URL")
+    @admin.display(description="Source")
     def get_source_url(self, obj: Document) -> str:
         return format_html("<a href={}>{}</a>", obj.source_url, obj.source_url)
+
+    @admin.display(description="Display")
+    def get_display_url(self, obj: Document) -> str:
+        url = reverse("fundan-documents", args=[obj.path])
+        return format_html("<a href={}>{}</a>", url, url)
 
 
 @admin.register(MenuLink)
@@ -66,11 +79,12 @@ class MenuLinkAdmin(admin.ModelAdmin):
     list_display = ["path", "menu", "order", "organizer", "time", "type", "text"]
     list_filter = ["type"]
     autocomplete_fields = ["menu"]
-    readonly_fields = ["get_source_url"]
+    readonly_fields = ["get_source_url", "get_admin_url"]
     fields = [
         "menu",
         "get_source_url",
         "path",
+        "get_admin_url",
         "order",
         "organizer",
         "time",
@@ -78,6 +92,14 @@ class MenuLinkAdmin(admin.ModelAdmin):
         "text",
     ]
 
-    @admin.display(description="Source URL")
+    @admin.display(description="Source")
     def get_source_url(self, obj: MenuLink) -> str | None:
-        return format_html("<a href={}>{}</a>", obj.source_url, obj.source_url)
+        url = obj.get_source_url()
+        if url:
+            return format_html("<a href={}>{}</a>", url, url)
+
+    @admin.display(description="Admin URL")
+    def get_admin_url(self, obj: MenuLink) -> str | None:
+        url = obj.get_admin_url()
+        if url:
+            return format_html("<a href={}>{}</a>", url, obj.path)
