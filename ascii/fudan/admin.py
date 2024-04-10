@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from ascii.core.utils import reverse
-from ascii.fundan.models import Document, Menu, MenuLink
+from ascii.fudan.models import Document, Menu, MenuLink
 
 
 class MenuLinkInline(admin.TabularInline):
@@ -70,7 +70,7 @@ class DocumentAdmin(admin.ModelAdmin):
 
     @admin.display(description="Display")
     def get_display_url(self, obj: Document) -> str:
-        url = reverse("fundan-documents", args=[obj.path])
+        url = reverse("fudan-documents", args=[obj.path])
         return format_html("<a href={}>{}</a>", url, url)
 
 

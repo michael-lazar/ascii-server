@@ -1,7 +1,7 @@
 from django.db import models
 
 from ascii.core.utils import reverse
-from ascii.fundan.choices import MenuLinkType
+from ascii.fudan.choices import MenuLinkType
 
 
 class Menu(models.Model):
@@ -52,9 +52,9 @@ class MenuLink(models.Model):
     def get_admin_url(self) -> str | None:
         match self.type:
             case MenuLinkType.DIRECTORY:
-                return reverse("admin:fundan_menu_changelist", qs={"path": self.path})
+                return reverse("admin:fudan_menu_changelist", qs={"path": self.path})
             case MenuLinkType.FILE:
-                return reverse("admin:fundan_document_changelist", qs={"path": self.path})
+                return reverse("admin:fudan_document_changelist", qs={"path": self.path})
             case _:
                 return None
 

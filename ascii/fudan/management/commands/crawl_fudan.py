@@ -9,7 +9,7 @@ from lxml import etree
 from scrapy.crawler import CrawlerProcess
 
 BASE_URL = "https://bbs.fudan.edu.cn/bbs"
-DATA_PATH = os.path.join(settings.DATA_ROOT, "spiders", "fundan")
+DATA_PATH = os.path.join(settings.DATA_ROOT, "spiders", "fudan")
 
 
 class Spider(scrapy.Spider):
@@ -62,7 +62,7 @@ class Spider(scrapy.Spider):
 
 
 class Command(BaseCommand):
-    help = "Crawl fundan essence area"
+    help = "Crawl fudan essence area"
 
     def handle(self, *args, **options):
         process = CrawlerProcess(

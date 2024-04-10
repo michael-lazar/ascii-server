@@ -7,14 +7,14 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from ascii.fundan.models import Document, Menu, MenuLink
-from ascii.fundan.utils import parse_xml, parse_xml_re, unescape_xml_bytes, unescape_xml_text
+from ascii.fudan.models import Document, Menu, MenuLink
+from ascii.fudan.utils import parse_xml, parse_xml_re, unescape_xml_bytes, unescape_xml_text
 
-DATA_PATH = os.path.join(settings.DATA_ROOT, "spiders", "fundan")
+DATA_PATH = os.path.join(settings.DATA_ROOT, "spiders", "fudan")
 
 
 class Command(BaseCommand):
-    help = "Import fundan crawl data into the database"
+    help = "Import fudan crawl data into the database"
 
     xml_document_pattern = re.compile(rb"<po>(.*?)</po>", re.DOTALL)
 

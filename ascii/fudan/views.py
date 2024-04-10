@@ -2,8 +2,8 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
 
-from ascii.fundan.ansi import ANSIParser
-from ascii.fundan.models import Document
+from ascii.fudan.ansi import ANSIParser
+from ascii.fudan.models import Document
 
 
 class FundanDocumentView(View):

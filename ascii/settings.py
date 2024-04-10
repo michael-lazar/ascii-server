@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "ascii.core",
-    "ascii.fundan",
+    "ascii.fudan",
 ]
 
 MIDDLEWARE = [
