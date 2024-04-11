@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from django.db import models
 
-from ascii.core.utils import reverse
+from ascii.core.models import BaseModel
 from ascii.fudan.choices import MenuLinkType
 
 
-class Menu(models.Model):
+class Menu(BaseModel):
     path = models.CharField(max_length=256, unique=True)
 
     def __str__(self):
@@ -21,14 +23,28 @@ class Menu(models.Model):
         return f"https://bbs.fudan.edu.cn/bbs/0an?path={self.path}"
 
 
-class MenuLink(models.Model):
+class MenuLinkQuerySet(models.QuerySet):
+
+    def linked_to_document(self, document: Document) -> MenuLinkQuerySet:
+        return self.filter(path=document.path, type=MenuLinkType.FILE)
+
+    def linked_to_menu(self, menu: Menu) -> MenuLinkQuerySet:
+        return self.filter(path=menu.path, type=MenuLinkType.DIRECTORY)
+
+
+MenuLinkManager = models.Manager.from_queryset(MenuLinkQuerySet)  # noqa
+
+
+class MenuLink(BaseModel):
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, related_name="links")
     order = models.PositiveIntegerField(db_index=True)
     organizer = models.CharField(blank=True, max_length=64)
-    path = models.CharField(max_length=256)
+    path = models.CharField(max_length=256, db_index=True)
     time = models.DateTimeField()
-    type = models.CharField(max_length=1, choices=MenuLinkType.choices)
+    type = models.CharField(max_length=1, choices=MenuLinkType.choices, db_index=True)
     text = models.CharField(max_length=256, blank=True)
+
+    objects = MenuLinkManager()
 
     class Meta:
         ordering = ["order", "id"]
@@ -49,17 +65,22 @@ class MenuLink(models.Model):
             case _:
                 return None
 
-    def get_admin_url(self) -> str | None:
-        match self.type:
-            case MenuLinkType.DIRECTORY:
-                return reverse("admin:fudan_menu_changelist", qs={"path": self.path})
-            case MenuLinkType.FILE:
-                return reverse("admin:fudan_document_changelist", qs={"path": self.path})
-            case _:
-                return None
+    def get_link_change_url(self) -> str | None:
+        """
+        Return the admin page for the linked menu/document, if it exists.
+        """
+        if self.type == MenuLinkType.DIRECTORY:
+            if menu := Menu.objects.filter(path=self.path).first():
+                return menu.change_url
+
+        if self.type == MenuLinkType.FILE:
+            if directory := Document.objects.filter(path=self.path).first():
+                return directory.change_url
+
+        return None
 
 
-class Document(models.Model):
+class Document(BaseModel):
     path = models.CharField(max_length=256, unique=True)
     data = models.BinaryField()
     html = models.TextField(verbose_name="HTML")

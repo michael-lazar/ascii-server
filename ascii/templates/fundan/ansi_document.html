@@ -4,6 +4,11 @@
 
 {% block extrastyle %}
 <style>
+  @font-face {
+      font-family: "SimSunWebBBS";
+      src: url('{% static 'fonts/SimSunWebBBS.woff2' %}') format('woff2');
+  }
+
   /* This is the Windows XP console color scheme taken from
      https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit */
   :root {
@@ -29,9 +34,10 @@
       background-color: var(--c0);
   }
   pre {
-      font-family: "SimSun", serif;
+      font-family: "SimSunWebBBS", monospace;
       font-size: 20px;
-      line-height: 20px;
+      line-height: 1;
+      letter-spacing: 0;
       width: 80ch;
   }
   @keyframes blink {
