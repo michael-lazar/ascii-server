@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from stransi import Ansi
 
 from ascii.core.utils import reverse
 from ascii.fudan.models import Document, Menu, MenuLink
@@ -51,27 +52,51 @@ class MenuAdmin(admin.ModelAdmin):
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
     list_display = ["id", "path"]
-    readonly_fields = ["get_data", "get_source_url", "get_preview_url"]
+    search_fields = ["path"]
+    readonly_fields = [
+        "get_data",
+        "get_source_url",
+        "get_preview",
+        "get_instructions",
+    ]
     fields = [
         "get_source_url",
-        "get_preview_url",
         "path",
+        "get_preview",
+        "get_instructions",
         "get_data",
         "html",
     ]
 
     @admin.display(description="Data")
     def get_data(self, obj: Document) -> str:
-        return obj.data.decode("gb18030", errors="replace")
+        text = obj.data.decode("gb18030", errors="backslashreplace")
 
-    @admin.display(description="Source")
+        lines: list[str] = []
+        for n, line in enumerate(text.splitlines(), start=1):
+            lines.append(f"{n:<3} {repr(line)[1:-1]}")
+
+        return format_html("<pre class='fudan-raw'>{}</pre>", "\n".join(lines))
+
+    @admin.display(description="Instructions")
+    def get_instructions(self, obj: Document) -> str:
+        text = obj.data.decode("gb18030", errors="backslashreplace")
+        text = "".join(str(part) for part in Ansi(text).instructions())
+
+        lines: list[str] = []
+        for n, line in enumerate(text.splitlines(), start=1):
+            lines.append(f"{n:>4} {repr(line)[1:-1]}")
+
+        return format_html("<pre class='fudan-raw'>{}</pre>", "\n".join(lines))
+
+    @admin.display(description="Source Link")
     def get_source_url(self, obj: Document) -> str:
         return format_html("<a href={}>{}</a>", obj.source_url, obj.source_url)
 
     @admin.display(description="Preview")
-    def get_preview_url(self, obj: Document) -> str:
+    def get_preview(self, obj: Document) -> str:
         url = reverse("fudan-documents", args=[obj.path])
-        return format_html("<iframe class='fudan-ansi' src={}></a>", url)
+        return format_html("<iframe class='fudan-ansi' src={}></iframe>", url)
 
 
 @admin.register(MenuLink)

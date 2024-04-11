@@ -3,39 +3,50 @@
 {% load static %}
 
 {% block extrastyle %}
-  <link rel="stylesheet" href="{% static "styles/fudan.css" %}">
-  <style>
-    /* This is the Windows XP console color scheme taken from
-       https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit */
-    :root {
-      --c0: #000000;
-      --c1: #800000;
-      --c2: #008000;
-      --c3: #808000;
-      --c4: #000080;
-      --c5: #800080;
-      --c6: #008080;
-      --c7: #C0C0C0;
-      --c8: #808080;
-      --c9: #FF0000;
-      --c10: #00FF00;
-      --c11: #FFFF00;
-      --c12: #0000FF;
-      --c13: #FF00FF;
-      --c14: #00FFFF;
-      --c15: #FFFFFF;
+<style>
+  /* This is the Windows XP console color scheme taken from
+     https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit */
+  :root {
+    --c0: #000000;
+    --c1: #800000;
+    --c2: #008000;
+    --c3: #808000;
+    --c4: #000080;
+    --c5: #800080;
+    --c6: #008080;
+    --c7: #C0C0C0;
+    --c8: #808080;
+    --c9: #FF0000;
+    --c10: #00FF00;
+    --c11: #FFFF00;
+    --c12: #0000FF;
+    --c13: #FF00FF;
+    --c14: #00FFFF;
+    --c15: #FFFFFF;
+  }
+  body {
+      color: var(--c7);
+      background-color: var(--c0);
+  }
+  pre {
+      font-family: "SimSun", serif;
+      font-size: 20px;
+      line-height: 20px;
+      width: 80ch;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0.0;
     }
-    body {
-        color: var(--c7);
-        background-color: var(--c0);
-    }
-    pre {
-        font-family: "SimSun", serif;
-        font-size: 20px;
-        line-height: 20px;
-        width: 80ch;
-    }
-  </style>
+  }
+
+  .blink {
+    animation: blink 2s step-start 0s infinite;
+  }
+  .underline {
+      text-decoration: underline;
+  }
+</style>
 {% endblock %}
 
 {% block body %}

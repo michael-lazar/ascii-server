@@ -8,3 +8,4 @@ lxml
 requests
 scrapy
 stransi
+telnetlib3

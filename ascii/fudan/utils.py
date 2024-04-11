@@ -54,5 +54,4 @@ def parse_xml_re(data: bytes) -> bytes:
     For example, see this URL which breaks the javascript on the web portal:
         https://bbs.fudan.edu.cn/bbs/anc?path=/groups/rec.faq/ANSI/recommend/D6F3FF4AE/G.1071333485.430613
     """
-    data = _xml_document_pattern.search(data).group(1)
-    return data
+    return _xml_document_pattern.search(data).group(1)
