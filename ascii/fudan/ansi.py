@@ -32,9 +32,7 @@ class ANSIParser:
         span = f"<span {' '.join(parts)}>{text}</span>"
         return span
 
-    def to_html(self, data: bytes) -> str:
-        text = data.decode("gb18030", errors="replace")
-
+    def to_html(self, text: str) -> str:
         state = self.State()
         buffer = ""
 

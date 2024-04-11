@@ -35,29 +35,41 @@ class MenuAdmin(admin.ModelAdmin):
     search_fields = ["id", "path"]
     inlines = [MenuLinkInline]
     readonly_fields = [
-        "get_data",
+        "get_text",
         "get_source",
         "get_linked_from",
+        "get_preview",
     ]
     fields = [
         "get_source",
         "path",
         "get_linked_from",
-        "get_data",
+        "get_preview",
+        "get_text",
     ]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.prefetch_related("links")
+        return qs
 
     @admin.display(description="Linked from")
     def get_linked_from(self, obj: Menu):
         links = MenuLink.objects.linked_to_menu(obj)
         return render_to_string("admin/fragments/linked_from_list.html", {"links": links})
 
-    @admin.display(description="Data")
-    def get_data(self, obj: Menu) -> str:
-        return obj.get_data().decode("gb18030", errors="replace")
+    @admin.display(description="Text")
+    def get_text(self, obj: Menu) -> str:
+        return obj.get_text()
 
     @admin.display(description="Source")
     def get_source(self, obj: Menu) -> str:
         return format_html("<a href={}>{}</a>", obj.source_url, obj.source_url)
+
+    @admin.display(description="Preview")
+    def get_preview(self, obj: Menu) -> str:
+        url = reverse("fudan-menu", args=[obj.path])
+        return render_to_string("admin/fragments/ansi_preview.html", {"url": url})
 
 
 @admin.register(Document)
@@ -113,8 +125,8 @@ class DocumentAdmin(admin.ModelAdmin):
 
     @admin.display(description="Preview")
     def get_preview(self, obj: Document) -> str:
-        url = reverse("fudan-documents", args=[obj.path])
-        return format_html("<iframe class='fudan-ansi' src={}></iframe>", url)
+        url = reverse("fudan-document", args=[obj.path])
+        return render_to_string("admin/fragments/ansi_preview.html", {"url": url})
 
 
 @admin.register(MenuLink)

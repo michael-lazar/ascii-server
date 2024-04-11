@@ -3,6 +3,7 @@ from __future__ import annotations
 from django.db import models
 
 from ascii.core.models import BaseModel
+from ascii.fudan.ansi import ANSIParser
 from ascii.fudan.choices import MenuLinkType
 
 
@@ -12,11 +13,12 @@ class Menu(BaseModel):
     def __str__(self):
         return f"Menu {self.pk}"
 
-    def get_data(self) -> bytes:
-        """
-        Get the raw ANSI data for the menu screen.
-        """
-        return b"".join(link.data + b"\r\n" for link in self.links.all())
+    def get_text(self) -> str:
+        return "".join(f"{link.text}\r\n" for link in self.links.all())
+
+    def get_html(self) -> str:
+        parser = ANSIParser()
+        return parser.to_html(self.get_text())
 
     @property
     def source_url(self) -> str:
@@ -26,10 +28,14 @@ class Menu(BaseModel):
 class MenuLinkQuerySet(models.QuerySet):
 
     def linked_to_document(self, document: Document) -> MenuLinkQuerySet:
-        return self.filter(path=document.path, type=MenuLinkType.FILE)
+        qs = self.filter(path=document.path, type=MenuLinkType.FILE)
+        qs = qs.select_related("menu")
+        return qs
 
     def linked_to_menu(self, menu: Menu) -> MenuLinkQuerySet:
-        return self.filter(path=menu.path, type=MenuLinkType.DIRECTORY)
+        qs = self.filter(path=menu.path, type=MenuLinkType.DIRECTORY)
+        qs = qs.select_related("menu")
+        return qs
 
 
 MenuLinkManager = models.Manager.from_queryset(MenuLinkQuerySet)  # noqa
@@ -55,6 +61,10 @@ class MenuLink(BaseModel):
     @property
     def data(self) -> bytes:
         return self.text.encode("gb18030")
+
+    def get_html(self) -> str:
+        parser = ANSIParser()
+        return parser.to_html(self.text)
 
     def get_source_url(self) -> str | None:
         match self.type:
@@ -91,3 +101,11 @@ class Document(BaseModel):
     @property
     def source_url(self) -> str:
         return f"https://bbs.fudan.edu.cn/bbs/anc?path={self.path}"
+
+    @property
+    def text(self) -> str:
+        return self.data.decode("gb18030", errors="replace")
+
+    def get_html(self) -> str:
+        parser = ANSIParser()
+        return parser.to_html(self.text)
