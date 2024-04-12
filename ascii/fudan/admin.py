@@ -3,130 +3,136 @@ from django.template.loader import render_to_string
 from django.utils.html import format_html
 from stransi import Ansi
 
+from ascii.core.admin import ReadOnlyModelAdmin, ReadOnlyTabularInline
 from ascii.fudan.models import Document, Menu, MenuLink
 
 
-class MenuLinkInline(admin.TabularInline):
+class MenuLinkInline(ReadOnlyTabularInline):
     model = MenuLink
-    extra = 0
-    fields = ["menu", "get_path", "order", "organizer", "time", "type", "text"]
-    readonly_fields = ["get_path"]
+    readonly_fields = [
+        "get_target",
+    ]
+    fields = [
+        "menu",
+        "get_target",
+        "type",
+        "order",
+        "organizer",
+        "time",
+        "text",
+    ]
 
-    @admin.display(description="Path")
-    def get_path(self, obj: MenuLink) -> str:
-        if url := obj.get_link_change_url():
-            return format_html("<a href={}>{}</a>", url, obj.path)
-        return obj.path
+    @admin.display(description="Target")
+    def get_target(self, obj: MenuLink) -> str:
+        if obj.target:
+            return format_html("<a href='{}'>{}</a>", obj.target.change_url, obj.target)
+        else:
+            return "-"
 
-    def has_change_permission(self, request, obj=None):
-        return False
 
-    def has_add_permission(self, request, obj=None):
-        return False
+class MenuLinkMenuInline(MenuLinkInline):
+    fk_name = "menu"
+    verbose_name = "link"
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+
+class MenuLinkTargetMenuInline(MenuLinkMenuInline):
+    fk_name = "target_menu"
+    verbose_name = "parent"
+
+
+class MenuLinkTargetDocumentInline(MenuLinkMenuInline):
+    fk_name = "target_document"
+    verbose_name = "parent"
 
 
 @admin.register(Menu)
-class MenuAdmin(admin.ModelAdmin):
+class MenuAdmin(ReadOnlyModelAdmin):
     list_display = ["id", "path"]
     search_fields = ["id", "path"]
-    inlines = [MenuLinkInline]
+    inlines = [MenuLinkTargetMenuInline, MenuLinkMenuInline]
     readonly_fields = [
-        "get_text",
         "get_source",
-        "get_linked_from",
-        "get_preview",
+        "get_bbs_preview",
+        "get_text",
     ]
     fields = [
-        "get_source",
         "path",
-        "get_linked_from",
-        "get_preview",
+        "get_source",
+        "get_bbs_preview",
         "get_text",
     ]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.prefetch_related("links")
+        qs = qs.prefetch_related("links", "parents")
         return qs
-
-    @admin.display(description="Linked from")
-    def get_linked_from(self, obj: Menu):
-        links = MenuLink.objects.linked_to_menu(obj)
-        return render_to_string("admin/fragments/linked_from_list.html", {"links": links})
-
-    @admin.display(description="Text")
-    def get_text(self, obj: Menu) -> str:
-        return format_html("<pre class='fudan-raw'>{}</pre>", obj.get_text())
 
     @admin.display(description="Source")
     def get_source(self, obj: Menu) -> str:
         return format_html("<a href={}>{}</a>", obj.source_url, obj.source_url)
 
     @admin.display(description="Preview")
-    def get_preview(self, obj: Menu) -> str:
-        return render_to_string("admin/fragments/ansi_preview.html", {"url": obj.url})
+    def get_bbs_preview(self, obj: Menu) -> str:
+        return render_to_string("admin/fragments/bbs_preview.html", {"url": obj.bbs_url})
+
+    @admin.display(description="Text")
+    def get_text(self, obj: Menu) -> str:
+        return format_html("<pre class='bbs-raw'>{}</pre>", obj.get_text())
 
 
 @admin.register(Document)
-class DocumentAdmin(admin.ModelAdmin):
+class DocumentAdmin(ReadOnlyModelAdmin):
     list_display = ["id", "path"]
-    search_fields = ["path"]
+    search_fields = ["id", "path"]
+    inlines = [MenuLinkTargetDocumentInline]
     readonly_fields = [
-        "get_data",
         "get_source",
-        "get_preview",
+        "get_bbs_preview",
+        "get_data",
         "get_instructions",
-        "get_linked_from",
     ]
     fields = [
-        "get_source",
         "path",
-        "get_linked_from",
-        "get_preview",
-        "get_instructions",
+        "get_source",
+        "get_bbs_preview",
         "get_data",
+        "get_instructions",
     ]
 
-    @admin.display(description="Linked from")
-    def get_linked_from(self, obj: Document):
-        links = MenuLink.objects.linked_to_document(obj)
-        return render_to_string("admin/fragments/linked_from_list.html", {"links": links})
-
-    @admin.display(description="Data")
-    def get_data(self, obj: Document) -> str:
-        text = obj.data.decode("gb18030", errors="backslashreplace")
-
-        lines: list[str] = []
-        for n, line in enumerate(text.splitlines(), start=1):
-            lines.append(f"{n:<3} {repr(line)[1:-1]}")
-
-        return format_html("<pre class='fudan-raw'>{}</pre>", "\n".join(lines))
-
-    @admin.display(description="Instructions")
-    def get_instructions(self, obj: Document) -> str:
-        text = obj.data.decode("gb18030", errors="backslashreplace")
-        text = "".join(str(part) for part in Ansi(text).instructions())
-
-        lines: list[str] = []
-        for n, line in enumerate(text.splitlines(), start=1):
-            lines.append(f"{n:>4} {repr(line)[1:-1]}")
-
-        return format_html("<pre class='fudan-raw'>{}</pre>", "\n".join(lines))
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.prefetch_related("parents")
+        return qs
 
     @admin.display(description="Source")
     def get_source(self, obj: Document) -> str:
         return format_html("<a href={}>{}</a>", obj.source_url, obj.source_url)
 
     @admin.display(description="Preview")
-    def get_preview(self, obj: Document) -> str:
-        return render_to_string("admin/fragments/ansi_preview.html", {"url": obj.url})
+    def get_bbs_preview(self, obj: Document) -> str:
+        return render_to_string("admin/fragments/bbs_preview.html", {"url": obj.bbs_url})
+
+    @admin.display(description="Data")
+    def get_data(self, obj: Document) -> str:
+        lines: list[str] = []
+        for n, line in enumerate(obj.escaped_text.splitlines(), start=1):
+            lines.append(f"{n:<3} {repr(line)[1:-1]}")
+
+        return format_html("<pre class='bbs-raw'>{}</pre>", "\n".join(lines))
+
+    @admin.display(description="Instructions")
+    def get_instructions(self, obj: Document) -> str:
+        text = "".join(str(part) for part in Ansi(obj.escaped_text).instructions())
+
+        lines: list[str] = []
+        for n, line in enumerate(text.splitlines(), start=1):
+            lines.append(f"{n:>4} {repr(line)[1:-1]}")
+
+        return format_html("<pre class='bbs-raw'>{}</pre>", "\n".join(lines))
 
 
 @admin.register(MenuLink)
-class MenuLinkAdmin(admin.ModelAdmin):
+class MenuLinkAdmin(ReadOnlyModelAdmin):
     list_display = [
         "id",
         "path",
@@ -136,12 +142,12 @@ class MenuLinkAdmin(admin.ModelAdmin):
         "type",
         "text",
     ]
-    list_filter = ["type"]
-    autocomplete_fields = ["menu"]
-    readonly_fields = ["get_menu"]
+    search_fields = ["id", "path"]
     fields = [
         "menu",
-        "get_menu",
+        "path",
+        "target_document",
+        "target_menu",
         "order",
         "organizer",
         "time",
@@ -149,8 +155,7 @@ class MenuLinkAdmin(admin.ModelAdmin):
         "text",
     ]
 
-    @admin.display(description="Menu")
-    def get_menu(self, obj: MenuLink) -> str:
-        if url := obj.get_link_change_url():
-            return format_html("<a href={}>{}</a>", url, obj.path)
-        return obj.path
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.select_related("menu", "target_document", "target_menu")
+        return qs

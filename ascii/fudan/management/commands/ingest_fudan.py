@@ -1,13 +1,12 @@
 import glob
 import os
-import re
 from datetime import datetime
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from ascii.fudan.models import Document, Menu, MenuLink
+from ascii.fudan.models import Document, Menu, MenuLink, MenuLinkType
 from ascii.fudan.utils import parse_xml, parse_xml_re, unescape_xml_bytes, unescape_xml_text
 
 DATA_PATH = os.path.join(settings.DATA_ROOT, "spiders", "fudan")
@@ -15,8 +14,6 @@ DATA_PATH = os.path.join(settings.DATA_ROOT, "spiders", "fudan")
 
 class Command(BaseCommand):
     help = "Import fudan crawl data into the database"
-
-    xml_document_pattern = re.compile(rb"<po>(.*?)</po>", re.DOTALL)
 
     def handle(self, *args, **options):
 
@@ -34,6 +31,19 @@ class Command(BaseCommand):
             self.stdout.write(filepath)
             self.ingest_document(filepath)
 
+        # Populate the foreign-key relationships between the links
+        for link in MenuLink.objects.all():
+            self.stdout.write(link)
+            match link.type:
+                case MenuLinkType.DIRECTORY:
+                    link.target_menu = Menu.objects.filter(path=link.path).first()
+                    link.save(update_fields=["target_menu"])
+                case MenuLinkType.FILE:
+                    link.target_document = Document.objects.filter(path=link.path).first()
+                    link.save(update_fields=["target_document"])
+                case _:
+                    pass
+
     def ingest_menu(self, filepath: str) -> Menu:
         """
         Ingest a BBS menu file (i.e. announcement).
@@ -42,7 +52,7 @@ class Command(BaseCommand):
             data = fp.read()
 
         bbs_path = os.path.relpath(filepath, DATA_PATH)
-        bbs_path = os.path.dirname(bbs_path) + "/"
+        bbs_path = "/" + os.path.dirname(bbs_path)
 
         root = parse_xml(data)
         menu = Menu.objects.create(path=bbs_path)
@@ -81,7 +91,7 @@ class Command(BaseCommand):
             data = fp.read()
 
         bbs_path = os.path.relpath(filepath, DATA_PATH)
-        bbs_path = os.path.splitext(bbs_path)[0]
+        bbs_path = "/" + os.path.splitext(bbs_path)[0]
 
         data = parse_xml_re(data)
         data = unescape_xml_bytes(data)
