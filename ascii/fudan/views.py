@@ -3,7 +3,7 @@ from typing import Any
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
-from ascii.fudan.models import Document, Menu
+from ascii.fudan.models import Document, Menu, get_navbar_html
 
 
 class FudanBBSView(TemplateView):
@@ -16,5 +16,7 @@ class FudanBBSView(TemplateView):
         else:
             obj = get_object_or_404(Document, path=f"/{path}")
 
-        bbs_html = obj.get_html()
-        return {"bbs_html": bbs_html}
+        return {
+            "bbs_html": obj.get_html(),
+            "navbar_html": get_navbar_html(obj),
+        }

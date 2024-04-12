@@ -55,17 +55,18 @@
   }
   .bbs a:link{
       text-decoration: none;
-      color: var(--c12);
+      color: var(--c14);
   }
   .bbs a:visited {
       text-decoration: none;
-      color: var(--c5);
+      color: var(--c13);
   }
 </style>
 {% endblock %}
 
 {% block body %}
 <div class="bbs">
-  <pre>{{ bbs_html }}</pre>
+  <pre>{{ navbar_html }}
+{{ bbs_html }}</pre>
 </div>
 {% endblock %}

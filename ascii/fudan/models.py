@@ -2,12 +2,21 @@ from __future__ import annotations
 
 from django.db import models
 from django.utils.html import format_html_join
+from django.utils.safestring import mark_safe
 
 from ascii.core.models import BaseModel
 from ascii.core.utils import reverse
 from ascii.fudan.ansi import ANSIParser
 from ascii.fudan.choices import MenuLinkType
 from ascii.fudan.utils import get_ansi_length
+
+
+def get_navbar_html(obj: Menu | Document) -> str:
+    def gen():
+        for link in obj.parents.all().select_related("menu"):
+            yield link.menu.bbs_url, link.menu.path
+
+    return format_html_join("", "<a href='{}'>↑ {}/</a>\n", gen())
 
 
 class Menu(BaseModel):
@@ -34,7 +43,7 @@ class Menu(BaseModel):
 
     @property
     def title(self) -> str:
-        if link := self.parents.all().first():
+        if link := self.parents.first():
             return link.text
         return ""
 
@@ -43,7 +52,7 @@ class Menu(BaseModel):
 
     def get_html(self) -> str:
         """
-        Compose the menu page from all of its individual links.
+        Compose the menu page by stringing together the individual links.
         """
 
         def gen():
@@ -54,13 +63,16 @@ class Menu(BaseModel):
                     link.bbs_tag,
                     link.target_bbs_url,
                     link.text,
-                    " " * (43 - get_ansi_length(link.text)),  # padding
+                    " " * (45 - get_ansi_length(link.text)),  # padding
                     link.organizer,
                     link.time.strftime("%Y-%m-%d"),
                 )
 
-        template = "{:>3}. [{}] <a href='{}'>{}</a> {} {:15} {:10}"
-        return format_html_join("\n", template, gen())
+        header = mark_safe(f"ORD TYPE {'DESCRIPTION':46}{'ORGANIZER':16}{'DATE':10}\n")
+
+        line_template = "{:>3}. [{}] <a href='{}'>{}</a> {}{:16}{:10}"
+        body = format_html_join("\n", line_template, gen())
+        return header + body
 
 
 class Document(BaseModel):
@@ -92,7 +104,7 @@ class Document(BaseModel):
 
     @property
     def title(self) -> str:
-        if link := self.parents.all().first():
+        if link := self.parents.first():
             return link.text
         return ""
 
