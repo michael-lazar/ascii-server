@@ -29,28 +29,41 @@
     --c14: #00FFFF;
     --c15: #FFFFFF;
   }
-  body {
-      color: var(--c7);
-      background-color: var(--c0);
-  }
-  pre {
-      font-family: "SimSunWebBBS", monospace;
-      font-size: 20px;
-      line-height: 1;
-      letter-spacing: 0;
-      width: 80ch;
-  }
   @keyframes blink {
     50% {
       opacity: 0.0;
     }
   }
 
-  .blink {
-    animation: blink 2s step-start 0s infinite;
+  body {
+      color: var(--c7);
+      background-color: var(--c0);
   }
-  .underline {
+
+  .bbs pre {
+      font-family: "SimSunWebBBS", monospace;
+      font-size: 20px;
+      line-height: 1;
+      letter-spacing: 0;
+      width: 80ch;
+  }
+  .bbs .blink {
+      animation: blink 2s step-start 0s infinite;
+  }
+  .bbs .underline {
       text-decoration: underline;
   }
+  .bbs a:link{
+      text-decoration: none;
+  }
+  .bbs a:visited {
+      text-decoration: none;
+  }
 </style>
+{% endblock %}
+
+{% block body %}
+<div class="bbs">
+  <pre>{{ bbs_html }}</pre>
+</div>
 {% endblock %}

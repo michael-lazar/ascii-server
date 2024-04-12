@@ -3,7 +3,6 @@ from django.template.loader import render_to_string
 from django.utils.html import format_html
 from stransi import Ansi
 
-from ascii.core.utils import reverse
 from ascii.fudan.models import Document, Menu, MenuLink
 
 
@@ -60,7 +59,7 @@ class MenuAdmin(admin.ModelAdmin):
 
     @admin.display(description="Text")
     def get_text(self, obj: Menu) -> str:
-        return obj.get_text()
+        return format_html("<pre class='fudan-raw'>{}</pre>", obj.get_text())
 
     @admin.display(description="Source")
     def get_source(self, obj: Menu) -> str:
@@ -68,8 +67,7 @@ class MenuAdmin(admin.ModelAdmin):
 
     @admin.display(description="Preview")
     def get_preview(self, obj: Menu) -> str:
-        url = reverse("fudan-menu", args=[obj.path])
-        return render_to_string("admin/fragments/ansi_preview.html", {"url": url})
+        return render_to_string("admin/fragments/ansi_preview.html", {"url": obj.url})
 
 
 @admin.register(Document)
@@ -90,7 +88,6 @@ class DocumentAdmin(admin.ModelAdmin):
         "get_preview",
         "get_instructions",
         "get_data",
-        "html",
     ]
 
     @admin.display(description="Linked from")
@@ -125,19 +122,26 @@ class DocumentAdmin(admin.ModelAdmin):
 
     @admin.display(description="Preview")
     def get_preview(self, obj: Document) -> str:
-        url = reverse("fudan-document", args=[obj.path])
-        return render_to_string("admin/fragments/ansi_preview.html", {"url": url})
+        return render_to_string("admin/fragments/ansi_preview.html", {"url": obj.url})
 
 
 @admin.register(MenuLink)
 class MenuLinkAdmin(admin.ModelAdmin):
-    list_display = ["path", "order", "organizer", "time", "type", "text"]
+    list_display = [
+        "id",
+        "path",
+        "order",
+        "organizer",
+        "time",
+        "type",
+        "text",
+    ]
     list_filter = ["type"]
     autocomplete_fields = ["menu"]
-    readonly_fields = ["get_path"]
+    readonly_fields = ["get_menu"]
     fields = [
         "menu",
-        "get_path",
+        "get_menu",
         "order",
         "organizer",
         "time",
@@ -145,8 +149,8 @@ class MenuLinkAdmin(admin.ModelAdmin):
         "text",
     ]
 
-    @admin.display(description="Path")
-    def get_path(self, obj: MenuLink) -> str:
+    @admin.display(description="Menu")
+    def get_menu(self, obj: MenuLink) -> str:
         if url := obj.get_link_change_url():
             return format_html("<a href={}>{}</a>", url, obj.path)
         return obj.path

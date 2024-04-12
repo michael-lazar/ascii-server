@@ -6,19 +6,15 @@ from django.views.generic import TemplateView
 from ascii.fudan.models import Document, Menu
 
 
-class FundanDocumentView(TemplateView):
+class FudanBBSView(TemplateView):
 
-    template_name = "fudan/ansi_document.html"
+    template_name = "fudan/ansi_bbs.html"
 
     def get_context_data(self, path: str) -> dict[str, Any]:
-        document = get_object_or_404(Document, path=path)
-        return {"document": document}
+        if path.endswith("/"):
+            obj = get_object_or_404(Menu, path=path)
+        else:
+            obj = get_object_or_404(Document, path=path)
 
-
-class FudanMenuView(TemplateView):
-
-    template_name = "fudan/ansi_menu.html"
-
-    def get_context_data(self, path: str) -> dict[str:Any]:
-        menu = get_object_or_404(Menu, path=path)
-        return {"menu": menu}
+        bbs_html = obj.get_html()
+        return {"bbs_html": bbs_html}
