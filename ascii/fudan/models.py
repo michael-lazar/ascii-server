@@ -7,6 +7,7 @@ from ascii.core.models import BaseModel
 from ascii.core.utils import reverse
 from ascii.fudan.ansi import ANSIParser
 from ascii.fudan.choices import MenuLinkType
+from ascii.fudan.utils import get_ansi_length
 
 
 class Menu(BaseModel):
@@ -31,23 +32,34 @@ class Menu(BaseModel):
     def bbs_url(self) -> str:
         return self.build_bbs_url(self.path)
 
+    @property
+    def title(self) -> str:
+        if link := self.parents.all().first():
+            return link.text
+        return ""
+
     def get_text(self) -> str:
         return "\n".join(link.text for link in self.links.all())
 
     def get_html(self) -> str:
+        """
+        Compose the menu page from all of its individual links.
+        """
+
         def gen():
             for link in self.links.all():
+
                 yield (
                     link.order,
+                    link.bbs_tag,
                     link.target_bbs_url,
                     link.text,
+                    " " * (43 - get_ansi_length(link.text)),  # padding
                     link.organizer,
                     link.time.strftime("%Y-%m-%d"),
                 )
 
-        # TODO: Add link to parent at the top - make this a separate function
-        # TODO: Align to 80 characters, only wrap link around text & not spaces
-        template = "{:4}  <a href='{}'>{:40}</a> {:20}{}"
+        template = "{:>3}. [{}] <a href='{}'>{}</a> {} {:15} {:10}"
         return format_html_join("\n", template, gen())
 
 
@@ -77,6 +89,12 @@ class Document(BaseModel):
     @property
     def text(self) -> str:
         return self.data.decode("gb18030", errors="replace")
+
+    @property
+    def title(self) -> str:
+        if link := self.parents.all().first():
+            return link.text
+        return ""
 
     @property
     def escaped_text(self):
@@ -148,3 +166,15 @@ class MenuLink(BaseModel):
                 return Document.build_bbs_url(self.path)
             case _:
                 return None
+
+    @property
+    def bbs_tag(self) -> str:
+        match self.type:
+            case MenuLinkType.FILE:
+                return "F"
+            case MenuLinkType.DIRECTORY:
+                return "D"
+            case MenuLinkType.ERROR:
+                return "E"
+            case _:
+                return " "

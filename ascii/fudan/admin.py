@@ -51,12 +51,14 @@ class MenuAdmin(ReadOnlyModelAdmin):
     search_fields = ["id", "path"]
     inlines = [MenuLinkTargetMenuInline, MenuLinkMenuInline]
     readonly_fields = [
+        "get_title",
         "get_source",
         "get_bbs_preview",
         "get_text",
     ]
     fields = [
         "path",
+        "get_title",
         "get_source",
         "get_bbs_preview",
         "get_text",
@@ -66,6 +68,10 @@ class MenuAdmin(ReadOnlyModelAdmin):
         qs = super().get_queryset(request)
         qs = qs.prefetch_related("links", "parents")
         return qs
+
+    @admin.display(description="Title")
+    def get_title(self, obj: Menu) -> str:
+        return obj.title
 
     @admin.display(description="Source")
     def get_source(self, obj: Menu) -> str:
@@ -86,6 +92,7 @@ class DocumentAdmin(ReadOnlyModelAdmin):
     search_fields = ["id", "path"]
     inlines = [MenuLinkTargetDocumentInline]
     readonly_fields = [
+        "get_title",
         "get_source",
         "get_bbs_preview",
         "get_data",
@@ -93,6 +100,7 @@ class DocumentAdmin(ReadOnlyModelAdmin):
     ]
     fields = [
         "path",
+        "get_title",
         "get_source",
         "get_bbs_preview",
         "get_data",
@@ -103,6 +111,10 @@ class DocumentAdmin(ReadOnlyModelAdmin):
         qs = super().get_queryset(request)
         qs = qs.prefetch_related("parents")
         return qs
+
+    @admin.display(description="Title")
+    def get_title(self, obj: Menu) -> str:
+        return obj.title
 
     @admin.display(description="Source")
     def get_source(self, obj: Document) -> str:

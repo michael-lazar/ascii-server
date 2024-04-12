@@ -55,3 +55,10 @@ def parse_xml_re(data: bytes) -> bytes:
         https://bbs.fudan.edu.cn/bbs/anc?path=/groups/rec.faq/ANSI/recommend/D6F3FF4AE/G.1071333485.430613
     """
     return _xml_document_pattern.search(data).group(1)
+
+
+def get_ansi_length(text: str) -> int:
+    """
+    Returns the length of a string, as it would be rendered in a terminal window.
+    """
+    return len(text.encode("gb18030"))

@@ -33,7 +33,7 @@ class Command(BaseCommand):
 
         # Populate the foreign-key relationships between the links
         for link in MenuLink.objects.all():
-            self.stdout.write(link)
+            self.stdout.write(link.path)
             match link.type:
                 case MenuLinkType.DIRECTORY:
                     link.target_menu = Menu.objects.filter(path=link.path).first()
@@ -59,7 +59,7 @@ class Command(BaseCommand):
 
         menu_links: list[MenuLink] = []
 
-        for order, ent in enumerate(root.findall(".//ent")):
+        for order, ent in enumerate(root.findall(".//ent"), start=1):
             ent_path = os.path.normpath(bbs_path + ent.get("path"))
             ent_time = datetime.fromisoformat(ent.get("time"))
             ent_time = timezone.make_aware(ent_time, timezone.utc)
