@@ -11,14 +11,6 @@ from ascii.fudan.choices import MenuLinkType
 from ascii.fudan.utils import get_ansi_length
 
 
-def get_navbar_html(obj: Menu | Document) -> str:
-    def gen():
-        for link in obj.parents.all().select_related("menu"):
-            yield link.menu.bbs_url, link.menu.path
-
-    return format_html_join("", "<a href='{}'>↑ {}/</a>\n", gen())
-
-
 class Menu(BaseModel):
     path = models.CharField(max_length=256, unique=True)
 
@@ -68,11 +60,10 @@ class Menu(BaseModel):
                     link.time.strftime("%Y-%m-%d"),
                 )
 
-        header = mark_safe(f"ORD TYPE {'DESCRIPTION':46}{'ORGANIZER':16}{'DATE':10}\n")
-
+        title = mark_safe(f"ORD TYPE {'DESCRIPTION':46}{'ORGANIZER':16}{'DATE':10}\n")
         line_template = "{:>3}. [{}] <a href='{}'>{}</a> {}{:16}{:10}"
-        body = format_html_join("\n", line_template, gen())
-        return header + body
+        table = format_html_join("\n", line_template, gen())
+        return title + table
 
 
 class Document(BaseModel):
