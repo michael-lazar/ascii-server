@@ -89,7 +89,7 @@ class MenuAdmin(ReadOnlyModelAdmin):
 @admin.register(Document)
 class DocumentAdmin(ReadOnlyModelAdmin):
     list_display = ["id", "path"]
-    search_fields = ["id", "path"]
+    search_fields = ["id", "path", "text"]
     inlines = [MenuLinkTargetDocumentInline]
     readonly_fields = [
         "get_title",
@@ -154,7 +154,7 @@ class MenuLinkAdmin(ReadOnlyModelAdmin):
         "type",
         "text",
     ]
-    search_fields = ["id", "path"]
+    search_fields = ["id", "path", "text"]
     fields = [
         "menu",
         "path",

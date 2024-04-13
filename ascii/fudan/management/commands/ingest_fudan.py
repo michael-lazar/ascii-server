@@ -96,6 +96,12 @@ class Command(BaseCommand):
         data = parse_xml_re(data)
         data = unescape_xml_bytes(data)
 
-        document = Document.objects.create(path=bbs_path, data=data)
+        text = data.decode("gb18030", errors="replace")
+
+        document = Document.objects.create(
+            path=bbs_path,
+            data=data,
+            text=text,
+        )
 
         return document

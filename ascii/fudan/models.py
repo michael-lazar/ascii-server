@@ -78,6 +78,7 @@ class Menu(BaseModel):
 class Document(BaseModel):
     path = models.CharField(max_length=256, unique=True)
     data = models.BinaryField()
+    text = models.TextField()
 
     def __str__(self):
         return f"Document: {self.pk}"
@@ -97,10 +98,6 @@ class Document(BaseModel):
     @property
     def bbs_url(self) -> str:
         return self.build_bbs_url(self.path)
-
-    @property
-    def text(self) -> str:
-        return self.data.decode("gb18030", errors="replace")
 
     @property
     def title(self) -> str:
