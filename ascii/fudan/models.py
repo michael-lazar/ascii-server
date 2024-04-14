@@ -49,7 +49,6 @@ class Menu(BaseModel):
 
         def gen():
             for link in self.links.all():
-
                 yield (
                     link.order,
                     link.bbs_tag,
@@ -57,11 +56,12 @@ class Menu(BaseModel):
                     link.text,
                     " " * (45 - get_ansi_length(link.text)),  # padding
                     link.organizer,
+                    " " * (16 - get_ansi_length(link.organizer)),  # padding
                     link.time.strftime("%Y-%m-%d"),
                 )
 
         title = mark_safe(f"ORD TYPE {'DESCRIPTION':46}{'ORGANIZER':16}{'DATE':10}\n")
-        line_template = "{:>3}. [{}] <a href='{}'>{}</a> {}{:16}{:10}"
+        line_template = "{:>3}. [{}] <a href='{}'>{}</a> {}{}{}{:10}"
         table = format_html_join("\n", line_template, gen())
         return title + table
 
@@ -117,12 +117,14 @@ class MenuLink(BaseModel):
     target_document = models.ForeignKey(
         Document,
         on_delete=models.SET_NULL,
+        blank=True,
         null=True,
         related_name="parents",
     )
     target_menu = models.ForeignKey(
         Menu,
         on_delete=models.SET_NULL,
+        blank=True,
         null=True,
         related_name="parents",
     )

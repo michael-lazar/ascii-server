@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db import models
 from django.template.loader import render_to_string
 from django.utils.html import format_html
 from stransi import Ansi
@@ -144,7 +145,12 @@ class DocumentAdmin(ReadOnlyModelAdmin):
 
 
 @admin.register(MenuLink)
-class MenuLinkAdmin(ReadOnlyModelAdmin):
+class MenuLinkAdmin(admin.ModelAdmin):
+    autocomplete_fields = [
+        "menu",
+        "target_document",
+        "target_menu",
+    ]
     list_display = [
         "id",
         "path",
@@ -166,6 +172,9 @@ class MenuLinkAdmin(ReadOnlyModelAdmin):
         "type",
         "text",
     ]
+    formfield_overrides = {
+        models.CharField: {"strip": False},
+    }
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

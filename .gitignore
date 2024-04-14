@@ -163,3 +163,4 @@ data/ascii.sqlite3
 data/media/
 data/spiders/
 TODO.md
+.DS_Store

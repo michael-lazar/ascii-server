@@ -79,6 +79,12 @@ class Command(BaseCommand):
                 )
             )
 
+        # Attempt to undo string trimming and add back leading indents.
+        if any(">>" in link.text for link in menu_links):
+            for link in menu_links:
+                if ">>" not in link.text:
+                    link.text = " " * 5 + link.text
+
         MenuLink.objects.bulk_create(menu_links)
 
         return menu
