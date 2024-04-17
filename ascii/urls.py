@@ -5,11 +5,12 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import path
 
 from ascii.core.views import IndexView
-from ascii.fudan.views import FudanBBSView
+from ascii.fudan.views import FudanBBSDocumentView, FudanBBSMenuView
 
 urlpatterns = [
     path("", IndexView.as_view(), name="index"),
-    path("fudan/bbs/<path:path>", FudanBBSView.as_view(), name="fudan-bbs"),
+    path("fudan/bbs/<path:path>/", FudanBBSMenuView.as_view(), name="fudan-bbs-menu"),
+    path("fudan/bbs/<path:path>", FudanBBSDocumentView.as_view(), name="fudan-bbs-document"),
     path("admin/", admin.site.urls),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
     *staticfiles_urlpatterns(),

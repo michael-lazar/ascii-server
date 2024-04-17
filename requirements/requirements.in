@@ -3,6 +3,7 @@ ansi2html
 django-admin-interface
 django-environ
 django-extensions
+googletrans==3.1.0a0
 gunicorn
 lxml
 requests

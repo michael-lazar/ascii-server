@@ -10,6 +10,9 @@ from ascii.fudan.ansi import ANSIParser
 from ascii.fudan.choices import MenuLinkType
 from ascii.fudan.utils import get_ansi_length
 
+# Link pinned to the top line that says "chinese"|"english"
+# Split lines into separate elements
+
 
 class Menu(BaseModel):
     path = models.CharField(max_length=256, unique=True)
@@ -21,17 +24,13 @@ class Menu(BaseModel):
     def build_source_url(cls, path: str) -> str:
         return f"https://bbs.fudan.edu.cn/bbs/0an?path={path}"
 
-    @classmethod
-    def build_bbs_url(cls, path: str) -> str:
-        return reverse("fudan-bbs", args=[f"{path[1:]}/"])
-
     @property
     def source_url(self) -> str:
         return self.build_source_url(self.path)
 
     @property
     def bbs_url(self) -> str:
-        return self.build_bbs_url(self.path)
+        return reverse("fudan-bbs-menu", args=[self.path])
 
     @property
     def title(self) -> str:
@@ -78,17 +77,13 @@ class Document(BaseModel):
     def build_source_url(cls, path: str) -> str:
         return f"https://bbs.fudan.edu.cn/bbs/anc?path={path}"
 
-    @classmethod
-    def build_bbs_url(cls, path: str) -> str:
-        return reverse("fudan-bbs", args=[f"{path[1:]}"])
-
     @property
     def source_url(self) -> str:
         return self.build_source_url(self.path)
 
     @property
     def bbs_url(self) -> str:
-        return self.build_bbs_url(self.path)
+        return reverse("fudan-bbs-document", args=[self.path])
 
     @property
     def title(self) -> str:
@@ -163,9 +158,9 @@ class MenuLink(BaseModel):
     def target_bbs_url(self) -> str | None:
         match self.type:
             case MenuLinkType.DIRECTORY:
-                return Menu.build_bbs_url(self.path)
+                return reverse("fudan-bbs-menu", args=[self.path])
             case MenuLinkType.FILE:
-                return Document.build_bbs_url(self.path)
+                return reverse("fudan-bbs-document", args=[self.path])
             case _:
                 return None
 

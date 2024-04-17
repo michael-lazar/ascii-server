@@ -1,0 +1,28 @@
+ansi_bbs.html{% extends "base.html" %}
+
+{% load static %}
+
+{% block extrahead %}
+<link href='{% static "styles/fundan.css" %}' rel='stylesheet' />
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+  @font-face {
+      font-family: "SimSunWebBBS";
+      src: url('{% static 'fonts/SimSunWebBBS.woff2' %}') format('woff2');
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="bbs">
+<pre>{% for link in links %}
+<a href="{{ link.menu.bbs_url }}">↑ {{ link.menu.path }}/</a>
+{% endfor %}
+{{ obj.get_html }}
+
+source: <a href="{{ obj.source_url }}">{{ obj.source_url }}</a>
+</pre>
+</div>
+{% endblock %}
