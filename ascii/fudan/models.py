@@ -1,14 +1,11 @@
 from __future__ import annotations
 
 from django.db import models
-from django.utils.html import format_html_join
-from django.utils.safestring import mark_safe
 
 from ascii.core.models import BaseModel
 from ascii.core.utils import reverse
 from ascii.fudan.ansi import ANSIParser
 from ascii.fudan.choices import MenuLinkType
-from ascii.fudan.utils import get_ansi_length
 
 # Link pinned to the top line that says "chinese"|"english"
 # Split lines into separate elements
@@ -30,7 +27,7 @@ class Menu(BaseModel):
 
     @property
     def bbs_url(self) -> str:
-        return reverse("fudan-bbs-menu", args=[self.path])
+        return reverse("fudan-bbs-menu", args=[self.path[1:]])
 
     @property
     def title(self) -> str:
@@ -40,29 +37,6 @@ class Menu(BaseModel):
 
     def get_text(self) -> str:
         return "\n".join(link.text for link in self.links.all())
-
-    def get_html(self) -> str:
-        """
-        Compose the menu page by stringing together the individual links.
-        """
-
-        def gen():
-            for link in self.links.all():
-                yield (
-                    link.order,
-                    link.bbs_tag,
-                    link.target_bbs_url,
-                    link.text,
-                    " " * (45 - get_ansi_length(link.text)),  # padding
-                    link.organizer,
-                    " " * (16 - get_ansi_length(link.organizer)),  # padding
-                    link.time.strftime("%Y-%m-%d"),
-                )
-
-        title = mark_safe(f"ORD TYPE {'DESCRIPTION':46}{'ORGANIZER':16}{'DATE':10}\n")
-        line_template = "{:>3}. [{}] <a href='{}'>{}</a> {}{}{}{:10}"
-        table = format_html_join("\n", line_template, gen())
-        return title + table
 
 
 class Document(BaseModel):
@@ -83,7 +57,7 @@ class Document(BaseModel):
 
     @property
     def bbs_url(self) -> str:
-        return reverse("fudan-bbs-document", args=[self.path])
+        return reverse("fudan-bbs-document", args=[self.path[1:]])
 
     @property
     def title(self) -> str:
@@ -93,7 +67,7 @@ class Document(BaseModel):
 
     @property
     def escaped_text(self):
-        return self.data.decode("gb18030", errors="backslashreplace")
+        return self.data.decode("gb18030", errors="backslashreplace")  # type: ignore
 
     def get_html(self) -> str:
         parser = ANSIParser()
@@ -158,9 +132,9 @@ class MenuLink(BaseModel):
     def target_bbs_url(self) -> str | None:
         match self.type:
             case MenuLinkType.DIRECTORY:
-                return reverse("fudan-bbs-menu", args=[self.path])
+                return reverse("fudan-bbs-menu", args=[self.path[1:]])
             case MenuLinkType.FILE:
-                return reverse("fudan-bbs-document", args=[self.path])
+                return reverse("fudan-bbs-document", args=[self.path[1:]])
             case _:
                 return None
 

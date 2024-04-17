@@ -1,4 +1,4 @@
-ansi_bbs.html{% extends "base.html" %}
+{% extends "base.html" %}
 
 {% load static %}
 
@@ -17,12 +17,14 @@ ansi_bbs.html{% extends "base.html" %}
 
 {% block body %}
 <div class="bbs">
-<pre>{% for link in links %}
-<a href="{{ link.menu.bbs_url }}">↑ {{ link.menu.path }}/</a>
-{% endfor %}
-{{ obj.get_html }}
-
-source: <a href="{{ obj.source_url }}">{{ obj.source_url }}</a>
-</pre>
+  <div class="bbs-nav">
+    {% for parent in parents %}
+      <div><a href="{{ parent.menu.bbs_url }}">↑ {{ parent.menu.path }}/</a></div>
+    {% endfor %}
+  </div>
+  <div class="bbs-document">{{ html }}</div>
+  <div class="bbs-footer">
+    <div>source: <a href="{{ obj.source_url }}">{{ obj.source_url }}</a></div>
+  </div>
 </div>
 {% endblock %}
