@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "ascii.core",
     "ascii.fudan",
+    "ascii.translations",
 ]
 
 MIDDLEWARE = [
