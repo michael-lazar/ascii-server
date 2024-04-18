@@ -68,14 +68,14 @@ body {
 }
 
 .bbs-menu > span {
-    white-space: pre-wrap;
+    white-space: pre;
 }
 .bbs-menu > .rjust {
     justify-self: right;
 }
 
 .bbs-document {
-    white-space: pre-wrap;
+    white-space: pre;
     margin: 1ch auto;
 }
 

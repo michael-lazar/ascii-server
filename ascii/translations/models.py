@@ -25,7 +25,7 @@ class Translation(BaseModel):
         ]
 
     def __str__(self) -> str:
-        return f"Translation: {self.original}"
+        return f"Translation: {self.pk}"
 
     @classmethod
     def get_or_translate(
