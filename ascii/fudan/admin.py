@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.html import format_html
-from stransi import Ansi
 
 from ascii.core.admin import ReadOnlyModelAdmin, ReadOnlyTabularInline
 from ascii.fudan.models import Document, Menu, MenuLink
@@ -52,14 +51,12 @@ class MenuAdmin(ReadOnlyModelAdmin):
     search_fields = ["id", "path"]
     inlines = [MenuLinkTargetMenuInline, MenuLinkMenuInline]
     readonly_fields = [
-        "get_title",
         "get_source",
         "get_bbs_preview",
         "get_text",
     ]
     fields = [
         "path",
-        "get_title",
         "get_source",
         "get_bbs_preview",
         "get_text",
@@ -69,10 +66,6 @@ class MenuAdmin(ReadOnlyModelAdmin):
         qs = super().get_queryset(request)
         qs = qs.prefetch_related("links", "parents")
         return qs
-
-    @admin.display(description="Title")
-    def get_title(self, obj: Menu) -> str:
-        return obj.title
 
     @admin.display(description="Source")
     def get_source(self, obj: Menu) -> str:
@@ -93,29 +86,21 @@ class DocumentAdmin(ReadOnlyModelAdmin):
     search_fields = ["id", "path", "text"]
     inlines = [MenuLinkTargetDocumentInline]
     readonly_fields = [
-        "get_title",
         "get_source",
         "get_bbs_preview",
         "get_data",
-        "get_instructions",
     ]
     fields = [
         "path",
-        "get_title",
         "get_source",
         "get_bbs_preview",
         "get_data",
-        "get_instructions",
     ]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.prefetch_related("parents")
         return qs
-
-    @admin.display(description="Title")
-    def get_title(self, obj: Menu) -> str:
-        return obj.title
 
     @admin.display(description="Source")
     def get_source(self, obj: Document) -> str:
@@ -127,19 +112,11 @@ class DocumentAdmin(ReadOnlyModelAdmin):
 
     @admin.display(description="Data")
     def get_data(self, obj: Document) -> str:
-        lines: list[str] = []
-        for n, line in enumerate(obj.escaped_text.splitlines(), start=1):
-            lines.append(f"{n:<3} {repr(line)[1:-1]}")
-
-        return format_html("<pre class='bbs-raw'>{}</pre>", "\n".join(lines))
-
-    @admin.display(description="Instructions")
-    def get_instructions(self, obj: Document) -> str:
-        text = "".join(str(part) for part in Ansi(obj.escaped_text).instructions())
+        text = obj.data.decode("gb18030", errors="backslashreplace")
 
         lines: list[str] = []
         for n, line in enumerate(text.splitlines(), start=1):
-            lines.append(f"{n:>4} {repr(line)[1:-1]}")
+            lines.append(f"{n:<3} {repr(line)[1:-1]}")
 
         return format_html("<pre class='bbs-raw'>{}</pre>", "\n".join(lines))
 

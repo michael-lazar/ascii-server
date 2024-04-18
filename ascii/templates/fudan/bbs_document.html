@@ -4,6 +4,7 @@
 
 {% block extrahead %}
 <link href='{% static "styles/fundan.css" %}' rel='stylesheet' />
+<script src="{% static "js/fudan.js" %}" ></script>
 {% endblock %}
 
 {% block extrastyle %}
@@ -19,10 +20,14 @@
 <div class="bbs">
   <div class="bbs-nav">
     {% for parent in parents %}
-      <div><a href="{{ parent.menu.bbs_url }}">↑ {{ parent.menu.path }}/</a></div>
+      <div>
+        <a class="text-zh {% if zh %}active{% endif %}" href="{{ parent.menu.bbs_url }}?lang=zh">↑ {{ parent.menu.path }}/</a>
+        <a class="text-en {% if en %}active{% endif %}" href="{{ parent.menu.bbs_url }}?lang=en">↑ {{ parent.menu.path }}/</a>
+      </div>
     {% endfor %}
   </div>
-  <div class="bbs-document">{{ html }}</div>
+  <div class="bbs-lang-toggle"><span id="lang-zh" class="lang-option {% if zh %}active{% endif %}">zh</span><span id="lang-en" class="lang-option {% if en %}active{% endif %}">en</span></div>
+  <div class="bbs-document"><span class="text-zh {% if en %}hidden{% endif %}">{{  obj.get_html }}</span><span class="text-en {% if zh %}hidden{% endif %}">{{ obj.get_translated_text }}</span></div>
   <div class="bbs-footer">
     <div>source: <a href="{{ obj.source_url }}">{{ obj.source_url }}</a></div>
   </div>

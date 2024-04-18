@@ -8,6 +8,10 @@ from ascii.translations.clients import GoogleTranslateClient
 
 
 class Translation(BaseModel):
+    """
+    Simple backend for caching results from a translation API.
+    """
+
     language = models.CharField(choices=TranslationLanguages.choices, max_length=10)
     original = models.TextField(db_index=True)
     translated = models.TextField(blank=True)
@@ -25,14 +29,19 @@ class Translation(BaseModel):
 
     @classmethod
     def get_or_translate(
-        cls, text: str, language: TranslationLanguages
+        cls,
+        text: str,
+        language: TranslationLanguages = TranslationLanguages.CHINESE_SIMPLIFIED,
     ) -> tuple[Translation, bool]:
         try:
             obj = cls.objects.filter(original=text, language=language).get()
             created = False
         except cls.DoesNotExist:
             client = GoogleTranslateClient()
-            translated = client.translate(text, language)
+            if text == "":
+                translated = text
+            else:
+                translated = client.translate(text, language)
             obj = cls.objects.create(original=text, translated=translated, language=language)
             created = True
 

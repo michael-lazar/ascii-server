@@ -30,13 +30,16 @@ body {
     background-color: var(--c0);
 }
 
+.hidden {
+    display: none;
+}
+
 .bbs {
     font-family: "SimSunWebBBS", monospace;
     font-size: 20px;
     line-height: 1;
     letter-spacing: 0;
-    width: 80ch;
-    margin: auto;
+    margin: 20px;
 }
 
 .bbs .blink {
@@ -61,18 +64,35 @@ body {
     display: grid;
     grid-template-columns: auto auto 1fr auto auto;
     column-gap: 1ch;
-    margin: 1ch auto;
+    margin: 1em auto;
 }
 
 .bbs-menu > span {
     white-space: pre-wrap;
 }
-
-.bbs-menu > span:nth-child(5n) {
-    justify-self: end;
+.bbs-menu > .rjust {
+    justify-self: right;
 }
 
 .bbs-document {
     white-space: pre-wrap;
     margin: 1ch auto;
+}
+
+.bbs-lang-toggle {
+    display: inline-flex;
+    color: var(--c7);
+    cursor: pointer;
+    margin-top: 1em;
+    border: 1px solid;
+}
+
+.bbs-lang-toggle .lang-option {
+    padding: 0 5px;
+    user-select: none;
+}
+
+.bbs-lang-toggle .lang-option.active {
+    background-color: var(--c7);
+    color: var(--c0);
 }

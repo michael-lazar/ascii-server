@@ -4,6 +4,7 @@
 
 {% block extrahead %}
 <link href='{% static "styles/fundan.css" %}' rel='stylesheet' />
+<script src="{% static "js/fudan.js" %}" ></script>
 {% endblock %}
 
 {% block extrastyle %}
@@ -19,9 +20,13 @@
 <div class="bbs">
   <div class="bbs-nav">
     {% for parent in parents %}
-      <div><a href="{{ parent.menu.bbs_url }}">↑ {{ parent.menu.path }}/</a></div>
+      <div>
+        <a class="text-zh {% if en %}hidden{% endif %}" href="{{ parent.menu.bbs_url }}?lang=zh">↑ {{ parent.menu.path }}/</a>
+        <a class="text-en {% if zh %}hidden{% endif %}" href="{{ parent.menu.bbs_url }}?lang=en">↑ {{ parent.menu.path }}/</a>
+      </div>
     {% endfor %}
   </div>
+  <div class="bbs-lang-toggle"><span id="lang-zh" class="lang-option {% if zh %}active{% endif %}">zh</span><span id="lang-en" class="lang-option {% if en %}active{% endif %}">en</span></div>
   <div class="bbs-menu">
     <span>ORD</span>
     <span>TYPE</span>
@@ -29,11 +34,11 @@
     <span>ORGANIZER</span>
     <span>DATE</span>
     {% for link in links %}
-    <span>{{ link.order }}.</span>
-    <span>[{{ link.bbs_tag }}]</span>
-    <span><a href="{{ link.target_bbs_url }}">{{ link.text }}</a></span>
-    <span>{{ link.organizer }}</span>
-    <span>{{ link.time|date:"Y-m-d" }}</span>
+      <span class="rjust">{{ link.order }}.</span>
+      <span>[{{ link.bbs_tag }}]</span>
+      <span><a class="text-zh {% if en %}hidden{% endif %}" href="{{ link.target_bbs_url }}?lang=zh">{{ link.text }}</a><a class="text-en {% if zh %}hidden{% endif %}" href="{{ link.target_bbs_url }}?lang=en">{{ link.get_translated_text }}</a></span>
+      <span>{{ link.organizer }}</span>
+      <span>{{ link.time|date:"Y-m-d" }}</span>
     {% endfor %}
   </div>
   <div class="bbs-footer">

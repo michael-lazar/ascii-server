@@ -6,9 +6,7 @@ from ascii.core.models import BaseModel
 from ascii.core.utils import reverse
 from ascii.fudan.ansi import ANSIParser
 from ascii.fudan.choices import MenuLinkType
-
-# Link pinned to the top line that says "chinese"|"english"
-# Split lines into separate elements
+from ascii.translations.models import Translation
 
 
 class Menu(BaseModel):
@@ -28,12 +26,6 @@ class Menu(BaseModel):
     @property
     def bbs_url(self) -> str:
         return reverse("fudan-bbs-menu", args=[self.path[1:]])
-
-    @property
-    def title(self) -> str:
-        if link := self.parents.first():
-            return link.text
-        return ""
 
     def get_text(self) -> str:
         return "\n".join(link.text for link in self.links.all())
@@ -59,19 +51,13 @@ class Document(BaseModel):
     def bbs_url(self) -> str:
         return reverse("fudan-bbs-document", args=[self.path[1:]])
 
-    @property
-    def title(self) -> str:
-        if link := self.parents.first():
-            return link.text
-        return ""
-
-    @property
-    def escaped_text(self):
-        return self.data.decode("gb18030", errors="backslashreplace")  # type: ignore
+    def get_translated_text(self) -> str:
+        text = ANSIParser().to_plaintext(self.text)
+        translation, _ = Translation.get_or_translate(text)
+        return translation.translated
 
     def get_html(self) -> str:
-        parser = ANSIParser()
-        return parser.to_html(self.text)
+        return ANSIParser().to_html(self.text)
 
 
 class MenuLink(BaseModel):
@@ -149,3 +135,8 @@ class MenuLink(BaseModel):
                 return "E"
             case _:
                 return " "
+
+    def get_translated_text(self) -> str:
+        text = ANSIParser().to_plaintext(self.text)
+        translation, _ = Translation.get_or_translate(text)
+        return translation.translated
