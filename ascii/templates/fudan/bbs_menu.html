@@ -24,6 +24,8 @@
         <a class="text-zh {% if en %}hidden{% endif %}" href="{{ parent.menu.bbs_url }}?lang=zh">↑ {{ parent.menu.path }}/</a>
         <a class="text-en {% if zh %}hidden{% endif %}" href="{{ parent.menu.bbs_url }}?lang=en">↑ {{ parent.menu.path }}/</a>
       </div>
+    {% empty %}
+      <br>
     {% endfor %}
   </div>
   <div class="bbs-lang-toggle"><span id="lang-zh" class="lang-option {% if zh %}active{% endif %}">zh</span><span id="lang-en" class="lang-option {% if en %}active{% endif %}">en</span></div>

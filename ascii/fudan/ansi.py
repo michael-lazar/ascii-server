@@ -12,7 +12,7 @@ from stransi.color import ColorRole
 _logger = logging.getLogger(__name__)
 
 
-DRAWING_CHARACTERS = "─│├┤╭╮╯╰"
+DRAWING_CHARACTERS = "─━│┃├┤╝╭╮╯╰"
 
 
 class ANSIParser:

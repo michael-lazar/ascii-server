@@ -21,8 +21,8 @@
   <div class="bbs-nav">
     {% for parent in parents %}
       <div>
-        <a class="text-zh {% if zh %}active{% endif %}" href="{{ parent.menu.bbs_url }}?lang=zh">↑ {{ parent.menu.path }}/</a>
-        <a class="text-en {% if en %}active{% endif %}" href="{{ parent.menu.bbs_url }}?lang=en">↑ {{ parent.menu.path }}/</a>
+        <a class="text-zh {% if en %}hidden{% endif %}" href="{{ parent.menu.bbs_url }}?lang=zh">↑ {{ parent.menu.path }}/</a>
+        <a class="text-en {% if zh %}hidden{% endif %}" href="{{ parent.menu.bbs_url }}?lang=en">↑ {{ parent.menu.path }}/</a>
       </div>
     {% endfor %}
   </div>
