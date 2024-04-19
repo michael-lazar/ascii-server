@@ -2,15 +2,14 @@ from django.contrib import admin
 from django.db import models
 from django.utils.html import format_html
 
-from ascii.core.admin import ReadOnlyModelAdmin, ReadOnlyTabularInline
 from ascii.fudan.models import Document, Menu, MenuLink
 
 
-class MenuLinkInline(ReadOnlyTabularInline):
+class MenuLinkInline(admin.TabularInline):
+    fk_name = "menu"
+    verbose_name = "link"
     model = MenuLink
-    readonly_fields = [
-        "get_target",
-    ]
+    readonly_fields = ["get_target", "menu", "time"]
     fields = [
         "menu",
         "get_target",
@@ -20,6 +19,9 @@ class MenuLinkInline(ReadOnlyTabularInline):
         "time",
         "text",
     ]
+    can_delete = False
+    extra = 0
+    show_change_link = True
 
     @admin.display(description="Target")
     def get_target(self, obj: MenuLink) -> str:
@@ -29,26 +31,21 @@ class MenuLinkInline(ReadOnlyTabularInline):
             return "-"
 
 
-class MenuLinkMenuInline(MenuLinkInline):
-    fk_name = "menu"
-    verbose_name = "link"
-
-
-class MenuLinkTargetMenuInline(MenuLinkMenuInline):
+class MenuLinkTargetMenuInline(MenuLinkInline):
     fk_name = "target_menu"
     verbose_name = "parent"
 
 
-class MenuLinkTargetDocumentInline(MenuLinkMenuInline):
+class MenuLinkTargetDocumentInline(MenuLinkInline):
     fk_name = "target_document"
     verbose_name = "parent"
 
 
 @admin.register(Menu)
-class MenuAdmin(ReadOnlyModelAdmin):
+class MenuAdmin(admin.ModelAdmin):
     list_display = ["id", "path"]
     search_fields = ["id", "path"]
-    inlines = [MenuLinkTargetMenuInline, MenuLinkMenuInline]
+    inlines = [MenuLinkTargetMenuInline, MenuLinkInline]
     readonly_fields = [
         "get_source",
         "get_view_link",
@@ -74,7 +71,7 @@ class MenuAdmin(ReadOnlyModelAdmin):
 
 
 @admin.register(Document)
-class DocumentAdmin(ReadOnlyModelAdmin):
+class DocumentAdmin(admin.ModelAdmin):
     list_display = ["id", "path"]
     search_fields = ["id", "path", "text"]
     inlines = [MenuLinkTargetDocumentInline]
