@@ -10,7 +10,7 @@
     {% for link in links %}
       <span class="rjust">{{ link.order }}.</span>
       <span>[{{ link.bbs_tag }}]</span>
-      <span><a class="text-zh {% if en %}hidden{% endif %}" href="{{ link.target_bbs_url }}?lang=zh">{{ link.text }}</a><a class="text-en {% if zh %}hidden{% endif %}" href="{{ link.target_bbs_url }}?lang=en">{{ link.get_translated_text }}</a></span>
+      <span><a class="text-zh {% if en %}hidden{% endif %}" href="{{ link.target_bbs_url }}?lang=zh-cn">{{ link.text }}</a><a class="text-en {% if zh %}hidden{% endif %}" href="{{ link.target_bbs_url }}?lang=en">{{ link.get_translated_text }}</a></span>
       <span>{{ link.organizer }}</span>
       <span>{{ link.time|date:"Y-m-d" }}</span>
     {% endfor %}

@@ -27,9 +27,6 @@ class Menu(BaseModel):
     def bbs_url(self) -> str:
         return reverse("fudan-bbs-menu", args=[self.path[1:]])
 
-    def get_text(self) -> str:
-        return "\n".join(link.text for link in self.links.all())
-
 
 class Document(BaseModel):
     path = models.CharField(max_length=256, unique=True)

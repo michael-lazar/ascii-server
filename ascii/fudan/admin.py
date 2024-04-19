@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.db import models
-from django.template.loader import render_to_string
 from django.utils.html import format_html
 
 from ascii.core.admin import ReadOnlyModelAdmin, ReadOnlyTabularInline
@@ -52,14 +51,12 @@ class MenuAdmin(ReadOnlyModelAdmin):
     inlines = [MenuLinkTargetMenuInline, MenuLinkMenuInline]
     readonly_fields = [
         "get_source",
-        "get_bbs_preview",
-        "get_text",
+        "get_view_link",
     ]
     fields = [
         "path",
         "get_source",
-        "get_bbs_preview",
-        "get_text",
+        "get_view_link",
     ]
 
     def get_queryset(self, request):
@@ -69,15 +66,11 @@ class MenuAdmin(ReadOnlyModelAdmin):
 
     @admin.display(description="Source")
     def get_source(self, obj: Menu) -> str:
-        return format_html("<a href={}>{}</a>", obj.source_url, obj.source_url)
+        return format_html("<a href={} target='_blank'>{}</a>", obj.source_url, obj.source_url)
 
-    @admin.display(description="Preview")
-    def get_bbs_preview(self, obj: Menu) -> str:
-        return render_to_string("admin/fragments/bbs_preview.html", {"url": obj.bbs_url})
-
-    @admin.display(description="Text")
-    def get_text(self, obj: Menu) -> str:
-        return format_html("<pre class='bbs-raw'>{}</pre>", obj.get_text())
+    @admin.display(description="View")
+    def get_view_link(self, obj: Menu) -> str:
+        return format_html("<a href={} target='_blank'>{}</a>", obj.bbs_url, obj.bbs_url)
 
 
 @admin.register(Document)
@@ -87,13 +80,13 @@ class DocumentAdmin(ReadOnlyModelAdmin):
     inlines = [MenuLinkTargetDocumentInline]
     readonly_fields = [
         "get_source",
-        "get_bbs_preview",
+        "get_view_link",
         "get_data",
     ]
     fields = [
         "path",
         "get_source",
-        "get_bbs_preview",
+        "get_view_link",
         "get_data",
     ]
 
@@ -106,9 +99,9 @@ class DocumentAdmin(ReadOnlyModelAdmin):
     def get_source(self, obj: Document) -> str:
         return format_html("<a href={}>{}</a>", obj.source_url, obj.source_url)
 
-    @admin.display(description="Preview")
-    def get_bbs_preview(self, obj: Document) -> str:
-        return render_to_string("admin/fragments/bbs_preview.html", {"url": obj.bbs_url})
+    @admin.display(description="View")
+    def get_view_link(self, obj: Document) -> str:
+        return format_html("<a href={} target='_blank'>{}</a>", obj.bbs_url, obj.bbs_url)
 
     @admin.display(description="Data")
     def get_data(self, obj: Document) -> str:

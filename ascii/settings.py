@@ -53,7 +53,11 @@ ROOT_URLCONF = "ascii.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "DIRS": [
+            # This gives the core app templates priority over templated defined by third-party
+            # apps, which is necessary in order to override django-admin templates.
+            "ascii/core/templates",
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
