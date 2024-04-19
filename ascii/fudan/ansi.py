@@ -1,6 +1,5 @@
 import logging
 import re
-import unicodedata
 from dataclasses import dataclass
 from typing import cast
 
@@ -9,6 +8,8 @@ from django.utils.safestring import mark_safe
 from stransi import Ansi, SetAttribute, SetColor
 from stransi.attribute import Attribute
 from stransi.color import ColorRole
+
+from ascii.fudan.utils import get_ansi_length
 
 _logger = logging.getLogger(__name__)
 
@@ -38,6 +39,7 @@ class ANSIParser:
 
     def __init__(self, text: str):
         self.text = text
+        self.ansi = Ansi(text)
 
     def build_span(self, text, attributes: dict) -> str:
         """
@@ -48,16 +50,14 @@ class ANSIParser:
         return span
 
     def apply_line_offsets(self, text: str) -> str:
-        lines = self.text.split("\n")
+        plaintext = "".join(part for part in self.ansi.instructions() if isinstance(part, str))
+
         offsets: list[int] = []
-        for line in lines:
+        for line in plaintext.split("\n"):
             offset = 0
             for char in line:
                 if self._re_leading_space.match(char):
-                    if unicodedata.east_asian_width(char) in "FWA":
-                        offset += 2
-                    else:
-                        offset += 1
+                    offset += get_ansi_length(char)
                 else:
                     break
             offsets.append(offset)
@@ -69,9 +69,7 @@ class ANSIParser:
         return "\n".join(buffer)
 
     def to_plaintext(self) -> str:
-        ansi = Ansi(self.text)
-
-        text = "".join(part for part in ansi.instructions() if isinstance(part, str))
+        text = "".join(part for part in self.ansi.instructions() if isinstance(part, str))
         text = self._re_drawing_char.sub(" ", text)
         text = self._re_compress_whitespace.sub(" ", text)
         text = "\n".join(line.strip() for line in text.splitlines())
@@ -81,8 +79,7 @@ class ANSIParser:
         state = self.State()
         buffer = ""
 
-        ansi = Ansi(self.text)
-        for instruction in ansi.instructions():
+        for instruction in self.ansi.instructions():
             if isinstance(instruction, str):
 
                 classes: list[str] = []
