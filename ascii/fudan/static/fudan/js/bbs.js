@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const langZh = document.getElementById('lang-zh');
     const textsEn = document.querySelectorAll('.text-en');
     const textsZh = document.querySelectorAll('.text-zh');
-    let currentLanguage = 'en'; // Default language
 
+    // Function to update the URL with the current language
     function updateUrlParameter(lang) {
         let currentUrl = new URL(window.location.href);
         currentUrl.searchParams.set('lang', lang);
@@ -48,6 +48,11 @@ document.addEventListener('DOMContentLoaded', function() {
             showEnglish();
         }
     }
+
+    // Detect the initial language setting from the URL on page load
+    let url = new URL(window.location.href);
+    let langParam = url.searchParams.get('lang');
+    let currentLanguage = langParam || 'en'; // Default to English if no lang parameter is set
 
     langEn.addEventListener('click', showEnglish);
     langZh.addEventListener('click', showChinese);
