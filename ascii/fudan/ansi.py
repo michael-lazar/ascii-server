@@ -1,5 +1,6 @@
 import logging
 import re
+import unicodedata
 from dataclasses import dataclass
 from typing import cast
 
@@ -17,13 +18,15 @@ _|~¤§¨°±·×÷ˇˉˊˋ˙–―‖‘’“”‥…‰′″‵※℃℅℉
 ╄╅╆╇╈╉╊╋═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╭╮╯╰╱╲╳▁▂▃▄▅▆▇█▉▊▋▌▍▎▏▓▔▕■□▲△▼▽◆◇○◎●◢◣◤◥★☆\
 ☉♀♂⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻〃々〇〈〉「」『』【】〒〓〔〕〖〗〝〞〾ノ㏎乀乁︱︳︴︵︶︷︸\
 ︹︺︻︼︽︾︿﹀﹁﹂﹃﹄﹉﹊﹋﹌﹍﹎﹏＄～￠￡\
+( ` 〢` - - ( -- ￣ /—﹨\\\\+\
 """
 
 
 class ANSIParser:
     _re_split_spaces = re.compile(r"(\s+|[^ ]+)")
-    _re_drop_drawing_chars = re.compile(f"[{DRAWING_CHARACTERS}]")
-    _re_compress_whitespace = re.compile("[ \t]+")
+    _re_drawing_char = re.compile(f"[{DRAWING_CHARACTERS}]")
+    _re_compress_whitespace = re.compile(r"[ \t]+")
+    _re_leading_space = re.compile(rf"[\s{DRAWING_CHARACTERS}]")
 
     @dataclass
     class State:
@@ -33,7 +36,10 @@ class ANSIParser:
         underline: bool = False
         blink: bool = False
 
-    def build_span(self, text: str, attributes: dict) -> str:
+    def __init__(self, text: str):
+        self.text = text
+
+    def build_span(self, text, attributes: dict) -> str:
         """
         Build a <span></span> element with the given attributes.
         """
@@ -41,18 +47,42 @@ class ANSIParser:
         span = f"<span {' '.join(parts)}>{text}</span>"
         return span
 
-    def to_plaintext(self, text: str) -> str:
-        text = "".join(part for part in Ansi(text).instructions() if isinstance(part, str))
-        text = self._re_drop_drawing_chars.sub(" ", text)
+    def apply_line_offsets(self, text: str) -> str:
+        lines = self.text.split("\n")
+        offsets: list[int] = []
+        for line in lines:
+            offset = 0
+            for char in line:
+                if self._re_leading_space.match(char):
+                    if unicodedata.east_asian_width(char) in "FWA":
+                        offset += 2
+                    else:
+                        offset += 1
+                else:
+                    break
+            offsets.append(offset)
+
+        buffer: list[str] = []
+        for offset, line in zip(offsets, text.split("\n")):
+            buffer.append(" " * offset + line)
+
+        return "\n".join(buffer)
+
+    def to_plaintext(self) -> str:
+        ansi = Ansi(self.text)
+
+        text = "".join(part for part in ansi.instructions() if isinstance(part, str))
+        text = self._re_drawing_char.sub(" ", text)
         text = self._re_compress_whitespace.sub(" ", text)
         text = "\n".join(line.strip() for line in text.splitlines())
         return text
 
-    def to_html(self, text: str) -> str:
+    def to_html(self) -> str:
         state = self.State()
         buffer = ""
 
-        for instruction in Ansi(text).instructions():
+        ansi = Ansi(self.text)
+        for instruction in ansi.instructions():
             if isinstance(instruction, str):
 
                 classes: list[str] = []

@@ -3,13 +3,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const langZh = document.getElementById('lang-zh');
     const textsEn = document.querySelectorAll('.text-en');
     const textsZh = document.querySelectorAll('.text-zh');
+    let currentLanguage = 'en'; // Default language
 
     function updateUrlParameter(lang) {
-        // Get the current URL
         let currentUrl = new URL(window.location.href);
-        // Set or replace the 'lang' query parameter
         currentUrl.searchParams.set('lang', lang);
-        // Update the URL without creating a new history entry
         window.history.replaceState({ path: currentUrl.href }, '', currentUrl.href);
     }
 
@@ -25,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
         langEn.classList.add('active');
         langZh.classList.remove('active');
         updateUrlParameter('en');
+        currentLanguage = 'en';
     }
 
     function showChinese() {
@@ -39,8 +38,25 @@ document.addEventListener('DOMContentLoaded', function() {
         langZh.classList.add('active');
         langEn.classList.remove('active');
         updateUrlParameter('zh-cn');
+        currentLanguage = 'zh-cn';
+    }
+
+    function toggleLanguage() {
+        if (currentLanguage === 'en') {
+            showChinese();
+        } else {
+            showEnglish();
+        }
     }
 
     langEn.addEventListener('click', showEnglish);
     langZh.addEventListener('click', showChinese);
+
+    // Bind the 't' key to toggle languages
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 't') {
+            toggleLanguage();
+            event.preventDefault(); // Prevent any default behavior triggered by 't'
+        }
+    });
 });

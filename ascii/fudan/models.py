@@ -50,12 +50,15 @@ class Document(BaseModel):
         return reverse("fudan-bbs-document", args=[self.path[1:]])
 
     def get_translated_text(self) -> str:
-        text = ANSIParser().to_plaintext(self.text)
-        translation, _ = Translation.get_or_translate(text)
-        return translation.translated
+        parser = ANSIParser(self.text)
+        text = parser.to_plaintext()
+        translated = Translation.get_or_translate(text)[0].translated
+        translated = parser.apply_line_offsets(translated)
+        return translated
 
     def get_html(self) -> str:
-        return ANSIParser().to_html(self.text)
+        parser = ANSIParser(self.text)
+        return parser.to_html()
 
 
 class MenuLink(BaseModel):
@@ -135,6 +138,8 @@ class MenuLink(BaseModel):
                 return " "
 
     def get_translated_text(self) -> str:
-        text = ANSIParser().to_plaintext(self.text)
-        translation, _ = Translation.get_or_translate(text)
-        return translation.translated
+        parser = ANSIParser(self.text)
+        text = parser.to_plaintext()
+        translated = Translation.get_or_translate(text)[0].translated
+        translated = parser.apply_line_offsets(translated)
+        return translated
