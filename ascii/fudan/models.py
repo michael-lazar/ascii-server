@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from django.db import models
 
+from ascii.core.fields import NonStrippingCharField, NonStrippingTextField
 from ascii.core.models import BaseModel
 from ascii.core.utils import reverse
 from ascii.fudan.ansi import ANSIParser
@@ -31,7 +32,7 @@ class Menu(BaseModel):
 class Document(BaseModel):
     path = models.CharField(max_length=256, unique=True)
     data = models.BinaryField()
-    text = models.TextField()
+    text = NonStrippingTextField()
 
     def __str__(self):
         return f"Document: {self.pk}"
@@ -64,7 +65,7 @@ class MenuLink(BaseModel):
     path = models.CharField(max_length=256)
     time = models.DateTimeField()
     type = models.CharField(max_length=1, choices=MenuLinkType.choices)
-    text = models.CharField(max_length=256, blank=True)
+    text = NonStrippingCharField(max_length=256, blank=True)
 
     target_document = models.ForeignKey(
         Document,

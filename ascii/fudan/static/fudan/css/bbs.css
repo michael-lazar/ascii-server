@@ -82,7 +82,7 @@ body {
 
 .bbs-controls {
     display: inline-flex;
-    gap: 1em;
+    gap: 0.5em;
     position: fixed;
     top: 1em;
     right: 1em;

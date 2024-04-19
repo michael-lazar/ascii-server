@@ -11,13 +11,19 @@ from stransi.color import ColorRole
 
 _logger = logging.getLogger(__name__)
 
-
-DRAWING_CHARACTERS = "─━│┃┏┓┗┛├┤┷╝╭╮╯╰"
+DRAWING_CHARACTERS = """\
+_|~¤§¨°±·×÷ˇˉˊˋ˙–―‖‘’“”‥…‰′″‵※℃℅℉№←↑→↓↖↗↘↙∈∏∑∕√∝∞∟∠∣∥∧∨∩∪∫∮∴∵∶∷∽≈≌≒≠≡\
+≤≥≦≧≮≯⊕⊙⊥⊿⌒─━│┃┄┅┆┇┈┉┊┋┌┍┎┏┐┑┒┓└┕┖┗┘┙┚┛├┝┞┟┠┡┢┣┤┥┦┧┨┩┪┫┬┭┮┯┰┱┲┳┴┵┶┷┸┹┺┻┼┽┾┿╀╁╂╃\
+╄╅╆╇╈╉╊╋═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╭╮╯╰╱╲╳▁▂▃▄▅▆▇█▉▊▋▌▍▎▏▓▔▕■□▲△▼▽◆◇○◎●◢◣◤◥★☆\
+☉♀♂⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻〃々〇〈〉「」『』【】〒〓〔〕〖〗〝〞〾ノ㏎乀乁︱︳︴︵︶︷︸\
+︹︺︻︼︽︾︿﹀﹁﹂﹃﹄﹉﹊﹋﹌﹍﹎﹏＄～￠￡\
+"""
 
 
 class ANSIParser:
-
-    _split_spaces_pattern = re.compile(r"(\s+|[^ ]+)")
+    _re_split_spaces = re.compile(r"(\s+|[^ ]+)")
+    _re_drop_drawing_chars = re.compile(f"[{DRAWING_CHARACTERS}]")
+    _re_compress_whitespace = re.compile("[ \t]+")
 
     @dataclass
     class State:
@@ -37,8 +43,8 @@ class ANSIParser:
 
     def to_plaintext(self, text: str) -> str:
         text = "".join(part for part in Ansi(text).instructions() if isinstance(part, str))
-        text = re.sub(f"[{DRAWING_CHARACTERS}]", "", text)
-        text = re.sub("[ \t]+", " ", text)
+        text = self._re_drop_drawing_chars.sub(" ", text)
+        text = self._re_compress_whitespace.sub(" ", text)
         text = "\n".join(line.strip() for line in text.splitlines())
         return text
 
@@ -58,7 +64,7 @@ class ANSIParser:
                     # So we need to split the string up and selectively wrap
                     # non-empty segments with blink tags.
                     inner = ""
-                    for seg in self._split_spaces_pattern.findall(instruction):
+                    for seg in self._re_split_spaces.findall(instruction):
                         if seg[0] == " ":
                             inner += seg
                         else:
