@@ -37,9 +37,9 @@ class ANSIParser:
 
     def to_plaintext(self, text: str) -> str:
         text = "".join(part for part in Ansi(text).instructions() if isinstance(part, str))
-        text = "\n".join(line.strip() for line in text.splitlines())
-        text = re.sub("[ \t]+", " ", text)
         text = re.sub(f"[{DRAWING_CHARACTERS}]", "", text)
+        text = re.sub("[ \t]+", " ", text)
+        text = "\n".join(line.strip() for line in text.splitlines())
         return text
 
     def to_html(self, text: str) -> str:

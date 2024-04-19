@@ -38,10 +38,7 @@ class Translation(BaseModel):
             created = False
         except cls.DoesNotExist:
             client = GoogleTranslateClient()
-            if text == "":
-                translated = text
-            else:
-                translated = client.translate(text, language)
+            translated = client.translate(text, language)
             obj = cls.objects.create(original=text, translated=translated, language=language)
             created = True
 
