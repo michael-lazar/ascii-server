@@ -18,8 +18,8 @@ _|~¤§¨°±·×÷ˇˉˊˋ˙–―‖‘’“”‥…‰′″‵※℃℅℉
 ≤≥≦≧≮≯⊕⊙⊥⊿⌒─━│┃┄┅┆┇┈┉┊┋┌┍┎┏┐┑┒┓└┕┖┗┘┙┚┛├┝┞┟┠┡┢┣┤┥┦┧┨┩┪┫┬┭┮┯┰┱┲┳┴┵┶┷┸┹┺┻┼┽┾┿╀╁╂╃\
 ╄╅╆╇╈╉╊╋═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╭╮╯╰╱╲╳▁▂▃▄▅▆▇█▉▊▋▌▍▎▏▓▔▕■□▲△▼▽◆◇○◎●◢◣◤◥★☆\
 ☉♀♂⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻〃々〇〈〉「」『』【】〒〓〔〕〖〗〝〞〾ノ㏎乀乁︱︳︴︵︶︷︸\
-︹︺︻︼︽︾︿﹀﹁﹂﹃﹄﹉﹊﹋﹌﹍﹎﹏＄～￠￡\
-( ` 〢` - - ( -- ￣ /—﹨\\\\+\
+︹︺︻︼︽︾︿﹀﹁﹂﹃﹄﹉﹊﹋﹌﹍﹎﹏＄～￠￡。\
+( ` 〢` - - ( -- ￣ /—﹨=\\\\+\
 """
 
 
@@ -27,7 +27,7 @@ class ANSIParser:
     _re_split_spaces = re.compile(r"(\s+|[^ ]+)")
     _re_drawing_char = re.compile(f"[{DRAWING_CHARACTERS}]")
     _re_compress_whitespace = re.compile(r"[ \t]+")
-    _re_leading_space = re.compile(rf"[\s{DRAWING_CHARACTERS}]")
+    _re_leading_space = re.compile(rf"[\s{DRAWING_CHARACTERS}]+")
 
     @dataclass
     class State:
@@ -54,12 +54,10 @@ class ANSIParser:
 
         offsets: list[int] = []
         for line in plaintext.split("\n"):
-            offset = 0
-            for char in line:
-                if self._re_leading_space.match(char):
-                    offset += get_ansi_length(char)
-                else:
-                    break
+            if m := self._re_leading_space.match(line):
+                offset = get_ansi_length(m.group(0))
+            else:
+                offset = 0
             offsets.append(offset)
 
         buffer: list[str] = []
