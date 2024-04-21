@@ -25,3 +25,4 @@ class TranslationAdmin(admin.ModelAdmin):
     def populate_translations(self, request: HttpRequest, queryset: models.QuerySet) -> None:
         for translation in queryset.all():
             translation.populate_translation()
+            translation.save()

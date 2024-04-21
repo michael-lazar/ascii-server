@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandParser
 
 from ascii.translations.choices import TranslationLanguages
-from ascii.translations.models import Translation
+from ascii.translations.utils import translate_bbs_text
 
 
 class Command(BaseCommand):
@@ -20,5 +20,5 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        translation, _ = Translation.get_or_translate(options["text"], options["language"])
-        self.stdout.write(translation.translated)
+        text = translate_bbs_text(options["text"], options["language"])
+        self.stdout.write(text)

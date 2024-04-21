@@ -7,7 +7,8 @@ from ascii.core.models import BaseModel
 from ascii.core.utils import reverse
 from ascii.fudan.ansi import ANSIParser
 from ascii.fudan.choices import MenuLinkType
-from ascii.translations.models import Translation
+from ascii.translations.choices import TranslationLanguages
+from ascii.translations.utils import translate_bbs_text
 
 
 class Menu(BaseModel):
@@ -50,11 +51,7 @@ class Document(BaseModel):
         return reverse("fudan-bbs-document", args=[self.path[1:]])
 
     def get_translated_text(self) -> str:
-        parser = ANSIParser(self.text)
-        text = parser.to_plaintext()
-        translated = Translation.get_or_translate(text)[0].translated
-        translated = parser.apply_line_offsets(translated)
-        return translated
+        return translate_bbs_text(self.text, TranslationLanguages.CHINESE_SIMPLIFIED)
 
     def get_html(self) -> str:
         parser = ANSIParser(self.text)
@@ -138,8 +135,4 @@ class MenuLink(BaseModel):
                 return " "
 
     def get_translated_text(self) -> str:
-        parser = ANSIParser(self.text)
-        text = parser.to_plaintext()
-        translated = Translation.get_or_translate(text)[0].translated
-        translated = parser.apply_line_offsets(translated)
-        return translated
+        return translate_bbs_text(self.text, TranslationLanguages.CHINESE_SIMPLIFIED)
