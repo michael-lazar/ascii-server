@@ -28,6 +28,11 @@ class Translation(BaseModel):
     def __str__(self) -> str:
         return f"Translation: {self.pk}"
 
+    def clean(self) -> None:
+        self.original = self.original.replace("\r\n", "\n")
+        self.translated = self.translated.replace("\r\n", "\n")
+
     def populate_translation(self) -> None:
         client = GoogleTranslateClient()
         self.translated = client.translate(self.original, self.language)  # noqa
+        self.save(update_fields=["translated"])

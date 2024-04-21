@@ -5,14 +5,13 @@ from ascii.translations.models import Translation
 
 def translate_bbs_text(text: str, source: TranslationLanguages) -> str:
     parser = ANSIParser(text)
-    text = parser.to_plaintext()
+    plaintext = parser.to_plaintext()
 
     try:
-        translation = Translation.objects.get(original=text, language=source)
-    except Translation.objects.DoesNotExist:
-        translation = Translation.objects.create(original=text, language=source)
+        translation = Translation.objects.get(original=plaintext, language=source)
+    except Translation.DoesNotExist:
+        translation = Translation.objects.create(original=plaintext, language=source)
         translation.populate_translation()
-        translation.save()
 
     translated_text = translation.translated
     translated_text = parser.apply_line_offsets(translated_text)

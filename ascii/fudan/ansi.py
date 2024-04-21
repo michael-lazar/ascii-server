@@ -53,7 +53,7 @@ class ANSIParser:
         plaintext = "".join(part for part in self.ansi.instructions() if isinstance(part, str))
 
         offsets: list[int] = []
-        for line in plaintext.split("\n"):
+        for line in plaintext.splitlines():
             if m := self._re_leading_space.match(line):
                 offset = get_ansi_length(m.group(0))
             else:
@@ -61,7 +61,7 @@ class ANSIParser:
             offsets.append(offset)
 
         buffer: list[str] = []
-        for offset, line in zip(offsets, text.split("\n")):
+        for offset, line in zip(offsets, text.splitlines()):
             buffer.append(" " * offset + line)
 
         return "\n".join(buffer)
