@@ -9,18 +9,10 @@ from stransi import Ansi, SetAttribute, SetColor
 from stransi.attribute import Attribute
 from stransi.color import ColorRole
 
+from ascii.fudan.constants import DRAWING_CHARACTERS
 from ascii.fudan.utils import get_ansi_length
 
 _logger = logging.getLogger(__name__)
-
-DRAWING_CHARACTERS = """\
-_|~¤§¨°±·×÷ˇˉˊˋ˙–―‖‘’“”‥…‰′″‵※℃℅℉№←↑→↓↖↗↘↙∈∏∑∕√∝∞∟∠∣∥∧∨∩∪∫∮∴∵∶∷∽≈≌≒≠≡\
-≤≥≦≧≮≯⊕⊙⊥⊿⌒─━│┃┄┅┆┇┈┉┊┋┌┍┎┏┐┑┒┓└┕┖┗┘┙┚┛├┝┞┟┠┡┢┣┤┥┦┧┨┩┪┫┬┭┮┯┰┱┲┳┴┵┶┷┸┹┺┻┼┽┾┿╀╁╂╃\
-╄╅╆╇╈╉╊╋═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╭╮╯╰╱╲╳▁▂▃▄▅▆▇█▉▊▋▌▍▎▏▓▔▕■□▲△▼▽◆◇○◎●◢◣◤◥★☆\
-☉♀♂⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻〃々〇〈〉「」『』【】〒〓〔〕〖〗〝〞〾ノ㏎乀乁︱︳︴︵︶︷︸\
-︹︺︻︼︽︾︿﹀﹁﹂﹃﹄﹉﹊﹋﹌﹍﹎﹏＄～￠￡。\
-( ` 〢` - - ( -- ￣ /—﹨=\\\\+\
-"""
 
 
 class ANSIParser:
