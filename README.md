@@ -6,7 +6,7 @@ Note: this is different from [the ASCII Art Emporium](https://ascii.mozz.us:7070
 
 It's also different from my personal gallery, which is a static file server at [https://mozz.us/ascii-art.html](https://mozz.us/ascii-art.html).
 
-It's also different from [https://aa.mozz.us](https://a.mozz.us), which is my Japanese Shift-JS art collection.
+It's also different from [https://aa.mozz.us](https://aa.mozz.us), which is my Japanese Shift-JS art collection.
 
 ## Requirements
 
