@@ -161,6 +161,7 @@ cython_debug/
 
 data/ascii.sqlite3
 data/media/
+data/static/
 data/spiders/
 TODO.md
 .DS_Store
