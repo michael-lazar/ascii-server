@@ -17,9 +17,7 @@ _logger = logging.getLogger(__name__)
 
 class ANSIParser:
     _re_split_spaces = re.compile(r"(\s+|[^ ]+)")
-    _re_drawing_char = re.compile(f"[{DRAWING_CHARACTERS}]")
     _re_compress_whitespace = re.compile(r"[ \t]+")
-    _re_leading_space = re.compile(rf"[\s{DRAWING_CHARACTERS}]+")
 
     @dataclass
     class State:
@@ -41,26 +39,30 @@ class ANSIParser:
         span = f"<span {' '.join(parts)}>{text}</span>"
         return span
 
-    def apply_line_offsets(self, text: str) -> str:
-        plaintext = "".join(part for part in self.ansi.instructions() if isinstance(part, str))
-
-        offsets: list[int] = []
-        for line in plaintext.splitlines():
-            if m := self._re_leading_space.match(line):
-                offset = get_ansi_length(m.group(0))
-            else:
-                offset = 0
-            offsets.append(offset)
+    def apply_line_indents(self, text: str) -> str:
+        plaintext = self.to_plaintext()
 
         buffer: list[str] = []
-        for offset, line in zip(offsets, text.splitlines()):
-            buffer.append(" " * offset + line)
+        for text_line, plaintext_line in zip(text.splitlines(), plaintext.splitlines()):
+            offset = 0
+            for ch in plaintext_line:
+                if ch == " ":
+                    offset += 1
+                elif ch in DRAWING_CHARACTERS:
+                    offset += get_ansi_length(ch)
+                else:
+                    break
+
+            buffer.append(" " * offset + text_line)
 
         return "\n".join(buffer)
 
     def to_plaintext(self) -> str:
-        text = "".join(part for part in self.ansi.instructions() if isinstance(part, str))
-        text = self._re_drawing_char.sub(" ", text)
+        return "".join(part for part in self.ansi.instructions() if isinstance(part, str))
+
+    def to_stripped_text(self) -> str:
+        text = self.to_plaintext()
+        text = "".join(" " if ch in DRAWING_CHARACTERS else ch for ch in text)
         text = self._re_compress_whitespace.sub(" ", text)
         text = "\n".join(line.strip() for line in text.splitlines())
         return text
