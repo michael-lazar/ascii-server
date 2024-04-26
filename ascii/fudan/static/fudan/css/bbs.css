@@ -62,7 +62,7 @@ body {
 
 .bbs-menu {
     display: grid;
-    grid-template-columns: auto auto auto auto 1fr;
+    grid-template-columns: 2em 2em auto 5em 5em;
     column-gap: 1ch;
     margin: 1em auto;
 }
