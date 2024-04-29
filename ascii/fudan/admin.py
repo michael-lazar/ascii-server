@@ -43,7 +43,7 @@ class MenuLinkTargetDocumentInline(MenuLinkInline):
 
 @admin.register(Menu)
 class MenuAdmin(admin.ModelAdmin):
-    list_display = ["id", "path"]
+    list_display = ["id", "path", "get_view_link"]
     search_fields = ["id", "path"]
     inlines = [MenuLinkTargetMenuInline, MenuLinkInline]
     readonly_fields = [
@@ -72,7 +72,7 @@ class MenuAdmin(admin.ModelAdmin):
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ["id", "path"]
+    list_display = ["id", "path", "get_view_link"]
     search_fields = ["id", "path", "text"]
     inlines = [MenuLinkTargetDocumentInline]
     readonly_fields = [
