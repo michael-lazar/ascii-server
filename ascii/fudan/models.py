@@ -8,7 +8,7 @@ from ascii.core.utils import reverse
 from ascii.fudan.ansi import ANSIParser
 from ascii.fudan.choices import MenuLinkType
 from ascii.translations.choices import TranslationLanguages
-from ascii.translations.utils import translate_bbs_text
+from ascii.translations.models import Translation
 
 
 class Menu(BaseModel):
@@ -50,17 +50,39 @@ class Document(BaseModel):
     def public_url(self) -> str:
         return reverse("fudan-bbs-document", args=[self.path[1:]])
 
+    def get_translation(self) -> Translation | None:
+        parser = ANSIParser(self.text)
+        original = parser.to_stripped_text()
+
+        translation = Translation.objects.filter(
+            original=original,
+            language=TranslationLanguages.CHINESE_SIMPLIFIED,
+        ).first()
+
+        return translation
+
     def get_translated_text(self, start: int | None = None, end: int | None = None) -> str:
-        translated = translate_bbs_text(self.text, TranslationLanguages.CHINESE_SIMPLIFIED)
+        parser = ANSIParser(self.text)
+        original = parser.to_stripped_text()
+
+        translation, created = Translation.objects.get_or_create(
+            original=original,
+            language=TranslationLanguages.CHINESE_SIMPLIFIED,
+        )
+        if created:
+            translation.populate_translation()
+
+        translated_text = translation.translated
+        translated_text = parser.apply_line_indents(translated_text)
+
         # Slice after translating to avoid busting the cache.
-        translated = "\n".join(translated.splitlines()[start:end])
-        return translated
+        translated_text = "\n".join(translated_text.splitlines()[start:end])
+        return translated_text
 
     def get_html(self, start: int | None = None, end: int | None = None) -> str:
         text = "\n".join(self.text.splitlines()[start:end])
         parser = ANSIParser(text)
-        html = parser.to_html()
-        return html
+        return parser.to_html()
 
 
 class MenuLink(BaseModel):
@@ -139,9 +161,31 @@ class MenuLink(BaseModel):
             case _:
                 return " "
 
+    def get_translation(self) -> Translation | None:
+        parser = ANSIParser(self.text)
+        original = parser.to_stripped_text()
+
+        translation = Translation.objects.filter(
+            original=original,
+            language=TranslationLanguages.CHINESE_SIMPLIFIED,
+        ).first()
+
+        return translation
+
     def get_translated_text(self) -> str:
-        translated = translate_bbs_text(self.text, TranslationLanguages.CHINESE_SIMPLIFIED)
-        return translated
+        parser = ANSIParser(self.text)
+        original = parser.to_stripped_text()
+
+        translation, created = Translation.objects.get_or_create(
+            original=original,
+            language=TranslationLanguages.CHINESE_SIMPLIFIED,
+        )
+        if created:
+            translation.populate_translation()
+
+        translated_text = translation.translated
+        translated_text = parser.apply_line_indents(translated_text)
+        return translated_text
 
 
 class ScratchFile(BaseModel):

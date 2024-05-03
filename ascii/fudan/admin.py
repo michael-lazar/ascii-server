@@ -78,12 +78,14 @@ class DocumentAdmin(admin.ModelAdmin):
     readonly_fields = [
         "get_source",
         "get_public_link",
+        "get_translation_link",
         "get_data",
     ]
     fields = [
         "path",
         "get_source",
         "get_public_link",
+        "get_translation_link",
         "get_data",
     ]
 
@@ -99,6 +101,17 @@ class DocumentAdmin(admin.ModelAdmin):
     @admin.display(description="View")
     def get_public_link(self, obj: Document) -> str:
         return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)
+
+    @admin.display(description="Translation")
+    def get_translation_link(self, obj: Document) -> str:
+        if translation := obj.get_translation():
+            return format_html(
+                "<a href={} target='_blank'>{}</a>",
+                translation.change_url,
+                translation,
+            )
+
+        return "-"
 
     @admin.display(description="Data")
     def get_data(self, obj: Document) -> str:
@@ -137,6 +150,7 @@ class MenuLinkAdmin(admin.ModelAdmin):
         "organizer",
         "time",
         "type",
+        "get_translation_link",
         "text",
     ]
     formfield_overrides = {
@@ -147,6 +161,17 @@ class MenuLinkAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         qs = qs.select_related("menu", "target_document", "target_menu")
         return qs
+
+    @admin.display(description="Translation")
+    def get_translation_link(self, obj: MenuLink) -> str:
+        if translation := obj.get_translation():
+            return format_html(
+                "<a href={} target='_blank'>{}</a>",
+                translation.change_url,
+                translation,
+            )
+
+        return "-"
 
 
 @admin.register(ScratchFile)

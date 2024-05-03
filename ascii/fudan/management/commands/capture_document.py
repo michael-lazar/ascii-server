@@ -40,7 +40,7 @@ class Command(BaseCommand):
         height = options["font_size"] * 22
 
         driver = self.setup_driver(options["url"])
-        sleep(1)  # Allow page to load
+        sleep(5)  # Allow page to load
 
         # Adjust window size to ensure the viewport size is correct
         inner_height = driver.execute_script("return window.innerHeight")
@@ -60,7 +60,7 @@ class Command(BaseCommand):
         while current_scroll_position < scroll_height:
             driver.execute_script(f"window.scrollTo(0, {current_scroll_position})")
             sleep(0.1)  # Allow scroll to finish
-            file_path = os.path.join(output_dir, f"screenshot_{screenshot_count}.png")
+            file_path = os.path.join(output_dir, f"screenshot_{screenshot_count:>04}.png")
             driver.save_screenshot(file_path)
             self.stdout.write(self.style.SUCCESS(f"Saved {file_path}"))
 
