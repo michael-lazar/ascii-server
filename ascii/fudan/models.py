@@ -26,7 +26,7 @@ class Menu(BaseModel):
         return self.build_source_url(self.path)
 
     @property
-    def bbs_url(self) -> str:
+    def public_url(self) -> str:
         return reverse("fudan-bbs-menu", args=[self.path[1:]])
 
 
@@ -47,15 +47,20 @@ class Document(BaseModel):
         return self.build_source_url(self.path)
 
     @property
-    def bbs_url(self) -> str:
+    def public_url(self) -> str:
         return reverse("fudan-bbs-document", args=[self.path[1:]])
 
-    def get_translated_text(self) -> str:
-        return translate_bbs_text(self.text, TranslationLanguages.CHINESE_SIMPLIFIED)
+    def get_translated_text(self, start: int | None = None, end: int | None = None) -> str:
+        translated = translate_bbs_text(self.text, TranslationLanguages.CHINESE_SIMPLIFIED)
+        # Slice after translating to avoid busting the cache.
+        translated = "\n".join(translated.splitlines()[start:end])
+        return translated
 
-    def get_html(self) -> str:
-        parser = ANSIParser(self.text)
-        return parser.to_html()
+    def get_html(self, start: int | None = None, end: int | None = None) -> str:
+        text = "\n".join(self.text.splitlines()[start:end])
+        parser = ANSIParser(text)
+        html = parser.to_html()
+        return html
 
 
 class MenuLink(BaseModel):
@@ -113,7 +118,7 @@ class MenuLink(BaseModel):
                 return None
 
     @property
-    def target_bbs_url(self) -> str | None:
+    def target_public_url(self) -> str | None:
         match self.type:
             case MenuLinkType.DIRECTORY:
                 return reverse("fudan-bbs-menu", args=[self.path[1:]])
@@ -135,4 +140,22 @@ class MenuLink(BaseModel):
                 return " "
 
     def get_translated_text(self) -> str:
-        return translate_bbs_text(self.text, TranslationLanguages.CHINESE_SIMPLIFIED)
+        translated = translate_bbs_text(self.text, TranslationLanguages.CHINESE_SIMPLIFIED)
+        return translated
+
+
+class ScratchFile(BaseModel):
+    slug = models.SlugField(unique=True)
+    text = NonStrippingTextField()
+
+    def __str__(self):
+        return f"Scratch: {self.pk}"
+
+    def get_html(self) -> str:
+        parser = ANSIParser(self.text)
+        html = parser.to_html()
+        return html
+
+    @property
+    def public_url(self) -> str:
+        return reverse("fudan-scratch", args=[self.slug])

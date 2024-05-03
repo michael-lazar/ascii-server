@@ -1,0 +1,23 @@
+{% extends "core/base.html" %}
+
+{% load static %}
+
+{% block extrahead %}
+<link href='{% static "fudan/css/bbs.css" %}' rel='stylesheet' />
+<link href='{% static "fudan/css/bbs-plain.css" %}' rel='stylesheet' />
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+  @font-face {
+      font-family: "SimSunWebBBS";
+      src: url('{% static 'core/fonts/SimSunWebBBS.woff2' %}') format('woff2');
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="bbs">
+  <div class="bbs-document">{{ content_zh }}</div>
+</div>
+{% endblock %}

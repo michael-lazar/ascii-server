@@ -5,10 +5,11 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import path
 
 from ascii.core.views import IndexView
-from ascii.fudan.views import FudanBBSDocumentView, FudanBBSMenuView
+from ascii.fudan.views import FudanBBSDocumentView, FudanBBSMenuView, FudanScratchFileView
 
 urlpatterns = [
     path("", IndexView.as_view(), name="index"),
+    path("fudan/scratch/<slug:slug>", FudanScratchFileView.as_view(), name="fudan-scratch"),
     path("fudan/bbs/<path:path>/", FudanBBSMenuView.as_view(), name="fudan-bbs-menu"),
     path("fudan/bbs/<path:path>", FudanBBSDocumentView.as_view(), name="fudan-bbs-document"),
     path("admin/", admin.site.urls),

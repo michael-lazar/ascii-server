@@ -27,8 +27,8 @@
   <div class="bbs-nav">
     {% for parent in parents %}
       <div>
-        <a class="text-zh {% if en %}hidden{% endif %}" href="{{ parent.menu.bbs_url }}?lang=zh-cn">↑ {{ parent.text }}</a>
-        <a class="text-en {% if zh %}hidden{% endif %}" href="{{ parent.menu.bbs_url }}?lang=en">↑ {{ parent.get_translated_text }}</a>
+        <a class="text-zh {% if en %}hidden{% endif %}" href="{{ parent.menu.public_url }}?lang=zh-cn">↑ {{ parent.text }}</a>
+        <a class="text-en {% if zh %}hidden{% endif %}" href="{{ parent.menu.public_url }}?lang=en">↑ {{ parent.get_translated_text }}</a>
       </div>
       {% empty %}
       <br>

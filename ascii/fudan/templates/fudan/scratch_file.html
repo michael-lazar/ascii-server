@@ -1,0 +1,28 @@
+{% extends "core/base.html" %}
+
+{% load static %}
+
+{% block extrahead %}
+<link href='{% static "fudan/css/bbs.css" %}' rel='stylesheet' />
+<script src="{% static "fudan/js/bbs.js" %}" ></script>
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+  @font-face {
+      font-family: "SimSunWebBBS";
+      src: url('{% static 'core/fonts/SimSunWebBBS.woff2' %}') format('woff2');
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="bbs">
+  <div class="bbs-controls">
+      {% if user.is_staff %}
+        <div class="bbs-admin-link"><a href="{{ obj.change_url }}" target="_blank">edit</a></div>
+      {% endif %}
+  </div>
+  <div class="bbs-scratch">{{ obj.get_html }}</div>
+</div>
+{% endblock %}

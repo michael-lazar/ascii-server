@@ -7,4 +7,6 @@ mypy
 pip-tools
 pytest
 pytest-django
+selenium
 types-requests
+webdriver-manager

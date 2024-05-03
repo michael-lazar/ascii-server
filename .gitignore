@@ -163,6 +163,7 @@ data/ascii.sqlite3
 data/media/
 data/static/
 data/spiders/
+data/screenshots/
 
 TODO.md
 

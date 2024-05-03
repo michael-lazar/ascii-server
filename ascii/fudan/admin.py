@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django.utils.html import format_html
 
-from ascii.fudan.models import Document, Menu, MenuLink
+from ascii.fudan.models import Document, Menu, MenuLink, ScratchFile
 
 
 class MenuLinkInline(admin.TabularInline):
@@ -43,17 +43,17 @@ class MenuLinkTargetDocumentInline(MenuLinkInline):
 
 @admin.register(Menu)
 class MenuAdmin(admin.ModelAdmin):
-    list_display = ["id", "path", "get_view_link"]
+    list_display = ["id", "path", "get_public_link"]
     search_fields = ["id", "path"]
     inlines = [MenuLinkTargetMenuInline, MenuLinkInline]
     readonly_fields = [
         "get_source",
-        "get_view_link",
+        "get_public_link",
     ]
     fields = [
         "path",
         "get_source",
-        "get_view_link",
+        "get_public_link",
     ]
 
     def get_queryset(self, request):
@@ -66,24 +66,24 @@ class MenuAdmin(admin.ModelAdmin):
         return format_html("<a href={} target='_blank'>{}</a>", obj.source_url, obj.source_url)
 
     @admin.display(description="View")
-    def get_view_link(self, obj: Menu) -> str:
-        return format_html("<a href={} target='_blank'>{}</a>", obj.bbs_url, obj.bbs_url)
+    def get_public_link(self, obj: Menu) -> str:
+        return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)
 
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ["id", "path", "get_view_link"]
+    list_display = ["id", "path", "get_public_link"]
     search_fields = ["id", "path", "text"]
     inlines = [MenuLinkTargetDocumentInline]
     readonly_fields = [
         "get_source",
-        "get_view_link",
+        "get_public_link",
         "get_data",
     ]
     fields = [
         "path",
         "get_source",
-        "get_view_link",
+        "get_public_link",
         "get_data",
     ]
 
@@ -97,8 +97,8 @@ class DocumentAdmin(admin.ModelAdmin):
         return format_html("<a href={}>{}</a>", obj.source_url, obj.source_url)
 
     @admin.display(description="View")
-    def get_view_link(self, obj: Document) -> str:
-        return format_html("<a href={} target='_blank'>{}</a>", obj.bbs_url, obj.bbs_url)
+    def get_public_link(self, obj: Document) -> str:
+        return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)
 
     @admin.display(description="Data")
     def get_data(self, obj: Document) -> str:
@@ -147,3 +147,18 @@ class MenuLinkAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         qs = qs.select_related("menu", "target_document", "target_menu")
         return qs
+
+
+@admin.register(ScratchFile)
+class ScratchFileAdmin(admin.ModelAdmin):
+    list_display = ["id", "slug", "get_public_link"]
+    search_fields = ["id", "slug", "text"]
+    readonly_fields = ["get_public_link"]
+    fields = ["slug", "get_public_link", "text"]
+
+    @admin.display(description="View")
+    def get_public_link(self, obj: Document) -> str:
+        if obj.pk:
+            return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)
+
+        return "-"

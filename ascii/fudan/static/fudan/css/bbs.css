@@ -80,6 +80,10 @@ body {
     margin: 1em auto;
 }
 
+.bbs-scratch {
+    white-space: pre-wrap;
+    margin: 1em auto;
+}
 .bbs-controls {
     display: inline-flex;
     gap: 0.5em;
