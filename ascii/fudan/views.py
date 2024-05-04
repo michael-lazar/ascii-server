@@ -1,10 +1,12 @@
 from typing import Any
 
-from django.shortcuts import get_object_or_404
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
 from django.views.generic import TemplateView
 
 from ascii.core.utils import get_query_param
-from ascii.fudan.models import Document, Menu, ScratchFile
+from ascii.fudan.models import AssetFile, Document, Menu, ScratchFile
 from ascii.translations.choices import TranslationLanguages
 
 
@@ -15,6 +17,13 @@ class FudanScratchFileView(TemplateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         obj = get_object_or_404(ScratchFile, slug=kwargs["slug"])
         return {"obj": obj}
+
+
+class FudanAssetFileView(View):
+
+    def get(self, request: HttpRequest, slug: str) -> HttpResponse:
+        obj = get_object_or_404(AssetFile, slug=slug)
+        return redirect(obj.file.url)
 
 
 class FudanBBSMenuView(TemplateView):

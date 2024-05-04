@@ -203,3 +203,15 @@ class ScratchFile(BaseModel):
     @property
     def public_url(self) -> str:
         return reverse("fudan-scratch", args=[self.slug])
+
+
+class AssetFile(BaseModel):
+    slug = models.SlugField(unique=True)
+    file = models.FileField()
+
+    def __str__(self):
+        return f"Asset: {self.pk}"
+
+    @property
+    def public_url(self) -> str:
+        return reverse("fudan-asset", args=[self.slug])

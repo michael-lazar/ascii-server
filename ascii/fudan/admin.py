@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django.utils.html import format_html
 
-from ascii.fudan.models import Document, Menu, MenuLink, ScratchFile
+from ascii.fudan.models import AssetFile, Document, Menu, MenuLink, ScratchFile
 
 
 class MenuLinkInline(admin.TabularInline):
@@ -182,7 +182,22 @@ class ScratchFileAdmin(admin.ModelAdmin):
     fields = ["slug", "get_public_link", "text"]
 
     @admin.display(description="View")
-    def get_public_link(self, obj: Document) -> str:
+    def get_public_link(self, obj: ScratchFile) -> str:
+        if obj.pk:
+            return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)
+
+        return "-"
+
+
+@admin.register(AssetFile)
+class AssetFileAdmin(admin.ModelAdmin):
+    list_display = ["id", "slug", "get_public_link"]
+    search_fields = ["id", "slug"]
+    readonly_fields = ["get_public_link"]
+    fields = ["slug", "get_public_link", "file"]
+
+    @admin.display(description="View")
+    def get_public_link(self, obj: ScratchFile) -> str:
         if obj.pk:
             return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)
 
