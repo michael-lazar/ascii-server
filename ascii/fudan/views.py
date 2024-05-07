@@ -82,7 +82,11 @@ class FudanBBSDocumentView(TemplateView):
                 pass
 
         content_zh = obj.get_html(start=start, end=end)
-        content_en = obj.get_translated_text(start=start, end=end)
+
+        if get_query_param(self.request, "plain"):
+            content_en = None
+        else:
+            content_en = obj.get_translated_text(start=start, end=end)
 
         parents = obj.parents.all().select_related("menu")
 

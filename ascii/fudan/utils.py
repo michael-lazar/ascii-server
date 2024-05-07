@@ -1,4 +1,6 @@
+import os
 import re
+import time
 
 from lxml import etree
 
@@ -65,3 +67,52 @@ def get_ansi_length(text: str) -> int:
     Returns the length of a string, as it would be rendered in a terminal window.
     """
     return len(text.encode("gb18030"))
+
+
+def screenshot_page(url: str, output_dir: str, font_size: int = 24):
+    """
+    Open the given fudan URL in selenium and automate capturing screenshots.
+    """
+    from selenium import webdriver
+    from selenium.webdriver.chrome.service import Service
+    from webdriver_manager.chrome import ChromeDriverManager
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    width = font_size * 41
+    height = font_size * 22
+
+    service = Service(ChromeDriverManager().install())
+    options = webdriver.ChromeOptions()
+    driver = webdriver.Chrome(service=service, options=options)
+    driver.get(url)
+
+    time.sleep(0.1)  # Allow page to load
+
+    # Adjust window size to ensure the viewport size is correct
+    inner_height = driver.execute_script("return window.innerHeight")
+    outer_height = driver.execute_script("return window.outerHeight")
+
+    chrome_height = outer_height - inner_height
+
+    # Set the window size to account for the chrome
+    driver.set_window_size(width, height + chrome_height)
+
+    scroll_height = driver.execute_script("return document.body.scrollHeight")
+    driver.execute_script("return document.body.style.overflow = 'hidden';")
+
+    current_scroll_position = 0
+    screenshot_count = 0
+
+    while current_scroll_position < scroll_height:
+        driver.execute_script(f"window.scrollTo(0, {current_scroll_position})")
+        time.sleep(0.1)  # Allow scroll to finish
+
+        filename = os.path.join(output_dir, f"screenshot_{screenshot_count:>04}.png")
+        driver.save_screenshot(filename)
+        yield filename
+
+        current_scroll_position += height
+        screenshot_count += 1
+
+    driver.quit()
