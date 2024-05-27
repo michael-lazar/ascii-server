@@ -62,9 +62,10 @@ body {
 
 .bbs-menu {
     display: grid;
-    grid-template-columns: 2em 2em auto 5em 5em;
+    grid-template-columns: 4ch 4ch 1fr 10ch 10ch;
     column-gap: 1ch;
     margin: 1em auto;
+    max-width: 80ch;
 }
 
 .bbs-menu > span {
@@ -88,10 +89,11 @@ body {
     display: inline-flex;
     gap: 0.5em;
     position: fixed;
-    top: 1em;
-    right: 1em;
+    top: 2.38vw;
+    right: 2.38vw;
     background-color: transparent;
     z-index: 1000;
+    font-size: 2.38vw;
 }
 
 .bbs-controls .bbs-admin-link {
@@ -113,15 +115,40 @@ body {
     border: 1px solid var(--c11);
     border-radius: 3px;
     background-color: var(--c0);
-    cursor: pointer;
 }
 
 .bbs-controls .bbs-lang-toggle .lang-option {
     padding: 0 5px;
     user-select: none;
+    cursor: pointer;
 }
 
 .bbs-controls .bbs-lang-toggle .lang-option.active {
     background-color: var(--c11);
     color: var(--c0);
+}
+
+.bbs-controls .bbs-font-toggle {
+    display: inline-flex;
+    color: var(--c11);
+    border: 1px solid var(--c11);
+    border-radius: 3px;
+    background-color: var(--c0);
+}
+
+.bbs-controls .bbs-font-toggle .font-label {
+    background-color: var(--c11);
+    color: var(--c0);
+    border-right: 1px solid var(--c0);
+}
+
+.bbs-controls .bbs-font-toggle .font-option {
+    padding: 0 5px;
+    user-select: none;
+    cursor: pointer;
+}
+
+.bbs-controls .bbs-font-toggle .font-label {
+    padding: 0 5px;
+    user-select: none;
 }
