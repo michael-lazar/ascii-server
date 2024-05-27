@@ -81,6 +81,10 @@ body {
     margin: 1em auto;
 }
 
+.bbs-nav {
+    margin-top: 3em;
+}
+
 .bbs-scratch {
     white-space: pre-wrap;
     margin: 1em auto;
@@ -136,19 +140,27 @@ body {
     background-color: var(--c0);
 }
 
-.bbs-controls .bbs-font-toggle .font-label {
-    background-color: var(--c11);
-    color: var(--c0);
-    border-right: 1px solid var(--c0);
-}
-
 .bbs-controls .bbs-font-toggle .font-option {
     padding: 0 5px;
     user-select: none;
     cursor: pointer;
 }
 
-.bbs-controls .bbs-font-toggle .font-label {
+.bbs-controls .bbs-whitespace-toggle {
+    display: inline-flex;
+    cursor: pointer;
+}
+
+.bbs-controls .bbs-whitespace-toggle .whitespace-option {
     padding: 0 5px;
     user-select: none;
+    color: var(--c11);
+    background-color: var(--c0);
+    border: 1px solid var(--c11);
+    border-radius: 3px;
+}
+
+.bbs-controls .bbs-whitespace-toggle .whitespace-option.active {
+    color: var(--c0);
+    background-color: var(--c11);
 }

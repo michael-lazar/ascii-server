@@ -5,17 +5,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const fontIncrease = document.getElementById('font-increase');
     const fontDecrease = document.getElementById('font-decrease');
 
+    const whitespaceToggle = document.getElementById('whitespace-toggle');
+
     const textsEn = document.querySelectorAll('.text-en');
     const textsZh = document.querySelectorAll('.text-zh');
 
     const bbs = document.querySelector('.bbs')
+    const bbsDocument = document.querySelector('.bbs-document');
+    const bbsMenuItems = document.querySelectorAll('.bbs-menu > span');
 
     // Detect the initial language setting from the URL on page load
     let url = new URL(window.location.href);
     let langParam = url.searchParams.get('lang');
-    let currentLanguage = langParam || 'en'; // Default to English if no lang parameter is set
 
+    let bbsLanguage = langParam || 'en';  // Initial language, default to en
     let bbsFontSize = 2.38; // Initial font size in vw units
+    let bbsWrapText = false; // Initial text wrapping
+
+    whitespaceToggle.addEventListener('click', function() {
+        const newWhiteSpace = bbsWrapText ? 'pre' : 'pre-line';
+
+        if (bbsDocument) {
+            bbsDocument.style.whiteSpace = newWhiteSpace;
+        }
+
+        bbsMenuItems.forEach(span => {
+            span.style.whiteSpace = newWhiteSpace;
+        });
+
+        whitespaceToggle.classList.toggle('active');
+        bbsWrapText = !bbsWrapText;
+    });
+
 
     fontIncrease.addEventListener('click', function() {
         bbsFontSize += 0.2;
@@ -47,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
         langEn.classList.add('active');
         langZh.classList.remove('active');
         updateUrlParameter('en');
-        currentLanguage = 'en';
+        bbsLanguage = 'en';
     }
 
     function showChinese() {
@@ -62,11 +83,11 @@ document.addEventListener('DOMContentLoaded', function() {
         langZh.classList.add('active');
         langEn.classList.remove('active');
         updateUrlParameter('zh-cn');
-        currentLanguage = 'zh-cn';
+        bbsLanguage = 'zh-cn';
     }
 
     function toggleLanguage() {
-        if (currentLanguage === 'en') {
+        if (bbsLanguage === 'en') {
             showChinese();
         } else {
             showEnglish();
