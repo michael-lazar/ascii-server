@@ -183,8 +183,8 @@ class MenuLink(BaseModel):
         if created:
             translation.populate_translation()
 
-        translated_text = translation.translated
-        translated_text = parser.apply_line_indents(translated_text)
+        translated_text = translation.translated or "(no description)"
+        # translated_text = parser.apply_line_indents(translated_text)
         return translated_text
 
 
