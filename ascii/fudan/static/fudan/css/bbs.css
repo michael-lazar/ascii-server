@@ -82,109 +82,52 @@ body {
 }
 
 .bbs-nav {
-    margin-top: 3em;
+    margin-top: 2em;
 }
 
 .bbs-scratch {
     white-space: pre-wrap;
     margin: 1em auto;
 }
+
 .bbs-controls {
     display: inline-flex;
     gap: 0.5em;
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 1em;
+    right: 1em;
     background-color: transparent;
     z-index: 1000;
     font-size: 20px;
 }
 
-.bbs-controls .bbs-admin-link {
-    color: var(--c0);
-    border: 1px solid var(--c9);
-    border-radius: 3px;
-    background-color: var(--c9);
-    cursor: pointer;
-    padding: 0 5px;
-}
-
-.bbs-controls .bbs-admin-link a:link, .bbs-controls .bbs-admin-link a:visited {
-    color: var(--c0);
-}
-
-.bbs-controls .bbs-lang-toggle {
+.control {
     display: inline-flex;
-    color: var(--c11);
-    border: 1px solid var(--c11);
-    border-radius: 3px;
-    background-color: var(--c0);
-}
-
-.bbs-controls .bbs-lang-toggle .lang-option {
-    padding: 0 5px;
-    user-select: none;
     cursor: pointer;
+    border-radius: 3px;
+    border: 1px solid var(--c11);
+    background-color: var(--c0);
+    color: var(--c11);
+    user-select: none;
+    white-space: nowrap;
 }
 
-.bbs-controls .bbs-lang-toggle .lang-option.active {
+.control.inverse {
     background-color: var(--c11);
     color: var(--c0);
 }
 
-.bbs-controls .bbs-font-toggle {
-    display: inline-flex;
+.control.toggle {
+    padding: 1px 6px;
+}
+
+.control-item {
+    background-color: var(--c0);
     color: var(--c11);
-    border: 1px solid var(--c11);
-    border-radius: 3px;
-    background-color: var(--c0);
+    padding: 1px 6px;
 }
 
-.bbs-controls .bbs-font-toggle .font-size-display {
+.control-item.inverse, .control-item.active, a.control-item:link, a.control-item:visited {
     background-color: var(--c11);
-    color: var(--c0);
-    padding: 0 5px;
-    min-width: 4ch;
-    text-align: right;
-    border-right: 1px solid var(--c0);
-}
-
-.bbs-controls .bbs-font-toggle .font-option {
-    padding: 0 5px;
-    user-select: none;
-    cursor: pointer;
-}
-
-.bbs-controls .bbs-whitespace-toggle {
-    display: inline-flex;
-    cursor: pointer;
-}
-
-.bbs-controls .bbs-whitespace-toggle .whitespace-option {
-    padding: 0 5px;
-    user-select: none;
-    color: var(--c11);
-    background-color: var(--c0);
-    border: 1px solid var(--c11);
-    border-radius: 3px;
-}
-
-.bbs-controls .bbs-whitespace-toggle .whitespace-option.active {
-    color: var(--c0);
-    background-color: var(--c11);
-}
-
-.bbs-controls .toolbar-toggle {
-    padding: 0 5px;
-    cursor: pointer;
-    background-color: var(--c0);
-    color: var(--c14);
-    border: 1px solid var(--c14);
-    border-radius: 3px;
-    user-select: none;
-}
-
-.bbs-controls .toolbar-toggle.collapsed {
-    background-color: var(--c14);
     color: var(--c0);
 }

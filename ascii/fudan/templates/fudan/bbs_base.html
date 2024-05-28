@@ -19,22 +19,24 @@
 {% block body %}
 <div class="bbs">
   <div class="bbs-controls">
-      <div class="bbs-font-toggle">
-        <span id="font-size-display" class="font-size-display">20px</span>
-        <span id="font-decrease" class="font-option">-</span>
-        <span id="font-increase" class="font-option">+</span>
+      <div class="control">
+        <span class="control-item inverse" id="font-size-display">20px</span>
+        <span class="control-item" id="font-decrease">-</span>
+        <span class="control-item" id="font-increase">+</span>
       </div>
-      <div class="bbs-whitespace-toggle">
-        <span id="whitespace-toggle" class="whitespace-option">wrap</span>
+      <div class="control">
+        <span class="control-item" id="whitespace-toggle">wrap</span>
       </div>
-      <div class="bbs-lang-toggle">
-        <span id="lang-zh" class="lang-option {% if lang == "zh" %}active{% endif %}">zh</span>
-        <span id="lang-en" class="lang-option {% if lang == "en" %}active{% endif %}">en</span>
+      <div class="control">
+        <span class="control-item {% if lang == "zh" %}active{% endif %}" id="lang-zh">zh</span>
+        <span class="control-item {% if lang == "en" %}active{% endif %}" id="lang-en">en</span>
       </div>
       {% if user.is_staff %}
-        <div class="bbs-admin-link"><a href="{{ obj.change_url }}" target="_blank">e</a></div>
+      <div class="control">
+        <a class="control-item inverse" href="{{ obj.change_url }}" target="_blank">e</a>
+      </div>
       {% endif %}
-      <div class="toolbar-toggle" id="toggle-toolbar"><</div>
+      <div class="control toggle" id="toggle-toolbar"><</div>
   </div>
   <div class="bbs-nav">
     {% for parent in parents %}

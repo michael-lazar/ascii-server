@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const bbsMenuItems = document.querySelectorAll('.bbs-menu > span');
 
     const toggleToolbarButton = document.getElementById('toggle-toolbar');
-    const toolbarElements = document.querySelectorAll('.bbs-controls > div:not(.toolbar-toggle)');
+    const toolbarElements = document.querySelectorAll('.bbs-controls > div:not(#toggle-toolbar)');
 
     const bbsFontSizeInitial = 20;
 
@@ -25,19 +25,37 @@ document.addEventListener('DOMContentLoaded', function() {
     let bbsWrapText = false;
     let isToolbarExpanded = true;
 
+    fontIncrease.addEventListener("mousedown", function () {
+        fontIncrease.classList.add("inverse")
+    })
+    fontIncrease.addEventListener("mouseup", function () {
+        fontIncrease.classList.remove("inverse")
+    })
+    fontIncrease.addEventListener("mouseleave", function () {
+        fontIncrease.classList.remove("inverse")
+    })
+
+    fontDecrease.addEventListener("mousedown", function () {
+        fontDecrease.classList.add("inverse")
+    })
+    fontDecrease.addEventListener("mouseup", function () {
+        fontDecrease.classList.remove("inverse")
+    })
+    fontIncrease.addEventListener("mouseleave", function () {
+        fontDecrease.classList.remove("inverse")
+    })
+
     toggleToolbarButton.addEventListener('click', function() {
         isToolbarExpanded = !isToolbarExpanded;
 
         toolbarElements.forEach(element => {
-            element.style.display = isToolbarExpanded ? 'flex' : 'none';
+            element.classList.toggle("hidden")
         });
 
         if (isToolbarExpanded) {
             toggleToolbarButton.textContent = '<';
-            toggleToolbarButton.classList.remove('collapsed');
         } else {
             toggleToolbarButton.textContent = '+';
-            toggleToolbarButton.classList.add('collapsed');
         }
     });
 
