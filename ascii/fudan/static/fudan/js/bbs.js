@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const langEn = document.getElementById('lang-en');
     const langZh = document.getElementById('lang-zh');
 
+    const fontDisplay = document.getElementById('font-size-display');
     const fontIncrease = document.getElementById('font-increase');
     const fontDecrease = document.getElementById('font-decrease');
 
@@ -10,20 +11,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const contentEn = document.querySelectorAll('.content-en');
     const contentZh = document.querySelectorAll('.content-zh');
 
-    const bbs = document.querySelector('.bbs')
-    const bbsDocument = document.querySelector('.bbs-document');
+    const bbsDocuments = document.querySelectorAll('.bbs-document');
     const bbsMenuItems = document.querySelectorAll('.bbs-menu > span');
 
+    const bbsFontSizeInitial = 20;
+
     let bbsLanguage = langZh.classList.contains('active') ? 'zh' : 'en';
-    let bbsFontSize = 2.38; // Initial font size in vw units
-    let bbsWrapText = false; // Initial text wrapping
+    let bbsFontSize = bbsFontSizeInitial;
+    let bbsWrapText = false;
 
     whitespaceToggle.addEventListener('click', function() {
         const newWhiteSpace = bbsWrapText ? 'pre' : 'pre-line';
 
-        if (bbsDocument) {
-            bbsDocument.style.whiteSpace = newWhiteSpace;
-        }
+        bbsDocuments.forEach(span => {
+            span.style.whiteSpace = newWhiteSpace;
+        });
 
         bbsMenuItems.forEach(span => {
             span.style.whiteSpace = newWhiteSpace;
@@ -33,16 +35,19 @@ document.addEventListener('DOMContentLoaded', function() {
         bbsWrapText = !bbsWrapText;
     });
 
+    function refreshFontSize() {
+        fontDisplay.textContent = `${bbsFontSize}px`;
+        document.querySelector('.bbs').style.fontSize = `${bbsFontSize}px`;
+    }
 
     fontIncrease.addEventListener('click', function() {
-        bbsFontSize += 0.2;
-        bbs.style.fontSize = `${bbsFontSize}vw`;
+        bbsFontSize += 4;
+        refreshFontSize();
     });
 
     fontDecrease.addEventListener('click', function() {
-        bbsFontSize -= 0.2;
-        if (bbsFontSize < 1) bbsFontSize = 1; // Minimum font size limit
-        bbs.style.fontSize = `${bbsFontSize}vw`;
+        bbsFontSize = Math.max(4, bbsFontSize - 4);
+        refreshFontSize();
     });
 
     function showEnglish() {

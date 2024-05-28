@@ -19,27 +19,25 @@
 {% block body %}
 <div class="bbs">
   <div class="bbs-controls">
-      <div class="bbs-lang-toggle">
-        <span id="lang-zh" class="lang-option {% if lang == "zh" %}active{% endif %}">zh</span>
-        <span id="lang-en" class="lang-option {% if lang == "en" %}active{% endif %}">en</span>
-      </div>
       <div class="bbs-font-toggle">
+        <span id="font-size-display" class="font-size-display">20px</span>
         <span id="font-decrease" class="font-option">-</span>
         <span id="font-increase" class="font-option">+</span>
       </div>
       <div class="bbs-whitespace-toggle">
         <span id="whitespace-toggle" class="whitespace-option">wrap</span>
       </div>
+      <div class="bbs-lang-toggle">
+        <span id="lang-zh" class="lang-option {% if lang == "zh" %}active{% endif %}">zh</span>
+        <span id="lang-en" class="lang-option {% if lang == "en" %}active{% endif %}">en</span>
+      </div>
       {% if user.is_staff %}
-        <div class="bbs-admin-link"><a href="{{ obj.change_url }}" target="_blank">edit</a></div>
+        <div class="bbs-admin-link"><a href="{{ obj.change_url }}" target="_blank">e</a></div>
       {% endif %}
   </div>
   <div class="bbs-nav">
     {% for parent in parents %}
-      <div>
-        <a class="content-zh {% if lang != "zh" %}hidden{% endif %}" href="{{ parent.menu.public_url }}">↑ {{ parent.text }}</a>
-        <a class="content-en {% if lang != "en" %}hidden{% endif %}" href="{{ parent.menu.public_url }}">↑ {{ parent.get_translated_text }}</a>
-      </div>
+      <div><a href="{{ parent.menu.public_url }}">↑ {{ parent.get_translated_text }}</a></div>
       {% empty %}
       <br>
     {% endfor %}
