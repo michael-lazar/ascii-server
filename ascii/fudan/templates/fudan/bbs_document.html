@@ -1,5 +1,6 @@
 {% extends "fudan/bbs_base.html" %}
 
 {% block content %}
-  <div class="bbs-document"><span class="text-zh {% if en %}hidden{% endif %}">{{ content_zh }}</span><span class="text-en {% if zh %}hidden{% endif %}">{{ content_en }}</span></div>
+  <div class="bbs-document content-zh {% if lang != "zh" %}hidden{% endif %}">{{ content_zh }}</div>
+  <div class="bbs-document content-en {% if lang != "en" %}hidden{% endif %}">{{ content_en }}</div>
 {% endblock %}

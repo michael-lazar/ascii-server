@@ -7,18 +7,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const whitespaceToggle = document.getElementById('whitespace-toggle');
 
-    const textsEn = document.querySelectorAll('.text-en');
-    const textsZh = document.querySelectorAll('.text-zh');
+    const contentEn = document.querySelectorAll('.content-en');
+    const contentZh = document.querySelectorAll('.content-zh');
 
     const bbs = document.querySelector('.bbs')
     const bbsDocument = document.querySelector('.bbs-document');
     const bbsMenuItems = document.querySelectorAll('.bbs-menu > span');
 
-    // Detect the initial language setting from the URL on page load
-    let url = new URL(window.location.href);
-    let langParam = url.searchParams.get('lang');
-
-    let bbsLanguage = langParam || 'en';  // Initial language, default to en
+    let bbsLanguage = langZh.classList.contains('active') ? 'zh' : 'en';
     let bbsFontSize = 2.38; // Initial font size in vw units
     let bbsWrapText = false; // Initial text wrapping
 
@@ -49,40 +45,29 @@ document.addEventListener('DOMContentLoaded', function() {
         bbs.style.fontSize = `${bbsFontSize}vw`;
     });
 
-    // Function to update the URL with the current language
-    function updateUrlParameter(lang) {
-        let currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.set('lang', lang);
-        window.history.replaceState({ path: currentUrl.href }, '', currentUrl.href);
-    }
-
     function showEnglish() {
-        textsEn.forEach(el => {
-            el.classList.add('visible');
+        contentEn.forEach(el => {
             el.classList.remove('hidden');
         });
-        textsZh.forEach(el => {
+        contentZh.forEach(el => {
             el.classList.add('hidden');
-            el.classList.remove('visible');
         });
         langEn.classList.add('active');
         langZh.classList.remove('active');
-        updateUrlParameter('en');
+
         bbsLanguage = 'en';
     }
 
     function showChinese() {
-        textsEn.forEach(el => {
+        contentEn.forEach(el => {
             el.classList.add('hidden');
-            el.classList.remove('visible');
         });
-        textsZh.forEach(el => {
-            el.classList.add('visible');
+        contentZh.forEach(el => {
             el.classList.remove('hidden');
         });
         langZh.classList.add('active');
         langEn.classList.remove('active');
-        updateUrlParameter('zh-cn');
+
         bbsLanguage = 'zh-cn';
     }
 

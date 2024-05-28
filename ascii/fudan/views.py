@@ -7,7 +7,6 @@ from django.views.generic import TemplateView
 
 from ascii.core.utils import get_query_param
 from ascii.fudan.models import AssetFile, Document, Menu, ScratchFile
-from ascii.translations.choices import TranslationLanguages
 
 
 class FudanScratchFileView(TemplateView):
@@ -33,12 +32,6 @@ class FudanBBSMenuView(TemplateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         obj = get_object_or_404(Menu, path=f"/{kwargs['path']}")
 
-        match self.request.GET.get("lang"):  # noqa
-            case TranslationLanguages.ENGLISH:
-                en, zh = True, False
-            case _:
-                en, zh = False, True
-
         links = obj.links.all()
         parents = obj.parents.all().select_related("menu")
 
@@ -46,8 +39,7 @@ class FudanBBSMenuView(TemplateView):
             "links": links,
             "parents": parents,
             "obj": obj,
-            "en": en,
-            "zh": zh,
+            "lang": "en",
         }
 
 
@@ -63,12 +55,6 @@ class FudanBBSDocumentView(TemplateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         obj = get_object_or_404(Document, path=f"/{kwargs['path']}")
-
-        match get_query_param(self.request, "lang"):
-            case TranslationLanguages.ENGLISH:
-                en, zh = True, False
-            case _:
-                en, zh = False, True
 
         start, end = None, None
         if _range := get_query_param(self.request, "range"):
@@ -95,6 +81,5 @@ class FudanBBSDocumentView(TemplateView):
             "obj": obj,
             "content_zh": content_zh,
             "content_en": content_en,
-            "en": en,
-            "zh": zh,
+            "lang": "zh",
         }
