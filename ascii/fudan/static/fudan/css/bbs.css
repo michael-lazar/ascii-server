@@ -173,3 +173,18 @@ body {
     color: var(--c0);
     background-color: var(--c11);
 }
+
+.bbs-controls .toolbar-toggle {
+    padding: 0 5px;
+    cursor: pointer;
+    background-color: var(--c0);
+    color: var(--c14);
+    border: 1px solid var(--c14);
+    border-radius: 3px;
+    user-select: none;
+}
+
+.bbs-controls .toolbar-toggle.collapsed {
+    background-color: var(--c14);
+    color: var(--c0);
+}

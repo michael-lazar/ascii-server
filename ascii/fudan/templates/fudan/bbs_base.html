@@ -34,6 +34,7 @@
       {% if user.is_staff %}
         <div class="bbs-admin-link"><a href="{{ obj.change_url }}" target="_blank">e</a></div>
       {% endif %}
+      <div class="toolbar-toggle" id="toggle-toolbar"><</div>
   </div>
   <div class="bbs-nav">
     {% for parent in parents %}

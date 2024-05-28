@@ -14,11 +14,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const bbsDocuments = document.querySelectorAll('.bbs-document');
     const bbsMenuItems = document.querySelectorAll('.bbs-menu > span');
 
+    const toggleToolbarButton = document.getElementById('toggle-toolbar');
+    const toolbarElements = document.querySelectorAll('.bbs-controls > div:not(.toolbar-toggle)');
+
     const bbsFontSizeInitial = 20;
 
+    // Defaults
     let bbsLanguage = langZh.classList.contains('active') ? 'zh' : 'en';
     let bbsFontSize = bbsFontSizeInitial;
     let bbsWrapText = false;
+    let isToolbarExpanded = true;
+
+    toggleToolbarButton.addEventListener('click', function() {
+        isToolbarExpanded = !isToolbarExpanded;
+
+        toolbarElements.forEach(element => {
+            element.style.display = isToolbarExpanded ? 'flex' : 'none';
+        });
+
+        if (isToolbarExpanded) {
+            toggleToolbarButton.textContent = '<';
+            toggleToolbarButton.classList.remove('collapsed');
+        } else {
+            toggleToolbarButton.textContent = '+';
+            toggleToolbarButton.classList.add('collapsed');
+        }
+    });
 
     whitespaceToggle.addEventListener('click', function() {
         const newWhiteSpace = bbsWrapText ? 'pre' : 'pre-line';
