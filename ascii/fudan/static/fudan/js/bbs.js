@@ -17,77 +17,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const toggleToolbarButton = document.getElementById('toggle-toolbar');
     const toolbarElements = document.querySelectorAll('.bbs-controls > div:not(#toggle-toolbar)');
 
-    const bbsFontSizeInitial = 20;
-
-    // Defaults
-    let bbsLanguage = langZh.classList.contains('active') ? 'zh' : 'en';
-    let bbsFontSize = bbsFontSizeInitial;
+    // Variables
+    let bbsFontSize = 20;
     let bbsWrapText = false;
     let isToolbarExpanded = true;
-
-    fontIncrease.addEventListener("mousedown", function () {
-        fontIncrease.classList.add("inverse")
-    })
-    fontIncrease.addEventListener("mouseup", function () {
-        fontIncrease.classList.remove("inverse")
-    })
-    fontIncrease.addEventListener("mouseleave", function () {
-        fontIncrease.classList.remove("inverse")
-    })
-
-    fontDecrease.addEventListener("mousedown", function () {
-        fontDecrease.classList.add("inverse")
-    })
-    fontDecrease.addEventListener("mouseup", function () {
-        fontDecrease.classList.remove("inverse")
-    })
-    fontIncrease.addEventListener("mouseleave", function () {
-        fontDecrease.classList.remove("inverse")
-    })
-
-    toggleToolbarButton.addEventListener('click', function() {
-        isToolbarExpanded = !isToolbarExpanded;
-
-        toolbarElements.forEach(element => {
-            element.classList.toggle("hidden")
-        });
-
-        if (isToolbarExpanded) {
-            toggleToolbarButton.textContent = '<';
-        } else {
-            toggleToolbarButton.textContent = '+';
-        }
-    });
-
-    whitespaceToggle.addEventListener('click', function() {
-        const newWhiteSpace = bbsWrapText ? 'pre' : 'pre-line';
-
-        bbsDocuments.forEach(span => {
-            span.style.whiteSpace = newWhiteSpace;
-        });
-
-        bbsMenuItems.forEach(span => {
-            span.style.whiteSpace = newWhiteSpace;
-        });
-
-        whitespaceToggle.classList.toggle('active');
-        bbsWrapText = !bbsWrapText;
-    });
+    let bbsLanguage = langZh.classList.contains('active') ? 'zh' : 'en';
 
     function refreshFontSize() {
         fontDisplay.textContent = `${bbsFontSize}px`;
         document.querySelector('.bbs').style.fontSize = `${bbsFontSize}px`;
     }
-
-    fontIncrease.addEventListener('click', function() {
-        bbsFontSize += 4;
-        refreshFontSize();
-    });
-
-    fontDecrease.addEventListener('click', function() {
-        bbsFontSize = Math.max(4, bbsFontSize - 4);
-        refreshFontSize();
-    });
 
     function showEnglish() {
         contentEn.forEach(el => {
@@ -122,6 +61,65 @@ document.addEventListener('DOMContentLoaded', function() {
             showEnglish();
         }
     }
+
+    fontIncrease.addEventListener("mousedown", function () {
+        fontIncrease.classList.add("inverse")
+    })
+    fontIncrease.addEventListener("mouseup", function () {
+        fontIncrease.classList.remove("inverse")
+    })
+    fontIncrease.addEventListener("mouseleave", function () {
+        fontIncrease.classList.remove("inverse")
+    })
+
+    fontDecrease.addEventListener("mousedown", function () {
+        fontDecrease.classList.add("inverse")
+    })
+    fontDecrease.addEventListener("mouseup", function () {
+        fontDecrease.classList.remove("inverse")
+    })
+    fontIncrease.addEventListener("mouseleave", function () {
+        fontDecrease.classList.remove("inverse")
+    })
+
+    toggleToolbarButton.addEventListener('click', function() {
+        isToolbarExpanded = !isToolbarExpanded;
+
+        toolbarElements.forEach(element => {
+            element.classList.toggle("hidden")
+        });
+
+        if (isToolbarExpanded) {
+            toggleToolbarButton.textContent = '-';
+        } else {
+            toggleToolbarButton.textContent = '+';
+        }
+    });
+
+    whitespaceToggle.addEventListener('click', function() {
+        const newWhiteSpace = bbsWrapText ? 'pre' : 'pre-line';
+
+        bbsDocuments.forEach(span => {
+            span.style.whiteSpace = newWhiteSpace;
+        });
+
+        bbsMenuItems.forEach(span => {
+            span.style.whiteSpace = newWhiteSpace;
+        });
+
+        whitespaceToggle.classList.toggle('active');
+        bbsWrapText = !bbsWrapText;
+    });
+
+    fontIncrease.addEventListener('click', function() {
+        bbsFontSize += 4;
+        refreshFontSize();
+    });
+
+    fontDecrease.addEventListener('click', function() {
+        bbsFontSize = Math.max(4, bbsFontSize - 4);
+        refreshFontSize();
+    });
 
     langEn.addEventListener('click', showEnglish);
     langZh.addEventListener('click', showChinese);

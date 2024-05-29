@@ -4,7 +4,7 @@
 
 {% block extrahead %}
 <link href='{% static "fudan/css/bbs.css" %}' rel='stylesheet' />
-<script src="{% static "fudan/js/bbs.js" %}" ></script>
+<script src="{% static "fudan/js/bbs.js" %}"></script>
 {% endblock %}
 
 {% block extrastyle %}
@@ -36,18 +36,20 @@
         <a class="control-item inverse" href="{{ obj.change_url }}" target="_blank">e</a>
       </div>
       {% endif %}
-      <div class="control toggle" id="toggle-toolbar"><</div>
+       <div class="control toggle" id="toggle-toolbar">-</div>
   </div>
-  <div class="bbs-nav">
-    {% for parent in parents %}
-      <div><a href="{{ parent.menu.public_url }}">↑ {{ parent.get_translated_text }}</a></div>
-      {% empty %}
-      <br>
-    {% endfor %}
-  </div>
-  {% block content %}{% endblock %}
-  <div class="bbs-footer">
-    <div>source: <a href="{{ obj.source_url }}">{{ obj.source_url }}</a></div>
+  <div class="bbs-content">
+    <div class="bbs-nav">
+      {% for parent in parents %}
+        <div><a href="{{ parent.menu.public_url }}">↑ {{ parent.get_translated_text }}</a></div>
+        {% empty %}
+        <br>
+      {% endfor %}
+    </div>
+    {% block content %}{% endblock %}
+    <div class="bbs-footer">
+      <div>source: <a href="{{ obj.source_url }}">{{ obj.source_url }}</a></div>
+    </div>
   </div>
 </div>
 {% endblock %}
