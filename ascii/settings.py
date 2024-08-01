@@ -34,9 +34,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+    "django_cleanup.apps.CleanupConfig",
     "ascii.core",
     "ascii.fudan",
     "ascii.translations",
+    "ascii.textmode",
 ]
 
 MIDDLEWARE = [
@@ -131,6 +133,11 @@ LOGGING = {
         "apscheduler": {
             "handlers": ["console"],
             "level": "WARNING",
+            "propagate": False,
+        },
+        "ascii.core.clients": {
+            "handlers": ["console"],
+            "level": "INFO",
             "propagate": False,
         },
     },

@@ -236,6 +236,10 @@ django-admin-interface==0.28.6 \
     --hash=sha256:444dea3caa1c878c2c0210662b0584b8ad9c7235955f0bbd04680733a3526b0f \
     --hash=sha256:c5dc5ef6865c9683b6ecd630fe588ef369350ee27afb89b24d56e6cdda914355
     # via -r requirements/requirements.in
+django-cleanup==8.1.0 \
+    --hash=sha256:70df905076a44e7a111b31198199af633dee08876e199e6dce36ca8dd6b8b10f \
+    --hash=sha256:7903873ea73b3f7e61e055340d27dba49b70634f60c87a573ad748e172836458
+    # via -r requirements/requirements.in
 django-colorfield==0.11.0 \
     --hash=sha256:05c38c8eb2a94938b810a19b2011846391a4ce71d1c92e88a35974fbcc8fc62e \
     --hash=sha256:460f40e6123b6ae0fb51a4eb86fc258fcdc0ea28f75102b685e8209b1eae9ec3
