@@ -1,0 +1,13 @@
+{% extends "textmode/base.html" %}
+
+{% load static %}
+
+{% block content %}
+  <div>
+    <a href="{% url 'textmode-pack' artfile.pack.name %}">{{ artfile.pack.name }}</a>
+  </div>
+  <br>
+  <img src="{{ artfile.image_x1.url }}" alt="{{ artfile.name }}">
+  <h3>{{ artfile.name }}</h3>
+  <pre>{{ artfile.sauce_str }}</pre>
+{% endblock %}

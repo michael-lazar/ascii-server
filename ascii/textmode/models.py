@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import json
+
 from django.db import models
 from django.db.models import Count, Manager
 
 from ascii.core.models import BaseModel
+from ascii.core.utils import reverse
 
 
 class ContentTagQuerySet(models.QuerySet):
@@ -89,13 +92,6 @@ ArtPackManager = Manager.from_queryset(ArtPackQuerySet)  # noqa
 
 class ArtPack(BaseModel):
     name = models.CharField(max_length=100, unique=True)
-    fileid = models.ForeignKey(
-        "textmode.ArtFile",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        verbose_name="File ID",
-    )
 
     objects = ArtPackManager()
 
@@ -129,6 +125,8 @@ class ArtFile(BaseModel):
     name = models.CharField(max_length=100, db_index=True)
     pack = models.ForeignKey(ArtPack, on_delete=models.CASCADE, related_name="artfiles")
 
+    is_fileid = models.BooleanField(default=False)
+
     raw = models.FileField(upload_to=upload_to_raw)
 
     image_tn = models.ImageField(verbose_name="Image (thumbnail)", upload_to=upload_to_tn)
@@ -147,10 +145,18 @@ class ArtFile(BaseModel):
     sauce = models.JSONField(blank=True, default=dict)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["-is_fileid", "name"]
         constraints = [
             models.UniqueConstraint(fields=["name", "pack"], name="unique_artfile_name_pack"),
         ]
 
     def __str__(self):
         return self.name
+
+    @property
+    def sauce_str(self) -> str:
+        return json.dumps(self.sauce, indent=2)
+
+    @property
+    def public_url(self) -> str:
+        return reverse("textmode-artfile", args=[self.pack.name, self.name])

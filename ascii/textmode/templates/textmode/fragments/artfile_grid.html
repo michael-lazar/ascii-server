@@ -1,0 +1,9 @@
+<div class="artfile-grid">
+  {% for artfile in artfiles %}
+    <div>
+      <a href="{{ artfile.public_url }}">
+        <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}">
+      </a>
+    </div>
+  {% endfor %}
+</div>

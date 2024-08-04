@@ -25,7 +25,6 @@ from ascii.textmode.models import (
 class ArtPackAdmin(admin.ModelAdmin):
     list_display = ["name", linkify("fileid"), "get_artfile_count"]
     search_fields = ["name"]
-    autocomplete_fields = ["fileid"]
     readonly_fields = ["get_artfile_count"]
 
     def get_queryset(self, request: HttpRequest) -> ArtPackQuerySet:
@@ -41,7 +40,7 @@ class ArtPackAdmin(admin.ModelAdmin):
 
 @admin.register(ArtFile)
 class ArtFileAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", linkify("pack")]
+    list_display = ["id", "name", linkify("pack"), "is_fileid"]
     list_filter = ["pack"]
     search_fields = ["name", "pack__name"]
     autocomplete_fields = ["pack", "content_tags", "artist_tags", "group_tags"]
@@ -64,7 +63,7 @@ class ContentTagAdmin(admin.ModelAdmin):
 
     @admin.display(description="Files", ordering="artfile_count")
     def get_artfile_count(self, obj: ContentTag) -> str:
-        link_url = reverse("admin:textmode_artfile_changelist", qs={"pack": obj.pk})
+        link_url = reverse("admin:textmode_artfile_changelist", qs={"content_tags": obj.pk})
         return format_html('<a href="{}">{}</a>', link_url, obj.artfile_count)
 
 
@@ -81,7 +80,7 @@ class ArtistTagAdmin(admin.ModelAdmin):
 
     @admin.display(description="Files", ordering="artfile_count")
     def get_artfile_count(self, obj: ArtistTag) -> str:
-        link_url = reverse("admin:textmode_artfile_changelist", qs={"pack": obj.pk})
+        link_url = reverse("admin:textmode_artfile_changelist", qs={"artist_tags": obj.pk})
         return format_html('<a href="{}">{}</a>', link_url, obj.artfile_count)
 
 
@@ -98,5 +97,5 @@ class GroupTagAdmin(admin.ModelAdmin):
 
     @admin.display(description="Files", ordering="artfile_count")
     def get_artfile_count(self, obj: GroupTag) -> str:
-        link_url = reverse("admin:textmode_artfile_changelist", qs={"pack": obj.pk})
+        link_url = reverse("admin:textmode_artfile_changelist", qs={"group_tags": obj.pk})
         return format_html('<a href="{}">{}</a>', link_url, obj.artfile_count)

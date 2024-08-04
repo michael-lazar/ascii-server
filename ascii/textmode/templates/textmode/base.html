@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+
+{% load static %}
+
+{% block extrahead %}
+<link href='{% static "textmode/css/textmode.css" %}' rel='stylesheet' />
+{% endblock %}
+
+{% block body %}
+<h1>Textmode ANSI art</h1>
+{% block content %}{% endblock %}
+{% endblock %}

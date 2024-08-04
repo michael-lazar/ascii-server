@@ -57,6 +57,8 @@ class SixteenColorsPackImporter:
             else:
                 image_x2_file = None
 
+            is_fileid = artfile_name == data["fileid"]
+
             artfile, _ = ArtFile.objects.update_or_create(
                 name=artfile_name,
                 pack=pack,
@@ -66,15 +68,12 @@ class SixteenColorsPackImporter:
                     "image_x1": image_x1_file,
                     "image_x2": image_x2_file,
                     "sauce": sauce,
+                    "is_fileid": is_fileid,
                 },
             )
 
             artfile.artist_tags.set(artist_tags)
             artfile.content_tags.set(content_tags)
             artfile.group_tags.set(group_tags)
-
-            if artfile.name == data["fileid"]:
-                pack.fileid = artfile
-                pack.save(update_fields=["fileid"])
 
         return pack

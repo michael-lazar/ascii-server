@@ -1,0 +1,18 @@
+{% extends "textmode/base.html" %}
+
+{% load static %}
+
+{% block content %}
+<h3>Tags</h3>
+  <ul>
+    <li><a href="{% url 'textmode-grouptag-list' %}">group</a></li>
+    <li><a href="{% url 'textmode-artisttag-list' %}">artist</a></li>
+    <li><a href="{% url 'textmode-contenttag-list' %}">content</a></li>
+  </ul>
+<h3>Packs</h3>
+<ul>
+{% for pack in packs %}
+  <li><a href="{% url 'textmode-pack' pack.name %}">{{ pack.name }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

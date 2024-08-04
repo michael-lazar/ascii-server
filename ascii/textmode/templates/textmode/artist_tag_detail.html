@@ -1,0 +1,9 @@
+{% extends "textmode/base.html" %}
+
+{% load static %}
+
+{% block content %}
+  <a href="{% url 'textmode-index' %}">tags - artist</a>
+  <h3>Tags - artist - {{ tag.name }}</h3>
+  {% include 'textmode/fragments/artfile_grid.html' %}
+{% endblock %}
