@@ -8,6 +8,10 @@
 {% endblock %}
 
 {% block body %}
-<h1>Textmode</h1>
-{% block content %}{% endblock %}
+<div class="header">
+  <a href="{% url 'textmode-index' %}">[textmode]</a>
+</div>
+<div class="content">
+  {% block content %}{% endblock %}
+</div>
 {% endblock %}

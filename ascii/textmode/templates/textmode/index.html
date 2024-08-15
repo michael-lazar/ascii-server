@@ -3,16 +3,17 @@
 {% load static %}
 
 {% block content %}
-<h3>Tags</h3>
-  <ul>
-    <li><a href="{% url 'textmode-grouptag-list' %}">group</a></li>
-    <li><a href="{% url 'textmode-artisttag-list' %}">artist</a></li>
-    <li><a href="{% url 'textmode-contenttag-list' %}">content</a></li>
-  </ul>
-<h3>Packs</h3>
-<ul>
-{% for pack in packs %}
-  <li><a href="{% url 'textmode-pack' pack.name %}">{{ pack.name }}</a></li>
-{% endfor %}
-</ul>
+<h1>packs</h1>
+<div class="pack-grid">
+  {% for pack in packs %}
+  <div class="pack-card">
+      <a href="{% url 'textmode-pack' pack.name %}">
+        <img alt="{{ pack.name }}" src="{{ pack.fileid.0.image_tn.url }}" >
+        <div class="pack-title">
+          {{ pack.name }}
+        </div>
+      </a>
+  </div>
+  {% endfor %}
+</div>
 {% endblock %}

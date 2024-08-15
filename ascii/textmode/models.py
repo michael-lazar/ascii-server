@@ -3,88 +3,56 @@ from __future__ import annotations
 import json
 
 from django.db import models
-from django.db.models import Count, Manager
+from django.db.models import Count, Manager, Prefetch
 
 from ascii.core.models import BaseModel
 from ascii.core.utils import reverse
+from ascii.textmode.choices import TagCategory
 
 
-class ContentTagQuerySet(models.QuerySet):
+class ArtFileTagQuerySet(models.QuerySet):
 
-    def annotate_artfile_count(self) -> ContentTagQuerySet:
+    def annotate_artfile_count(self) -> ArtFileTagQuerySet:
         return self.annotate(artfile_count=Count("artfiles"))
 
 
-ContentTagManager = Manager.from_queryset(ContentTagQuerySet)  # noqa
+ArtFileTagManager = Manager.from_queryset(ArtFileTagQuerySet)  # noqa
 
 
-class ContentTag(BaseModel):
-    name = models.CharField(max_length=100, unique=True)
+class ArtFileTag(BaseModel):
+    category = models.CharField(choices=TagCategory.choices, db_index=True, max_length=20)
+    name = models.CharField(max_length=100, db_index=True)
 
-    objects = ContentTagManager()
+    objects = ArtFileTagManager()
 
     # Annotated fields
     artfile_count: int
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["category", "name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "category"], name="unique_artfiletag_category_name"
+            ),
+        ]
 
     def __str__(self):
-        return self.name
-
-
-class ArtistTagQuerySet(models.QuerySet):
-
-    def annotate_artfile_count(self) -> ArtistTagQuerySet:
-        return self.annotate(artfile_count=Count("artfiles"))
-
-
-ArtistTagManager = Manager.from_queryset(ArtistTagQuerySet)  # noqa
-
-
-class ArtistTag(BaseModel):
-    name = models.CharField(max_length=100, unique=True)
-
-    objects = ArtistTagManager()
-
-    # Annotated fields
-    artfile_count: int
-
-    class Meta:
-        ordering = ["name"]
-
-    def __str__(self):
-        return self.name
-
-
-class GroupTagQuerySet(models.QuerySet):
-
-    def annotate_artfile_count(self) -> GroupTagQuerySet:
-        return self.annotate(artfile_count=Count("artfiles"))
-
-
-GroupTagManager = Manager.from_queryset(GroupTagQuerySet)  # noqa
-
-
-class GroupTag(BaseModel):
-    name = models.CharField(max_length=100, unique=True)
-
-    objects = GroupTagManager()
-
-    # Annotated fields
-    artfile_count: int
-
-    class Meta:
-        ordering = ["name"]
-
-    def __str__(self):
-        return self.name
+        return f"{self.category}: {self.name}"
 
 
 class ArtPackQuerySet(models.QuerySet):
 
     def annotate_artfile_count(self) -> ArtPackQuerySet:
         return self.annotate(artfile_count=Count("artfiles"))
+
+    def prefetch_fileid(self) -> ArtPackQuerySet:
+        return self.prefetch_related(
+            Prefetch(
+                "artfiles",
+                queryset=ArtFile.objects.filter(is_fileid=True),
+                to_attr="fileid",
+            )
+        )
 
 
 ArtPackManager = Manager.from_queryset(ArtPackQuerySet)  # noqa
@@ -97,12 +65,20 @@ class ArtPack(BaseModel):
 
     # Annotated fields
     artfile_count: int
+    fileid: list[ArtFile]
 
     class Meta:
         ordering = ["name"]
 
     def __str__(self):
         return self.name
+
+
+class ArtFileQuerySet(models.QuerySet):
+    pass
+
+
+ArtFileManager = Manager.from_queryset(ArtFileQuerySet)  # noqa
 
 
 def upload_to_raw(instance: ArtFile, filename: str) -> str:
@@ -138,11 +114,11 @@ class ArtFile(BaseModel):
         blank=True,
     )
 
-    content_tags = models.ManyToManyField(ContentTag, blank=True, related_name="artfiles")
-    artist_tags = models.ManyToManyField(ArtistTag, blank=True, related_name="artfiles")
-    group_tags = models.ManyToManyField(GroupTag, blank=True, related_name="artfiles")
+    tags = models.ManyToManyField(ArtFileTag, blank=True, related_name="artfiles")
 
     sauce = models.JSONField(blank=True, default=dict)
+
+    objects = ArtFileManager()
 
     class Meta:
         ordering = ["-is_fileid", "name"]
@@ -160,3 +136,14 @@ class ArtFile(BaseModel):
     @property
     def public_url(self) -> str:
         return reverse("textmode-artfile", args=[self.pack.name, self.name])
+
+    @property
+    def grid_width(self) -> int:
+        if self.is_fileid:
+            return 356
+
+        return 160
+
+    @property
+    def grid_height(self) -> int:
+        return int(self.grid_width * (self.image_tn.height / self.image_tn.width))
