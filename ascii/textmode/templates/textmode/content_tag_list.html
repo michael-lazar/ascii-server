@@ -5,7 +5,7 @@
 {% block content %}
   <a href="{% url 'textmode-index' %}">index</a>
   <h3>Tags - content</h3>
-  <ul>
+  <ul class="tag-list">
   {% for tag in tags %}
     <li>
       <a href="{% url 'textmode-contenttag-detail' tag.name %}">{{ tag.name }} ({{ tag.artfile_count }})</a>
