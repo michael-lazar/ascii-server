@@ -15,6 +15,9 @@ class ArtFileTagQuerySet(models.QuerySet):
     def annotate_artfile_count(self) -> ArtFileTagQuerySet:
         return self.annotate(artfile_count=Count("artfiles"))
 
+    def visible(self) -> ArtFileTagQuerySet:
+        return self.filter(artfiles__isnull=False)
+
 
 ArtFileTagManager = Manager.from_queryset(ArtFileTagQuerySet)  # noqa
 

@@ -3,17 +3,35 @@
 {% load static %}
 
 {% block content %}
-<h1>packs</h1>
-<div class="pack-grid">
-  {% for pack in packs %}
-  <div class="pack-card">
-      <a href="{% url 'textmode-pack' pack.name %}">
-        <img alt="{{ pack.name }}" src="{{ pack.fileid.0.image_tn.url }}" >
-        <div class="pack-title">
-          {{ pack.name }}
-        </div>
-      </a>
+  <h1>By Pack</h1>
+  <div class="pack-grid">
+    {% for pack in packs %}
+    <div class="pack-card">
+        <a href="{% url 'textmode-pack' pack.name %}">
+          <img alt="{{ pack.name }}" src="{{ pack.fileid.0.image_tn.url }}" >
+          <div class="pack-title">
+            {{ pack.name }}
+          </div>
+        </a>
+    </div>
+    {% endfor %}
   </div>
-  {% endfor %}
-</div>
+  <h1>By Artist</h1>
+  <ul class="tag-list">
+    {% for tag in artist_tags %}
+      <li class="tag-list-item">{{ tag.name }} ({{ tag.artfile_count }})</li>
+    {% endfor %}
+  </ul>
+  <h1>By Group</h1>
+  <ul class="tag-list">
+    {% for tag in group_tags %}
+      <li class="tag-list-item">{{ tag.name }} ({{ tag.artfile_count }})</li>
+    {% endfor %}
+  </ul>
+  <h1>By Content</h1>
+  <ul class="tag-list">
+    {% for tag in content_tags %}
+      <li class="tag-list-item">{{ tag.name }} ({{ tag.artfile_count }})</li>
+    {% endfor %}
+  </ul>
 {% endblock %}

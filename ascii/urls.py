@@ -11,11 +11,17 @@ from ascii.fudan.views import (
     FudanBBSMenuView,
     FudanScratchFileView,
 )
-from ascii.textmode.views import TextmodeArtfileView, TextmodeIndexView, TextmodePackView
+from ascii.textmode.views import (
+    TextmodeArtfileView,
+    TextmodeIndexView,
+    TextmodePacksView,
+    TextmodePackView,
+)
 
 urlpatterns = [
     path("", IndexView.as_view(), name="index"),
     path("textmode/", TextmodeIndexView.as_view(), name="textmode-index"),
+    path("textmode/pack/", TextmodePacksView.as_view(), name="textmode-packs"),
     path("textmode/pack/<slug:pack>/", TextmodePackView.as_view(), name="textmode-pack"),
     path(
         "textmode/pack/<slug:pack>/a/<str:artfile>",

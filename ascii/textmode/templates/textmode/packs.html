@@ -1,0 +1,24 @@
+{% extends "textmode/base.html" %}
+
+{% load static %}
+
+{% block breadcrumbs %}
+  <span>&gt;</span>
+  <a href="{% url 'textmode-packs' %}">packs</a>
+{% endblock %}
+
+{% block content %}
+  <h1>Packs</h1>
+  <div class="pack-list">
+    {% for pack in packs %}
+    <div class="pack-card">
+        <a href="{% url 'textmode-pack' pack.name %}">
+          <img alt="{{ pack.name }}" src="{{ pack.fileid.0.image_tn.url }}" >
+          <div class="pack-title">
+            {{ pack.name }}
+          </div>
+        </a>
+    </div>
+    {% endfor %}
+  </div>
+{% endblock %}

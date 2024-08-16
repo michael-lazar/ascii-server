@@ -22,7 +22,7 @@ class SixteenColorsPackImporter:
         pack, _ = ArtPack.objects.get_or_create(name=self.name)
 
         for artfile_name, artfile_data in data["files"].items():
-            tags = list[ArtFileTag]
+            tags: list[ArtFileTag] = []
 
             for tag_name in artfile_data.get("artists", []):
                 tag, _ = ArtFileTag.objects.get_or_create(
