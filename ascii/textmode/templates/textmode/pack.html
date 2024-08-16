@@ -11,9 +11,14 @@
 
 {% block content %}
   <h1>{{ pack.name }}</h1>
-  <form method="get">
-    {{ filter_form }}
-    <input type="submit" value="Filter">
-  </form>
+  <div class="filter-bar">
+    <span>
+      filter by...
+    </span>
+    <form method="get">
+      {{ filter_form }}
+      <input type="submit" value="Go">
+    </form>
+  </div>
   {% include 'textmode/fragments/artfile_grid.html' %}
 {% endblock %}

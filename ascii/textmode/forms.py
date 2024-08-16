@@ -29,6 +29,7 @@ class GalleryFilterForm(forms.Form):
             artfiles=artfiles,
             required=False,
             to_field_name="name",
+            label="artist",
         )
 
         self.fields["group"] = ArtFileTagChoiceField(
@@ -36,6 +37,7 @@ class GalleryFilterForm(forms.Form):
             artfiles=artfiles,
             required=False,
             to_field_name="name",
+            label="group",
         )
 
         self.fields["content"] = ArtFileTagChoiceField(
@@ -43,4 +45,5 @@ class GalleryFilterForm(forms.Form):
             artfiles=artfiles,
             required=False,
             to_field_name="name",
+            label="content",
         )
