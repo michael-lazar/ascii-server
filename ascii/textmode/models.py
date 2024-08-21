@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from django.db import models
 from django.db.models import Count, Manager, Prefetch
 from django.utils import timezone
@@ -120,9 +122,20 @@ class ArtFile(BaseModel):
 
     raw_file = models.FileField(upload_to=upload_to_raw)
     file_extension = models.CharField(max_length=20, blank=True)
+    filesize = models.PositiveIntegerField(default=0, db_index=True)
 
-    image_tn = models.ImageField(verbose_name="Image (thumbnail)", upload_to=upload_to_tn)
-    image_x1 = models.ImageField(verbose_name="Image (x1)", upload_to=upload_to_x1)
+    image_tn = models.ImageField(
+        verbose_name="Image (thumbnail)",
+        upload_to=upload_to_tn,
+        null=True,
+        blank=True,
+    )
+    image_x1 = models.ImageField(
+        verbose_name="Image (x1)",
+        upload_to=upload_to_x1,
+        null=True,
+        blank=True,
+    )
     image_x2 = models.ImageField(
         verbose_name="Image (x2)",
         upload_to=upload_to_x2,
@@ -137,7 +150,6 @@ class ArtFile(BaseModel):
     author = models.CharField(max_length=20, blank=True, db_index=True)
     group = models.CharField(max_length=20, blank=True, db_index=True)
     date = models.DateField(blank=True, null=True, db_index=True)
-    filesize = models.IntegerField(default=0, db_index=True)
     datatype = models.IntegerField(choices=DataType.choices, db_index=True)
     filetype = models.CharField(choices=FileType.choices, max_length=20, db_index=True)
     pixel_width = models.IntegerField(blank=True, null=True, db_index=True)
@@ -155,13 +167,20 @@ class ArtFile(BaseModel):
     objects = ArtFileManager()
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["id"]
         constraints = [
             models.UniqueConstraint(fields=["name", "pack"], name="unique_artfile_name_pack"),
         ]
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if self.raw_file:
+            self.file_size = self.raw_file.size
+            self.file_extension = os.path.splitext(self.raw_file.name)[1].lower()
+
+        super().save(*args, **kwargs)
 
     @property
     def public_url(self) -> str:

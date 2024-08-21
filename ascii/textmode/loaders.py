@@ -1,4 +1,3 @@
-import os.path
 from urllib.parse import quote
 
 from django.core.files.base import ContentFile
@@ -22,18 +21,15 @@ class SixteenColorsPackImporter:
     def process(self) -> ArtPack:
         data = self.client.get_pack(self.name)
 
-        # ArtPack.objects.filter(name=self.name).delete()
-        #
-        # zip_name = f"{self.name}.zip"
-        # zip_data = self.client.get_file(f"/archive/{self.year}/{zip_name}")
-        # zip_file = ContentFile(zip_data, name=zip_name)
-        #
-        # pack = ArtPack.objects.create(name=self.name, year=self.year, zip_file=zip_file)
-        pack = ArtPack.objects.get(name=self.name)
+        ArtPack.objects.filter(name=self.name).delete()
+
+        zip_name = f"{self.name}.zip"
+        zip_data = self.client.get_file(f"/archive/{self.year}/{zip_name}")
+        zip_file = ContentFile(zip_data, name=zip_name)
+
+        pack = ArtPack.objects.create(name=self.name, year=self.year, zip_file=zip_file)
 
         for artfile_name, artfile_data in data["files"].items():
-            if ArtFile.objects.filter(name=artfile_name, pack=pack).exists():
-                continue
 
             tags: list[ArtFileTag] = []
 
@@ -64,16 +60,22 @@ class SixteenColorsPackImporter:
             raw_data = self.client.get_file(f"/pack/{self.name}/raw/{quote(raw_name)}")
             raw_file = ContentFile(raw_data, name=raw_name)
 
-            image_tn_name = artfile_data["file"]["tn"]["file"]
-            image_tn_data = self.client.get_file(f"/pack/{self.name}/tn/{quote(image_tn_name)}")
-            image_tn_file = ContentFile(image_tn_data, name=image_tn_name)
+            if "tn" in artfile_data["file"]:
+                image_tn_name = artfile_data["file"]["tn"]["file"]
+                image_tn_data = self.client.get_file(f"/pack/{self.name}/tn/{quote(image_tn_name)}")
+                image_tn_file = ContentFile(image_tn_data, name=image_tn_name)
+            else:
+                image_tn_file = None
 
-            image_x1_name = artfile_data["file"]["x1"]["file"]
-            image_x1_data = self.client.get_file(f"/pack/{self.name}/x1/{quote(image_x1_name)}")
-            image_x1_file = ContentFile(image_x1_data, name=image_x1_name)
+            if "x1" in artfile_data["file"]:
+                image_x1_name = artfile_data["file"]["x1"]["file"]
+                image_x1_data = self.client.get_file(f"/pack/{self.name}/x1/{quote(image_x1_name)}")
+                image_x1_file = ContentFile(image_x1_data, name=image_x1_name)
+            else:
+                image_x1_file = None
 
-            if x2_data := artfile_data["file"].get("x2"):
-                image_x2_name = x2_data["file"]
+            if "x2" in artfile_data["file"]:
+                image_x2_name = artfile_data["file"]["x2"]["file"]
                 image_x2_data = self.client.get_file(f"/pack/{self.name}/x2/{quote(image_x2_name)}")
                 image_x2_file = ContentFile(image_x2_data, name=image_x2_name)
             else:
@@ -81,13 +83,10 @@ class SixteenColorsPackImporter:
 
             is_fileid = artfile_name == data["fileid"]
 
-            file_extension = os.path.splitext(artfile_name)[1].lower()
-
             artfile = ArtFile.objects.create(
                 name=artfile_name,
                 pack=pack,
                 raw_file=raw_file,
-                file_extension=file_extension,
                 image_tn=image_tn_file,
                 image_x1=image_x1_file,
                 image_x2=image_x2_file,
@@ -97,7 +96,6 @@ class SixteenColorsPackImporter:
                 author=sauce.author,
                 group=sauce.group,
                 date=sauce.date,
-                filesize=sauce.filesize,
                 datatype=sauce.datatype,
                 filetype=sauce.filetype,
                 pixel_width=sauce.pixel_width,

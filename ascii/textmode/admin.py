@@ -8,7 +8,14 @@ from django.utils.html import format_html
 from ascii.core.admin import ReadOnlyTabularInline, linkify
 from ascii.core.utils import reverse
 from ascii.core.widgets import FormattedJSONWidget, ImagePreviewWidget
-from ascii.textmode.models import ArtFile, ArtFileTag, ArtFileTagQuerySet, ArtPack, ArtPackQuerySet
+from ascii.textmode.models import (
+    ArtFile,
+    ArtFileQuerySet,
+    ArtFileTag,
+    ArtFileTagQuerySet,
+    ArtPack,
+    ArtPackQuerySet,
+)
 
 
 class ArtFileInline(ReadOnlyTabularInline):
@@ -67,7 +74,15 @@ class ArtFileAdmin(admin.ModelAdmin):
         "datatype",
         "filetype",
     ]
-    list_filter = ["pack", "is_fileid", "filetype", "datatype", "ice_colors", "letter_spacing"]
+    list_filter = [
+        "pack",
+        "is_fileid",
+        "file_extension",
+        "filetype",
+        "datatype",
+        "ice_colors",
+        "letter_spacing",
+    ]
     search_fields = ["name", "pack__name", "title", "author", "group"]
     autocomplete_fields = ["pack", "tags"]
     readonly_fields = ["created_at"]
@@ -75,6 +90,11 @@ class ArtFileAdmin(admin.ModelAdmin):
         models.JSONField: {"widget": FormattedJSONWidget},
         models.ImageField: {"widget": ImagePreviewWidget},
     }
+
+    def get_queryset(self, request: HttpRequest) -> ArtFileQuerySet:
+        qs = cast(ArtFileQuerySet, super().get_queryset(request))
+        qs = qs.prefetch_related("pack")
+        return qs
 
 
 @admin.register(ArtFileTag)
