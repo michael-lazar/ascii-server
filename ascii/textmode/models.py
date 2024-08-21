@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 import os
 
 from django.db import models
@@ -60,6 +61,9 @@ class ArtPackQuerySet(models.QuerySet):
                 to_attr="fileid",
             )
         )
+
+    def group_by_year(self):
+        return itertools.groupby(self, key=lambda obj: obj.year)
 
 
 ArtPackManager = Manager.from_queryset(ArtPackQuerySet)  # noqa

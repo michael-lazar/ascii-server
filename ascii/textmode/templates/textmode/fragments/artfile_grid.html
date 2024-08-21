@@ -8,11 +8,13 @@
   {% for artfile in artfiles %}
     <div class="artfile-item grid-item {% if artfile.is_fileid %}grid-item-wide{% endif %}">
       <a href="{{ artfile.public_url }}">
-        <img src="{{ artfile.image_tn.url }}"
-             alt="{{ artfile.name }}"
-             width="{{ artfile.grid_width }}"
-             height="{{ artfile.grid_height }}"
-        >
+        {% if artfile.image_tn %}
+          <img src="{{ artfile.image_tn.url }}"
+               alt="{{ artfile.name }}"
+               width="{{ artfile.grid_width }}"
+               height="{{ artfile.grid_height }}"
+          >
+        {% endif %}
         <div class="artfile-title">
           {{ artfile.name }}
         </div>

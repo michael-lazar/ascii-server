@@ -64,9 +64,9 @@ class TextmodePackListView(TemplateView):
     template_name = "textmode/pack_list.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        packs = ArtPack.objects.prefetch_fileid()
-
-        return {"packs": packs}
+        qs = ArtPack.objects.prefetch_fileid().order_by("-year", "-created_at")
+        packs_by_year = [(year, list(packs)) for year, packs in qs.group_by_year()]
+        return {"packs_by_year": packs_by_year}
 
 
 class TextmodeArtfileView(TemplateView):

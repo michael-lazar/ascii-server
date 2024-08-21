@@ -97,6 +97,7 @@ h1 {
   font-size: 12px;
   color: white;
   word-wrap: break-word;
+  text-decoration: none;
 }
 
 .pack-card {
@@ -113,6 +114,7 @@ h1 {
   height: 100%;
   gap: 10px;
   width: 180px;
+  text-decoration: none;
 }
 
 .pack-card img {
