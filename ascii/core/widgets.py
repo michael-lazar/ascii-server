@@ -25,7 +25,7 @@ class ImagePreviewWidget(forms.ClearableFileInput):
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
-        context["widget"]["image_preview"] = value and value.name.endswith(
+        context["widget"]["image_preview"] = value and value.name.lower().endswith(
             (".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp")
         )
         return context

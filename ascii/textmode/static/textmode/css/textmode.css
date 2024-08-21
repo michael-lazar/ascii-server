@@ -132,3 +132,18 @@ h1 {
 .tag-list-item {
   padding: 4px;
 }
+
+.header-link {
+  font-size: medium;
+  text-decoration: none;
+  text-transform: none;
+  vertical-align: middle;
+}
+
+/* Styles for mobile phones */
+@media (max-width: 768px) {
+    .pack-grid {
+        padding: 0;
+        justify-content: center;
+    }
+}

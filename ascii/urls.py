@@ -14,15 +14,23 @@ from ascii.fudan.views import (
 from ascii.textmode.views import (
     TextmodeArtfileView,
     TextmodeIndexView,
-    TextmodePacksView,
+    TextmodePackListView,
     TextmodePackView,
+    TextmodeTagCategoryListView,
+    TextmodeTagListView,
 )
 
 urlpatterns = [
     path("", IndexView.as_view(), name="index"),
     path("textmode/", TextmodeIndexView.as_view(), name="textmode-index"),
-    path("textmode/pack/", TextmodePacksView.as_view(), name="textmode-packs"),
+    path("textmode/pack/", TextmodePackListView.as_view(), name="textmode-pack-list"),
     path("textmode/pack/<slug:pack>/", TextmodePackView.as_view(), name="textmode-pack"),
+    path("textmode/tags/", TextmodeTagListView.as_view(), name="textmode-tag-list"),
+    path(
+        "textmode/tags/<slug:category>/",
+        TextmodeTagCategoryListView.as_view(),
+        name="textmode-tag-category-list",
+    ),
     path(
         "textmode/pack/<slug:pack>/a/<str:artfile>",
         TextmodeArtfileView.as_view(),

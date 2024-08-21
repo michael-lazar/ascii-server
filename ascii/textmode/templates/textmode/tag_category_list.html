@@ -1,0 +1,19 @@
+{% extends "textmode/base.html" %}
+
+{% load static %}
+
+{% block breadcrumbs %}
+  <span>&gt;</span>
+  <a href="{% url 'textmode-tag-list' %}">tags</a>
+  <span>&gt;</span>
+  <a href="{% url 'textmode-tag-category-list' category %}">{{ category }}</a>
+{% endblock %}
+
+{% block content %}
+  <h1>{{ category }} Tags</h1>
+  <div class="tag-column">
+    {% for tag in tags %}
+      <li class="tag-list-item">{{ tag.name }} ({{ tag.artfile_count }})</li>
+    {% endfor %}
+  </div>
+{% endblock %}

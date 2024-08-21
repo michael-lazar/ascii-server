@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
@@ -13,26 +14,16 @@ class TextmodeIndexView(TemplateView):
     template_name = "textmode/index.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        packs = ArtPack.objects.annotate_artfile_count().prefetch_fileid()
+        packs = ArtPack.objects.annotate_artfile_count().prefetch_fileid()[:20]
 
-        artist_tags = (
-            ArtFileTag.objects.visible()
-            .filter(category=TagCategory.ARTIST)
-            .annotate_artfile_count()
-            .order_by("-artfile_count")
-        )
-        group_tags = (
-            ArtFileTag.objects.visible()
-            .filter(category=TagCategory.GROUP)
-            .annotate_artfile_count()
-            .order_by("-artfile_count")
-        )
-        content_tags = (
-            ArtFileTag.objects.visible()
-            .filter(category=TagCategory.CONTENT)
-            .annotate_artfile_count()
-            .order_by("-artfile_count")
-        )
+        artist_tags = ArtFileTag.objects.by_category(TagCategory.ARTIST)
+        artist_tags = artist_tags.order_by("-artfile_count")[:20]
+
+        group_tags = ArtFileTag.objects.by_category(TagCategory.GROUP)
+        group_tags = group_tags.order_by("-artfile_count")[:20]
+
+        content_tags = ArtFileTag.objects.by_category(TagCategory.CONTENT)
+        content_tags = content_tags.order_by("-artfile_count")[:20]
 
         return {
             "packs": packs,
@@ -49,7 +40,7 @@ class TextmodePackView(TemplateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         pack = get_object_or_404(ArtPack, name=kwargs["pack"])
 
-        artfiles = pack.artfiles.select_related("pack").all()
+        artfiles = pack.artfiles.select_related("pack").order_by("-is_fileid", "name")
 
         filter_form = GalleryFilterForm(artfiles, data=self.request.GET)
         if filter_form.is_valid():
@@ -68,9 +59,9 @@ class TextmodePackView(TemplateView):
         }
 
 
-class TextmodePacksView(TemplateView):
+class TextmodePackListView(TemplateView):
 
-    template_name = "textmode/packs.html"
+    template_name = "textmode/pack_list.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         packs = ArtPack.objects.prefetch_fileid()
@@ -85,7 +76,34 @@ class TextmodeArtfileView(TemplateView):
         pack = get_object_or_404(ArtPack, name=kwargs["pack"])
         artfile = get_object_or_404(ArtFile, pack=pack, name=kwargs["artfile"])
 
+        return {"pack": pack, "artfile": artfile}
+
+
+class TextmodeTagListView(TemplateView):
+
+    template_name = "textmode/tag_list.html"
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        artist_tags = ArtFileTag.objects.by_category(TagCategory.ARTIST)
+        group_tags = ArtFileTag.objects.by_category(TagCategory.GROUP)
+        content_tags = ArtFileTag.objects.by_category(TagCategory.CONTENT)
+
         return {
-            "pack": pack,
-            "artfile": artfile,
+            "artist_tags": artist_tags,
+            "group_tags": group_tags,
+            "content_tags": content_tags,
         }
+
+
+class TextmodeTagCategoryListView(TemplateView):
+
+    template_name = "textmode/tag_category_list.html"
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        category = kwargs["category"]
+        if category not in TagCategory:
+            raise Http404()
+
+        tags = ArtFileTag.objects.by_category(category)
+
+        return {"tags": tags, "category": category}

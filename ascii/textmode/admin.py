@@ -19,6 +19,11 @@ class ArtFileInline(ReadOnlyTabularInline):
         "pack",
         "get_name",
         "is_fileid",
+        "author",
+        "group",
+        "date",
+        "datatype",
+        "filetype",
     ]
     extra = 0
     show_change_link = False
@@ -31,9 +36,10 @@ class ArtFileInline(ReadOnlyTabularInline):
 
 @admin.register(ArtPack)
 class ArtPackAdmin(admin.ModelAdmin):
-    list_display = ["name", "get_artfile_count"]
+    list_display = ["name", "year", "get_artfile_count"]
     search_fields = ["name"]
-    readonly_fields = ["get_artfile_count"]
+    list_filter = ["year"]
+    readonly_fields = ["get_artfile_count", "created_at"]
     inlines = [ArtFileInline]
 
     def get_queryset(self, request: HttpRequest) -> ArtPackQuerySet:
@@ -50,10 +56,21 @@ class ArtPackAdmin(admin.ModelAdmin):
 
 @admin.register(ArtFile)
 class ArtFileAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", linkify("pack"), "is_fileid"]
-    list_filter = ["pack"]
-    search_fields = ["name", "pack__name"]
+    list_display = [
+        "id",
+        "is_fileid",
+        "name",
+        linkify("pack"),
+        "author",
+        "group",
+        "date",
+        "datatype",
+        "filetype",
+    ]
+    list_filter = ["pack", "is_fileid", "filetype", "datatype", "ice_colors", "letter_spacing"]
+    search_fields = ["name", "pack__name", "title", "author", "group"]
     autocomplete_fields = ["pack", "tags"]
+    readonly_fields = ["created_at"]
     formfield_overrides = {
         models.JSONField: {"widget": FormattedJSONWidget},
         models.ImageField: {"widget": ImagePreviewWidget},

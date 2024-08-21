@@ -4,7 +4,7 @@
 
 {% block breadcrumbs %}
   <span>&gt;</span>
-  <a href="{% url 'textmode-packs' %}">packs</a>
+  <a href="{% url 'textmode-pack-list' %}">packs</a>
   <span>&gt;</span>
   <a href="{% url 'textmode-pack' pack.name %}">{{ pack.name }}</a>
   <span>&gt;</span>
@@ -12,7 +12,9 @@
 {% endblock %}
 
 {% block content %}
-  <h1>{{ artfile.name }}</h1>
+  <h1>{{ pack.name }}: {{ artfile.name }}</h1>
   <img src="{{ artfile.image_x1.url }}" alt="{{ artfile.name }}">
+
+
   <pre>{{ artfile.sauce_str }}</pre>
 {% endblock %}

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import json
-
 from django.db import models
 from django.db.models import Count, Manager, Prefetch
+from django.utils import timezone
 
 from ascii.core.models import BaseModel
 from ascii.core.utils import reverse
-from ascii.textmode.choices import TagCategory
+from ascii.textmode.choices import DataType, FileType, LetterSpacing, TagCategory
 
 
 class ArtFileTagQuerySet(models.QuerySet):
@@ -17,6 +16,9 @@ class ArtFileTagQuerySet(models.QuerySet):
 
     def visible(self) -> ArtFileTagQuerySet:
         return self.filter(artfiles__isnull=False)
+
+    def by_category(self, category: TagCategory) -> ArtFileTagQuerySet:
+        return self.visible().filter(category=category).annotate_artfile_count().order_by("name")
 
 
 ArtFileTagManager = Manager.from_queryset(ArtFileTagQuerySet)  # noqa
@@ -61,8 +63,16 @@ class ArtPackQuerySet(models.QuerySet):
 ArtPackManager = Manager.from_queryset(ArtPackQuerySet)  # noqa
 
 
+def upload_to_zip(instance: ArtPack, filename: str) -> str:
+    return f"pack/{instance.year}/{filename}"
+
+
 class ArtPack(BaseModel):
+    created_at = models.DateTimeField(default=timezone.now)
+
     name = models.CharField(max_length=100, unique=True)
+    year = models.IntegerField()
+    zip_file = models.FileField(upload_to=upload_to_zip)
 
     objects = ArtPackManager()
 
@@ -85,15 +95,15 @@ ArtFileManager = Manager.from_queryset(ArtFileQuerySet)  # noqa
 
 
 def upload_to_raw(instance: ArtFile, filename: str) -> str:
-    return f"pack/{instance.pack.name}/raw/{filename}"
+    return f"pack/{instance.pack.year}/{instance.pack.name}/raw/{filename}"
 
 
 def upload_to_tn(instance: ArtFile, filename: str) -> str:
-    return f"pack/{instance.pack.name}/tn/{filename}"
+    return f"pack/{instance.pack.year}/{instance.pack.name}/tn/{filename}"
 
 
 def upload_to_x1(instance: ArtFile, filename: str) -> str:
-    return f"pack/{instance.pack.name}/x1/{filename}"
+    return f"pack/{instance.pack.year}/{instance.pack.name}/x1/{filename}"
 
 
 def upload_to_x2(instance: ArtFile, filename: str) -> str:
@@ -101,12 +111,15 @@ def upload_to_x2(instance: ArtFile, filename: str) -> str:
 
 
 class ArtFile(BaseModel):
+    created_at = models.DateTimeField(default=timezone.now)
+
     name = models.CharField(max_length=100, db_index=True)
     pack = models.ForeignKey(ArtPack, on_delete=models.CASCADE, related_name="artfiles")
 
-    is_fileid = models.BooleanField(default=False)
+    is_fileid = models.BooleanField(default=False, db_index=True)
 
-    raw = models.FileField(upload_to=upload_to_raw)
+    raw_file = models.FileField(upload_to=upload_to_raw)
+    file_extension = models.CharField(max_length=20, blank=True)
 
     image_tn = models.ImageField(verbose_name="Image (thumbnail)", upload_to=upload_to_tn)
     image_x1 = models.ImageField(verbose_name="Image (x1)", upload_to=upload_to_x1)
@@ -118,23 +131,37 @@ class ArtFile(BaseModel):
     )
 
     tags = models.ManyToManyField(ArtFileTag, blank=True, related_name="artfiles")
+    sauce_data = models.JSONField(blank=True, default=dict)
 
-    sauce = models.JSONField(blank=True, default=dict)
+    title = models.CharField(max_length=35, blank=True, db_index=True)
+    author = models.CharField(max_length=20, blank=True, db_index=True)
+    group = models.CharField(max_length=20, blank=True, db_index=True)
+    date = models.DateField(blank=True, null=True, db_index=True)
+    filesize = models.IntegerField(default=0, db_index=True)
+    datatype = models.IntegerField(choices=DataType.choices, db_index=True)
+    filetype = models.CharField(choices=FileType.choices, max_length=20, db_index=True)
+    pixel_width = models.IntegerField(blank=True, null=True, db_index=True)
+    pixel_height = models.IntegerField(blank=True, null=True, db_index=True)
+    character_width = models.IntegerField(blank=True, null=True, db_index=True)
+    number_of_lines = models.IntegerField(blank=True, null=True, db_index=True)
+    ice_colors = models.BooleanField(blank=True, null=True, db_index=True)
+    letter_spacing = models.IntegerField(
+        choices=LetterSpacing.choices,
+        blank=True,
+        null=True,
+        db_index=True,
+    )
 
     objects = ArtFileManager()
 
     class Meta:
-        ordering = ["-is_fileid", "name"]
+        ordering = ["name"]
         constraints = [
             models.UniqueConstraint(fields=["name", "pack"], name="unique_artfile_name_pack"),
         ]
 
     def __str__(self):
         return self.name
-
-    @property
-    def sauce_str(self) -> str:
-        return json.dumps(self.sauce, indent=2)
 
     @property
     def public_url(self) -> str:

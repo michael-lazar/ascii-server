@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block content %}
-  <h1>By Pack</h1>
+  <h1>By Pack <a class="header-link" href="{% url 'textmode-pack-list' %}">(view all)</a></h1>
   <div class="pack-grid">
     {% for pack in packs %}
     <div class="pack-card">
@@ -16,19 +16,19 @@
     </div>
     {% endfor %}
   </div>
-  <h1>By Artist</h1>
+  <h1>By Artist <a class="header-link" href="{% url 'textmode-tag-category-list' 'artist'%}">(view all)</a></h1>
   <ul class="tag-list">
     {% for tag in artist_tags %}
       <li class="tag-list-item">{{ tag.name }} ({{ tag.artfile_count }})</li>
     {% endfor %}
   </ul>
-  <h1>By Group</h1>
+  <h1>By Group <a class="header-link" href="{% url 'textmode-tag-category-list' 'group'%}">(view all)</a></h1>
   <ul class="tag-list">
     {% for tag in group_tags %}
       <li class="tag-list-item">{{ tag.name }} ({{ tag.artfile_count }})</li>
     {% endfor %}
   </ul>
-  <h1>By Content</h1>
+  <h1>By Content <a class="header-link" href="{% url 'textmode-tag-category-list' 'content'%}">(view all)</a></h1>
   <ul class="tag-list">
     {% for tag in content_tags %}
       <li class="tag-list-item">{{ tag.name }} ({{ tag.artfile_count }})</li>

@@ -4,11 +4,11 @@
 
 {% block breadcrumbs %}
   <span>&gt;</span>
-  <a href="{% url 'textmode-packs' %}">packs</a>
+  <a href="{% url 'textmode-pack-list' %}">packs</a>
 {% endblock %}
 
 {% block content %}
-  <h1>Packs</h1>
+  <h1>By Pack</h1>
   <div class="pack-list">
     {% for pack in packs %}
     <div class="pack-card">
