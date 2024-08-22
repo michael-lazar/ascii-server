@@ -42,20 +42,16 @@ class TextmodePackView(TemplateView):
 
         artfiles = pack.artfiles.select_related("pack").order_by("-is_fileid", "name")
 
-        filter_form = GalleryFilterForm(artfiles, data=self.request.GET)
-        if filter_form.is_valid():
-            cleaned_data = filter_form.cleaned_data
+        form = GalleryFilterForm(artfiles, data=self.request.GET)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
             if cleaned_data["artist"]:
-                artfiles = artfiles.filter(tags=cleaned_data["artist"])
-            if cleaned_data["group"]:
-                artfiles = artfiles.filter(tags=cleaned_data["group"])
-            if cleaned_data["content"]:
-                artfiles = artfiles.filter(tags=cleaned_data["content"])
+                artfiles = artfiles.filter(tags__in=cleaned_data["artist"])
 
         return {
             "pack": pack,
             "artfiles": artfiles,
-            "filter_form": filter_form,
+            "form": form,
         }
 
 
@@ -65,11 +61,14 @@ class TextmodePackListView(TemplateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         qs = ArtPack.objects.prefetch_fileid().order_by("-year", "-created_at")
+        # For some reason the generators appear empty if I loop them inside of
+        # the template, I need to cast them to lists first.
         packs_by_year = [(year, list(packs)) for year, packs in qs.group_by_year()]
         return {"packs_by_year": packs_by_year}
 
 
 class TextmodeArtfileView(TemplateView):
+
     template_name = "textmode/artfile.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:

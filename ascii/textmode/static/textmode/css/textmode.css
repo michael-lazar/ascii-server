@@ -142,6 +142,49 @@ h1 {
   vertical-align: middle;
 }
 
+.pack-body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 10px;
+  margin: -10px;
+}
+
+.pack-filter {
+  display: flex;
+  flex-direction: column;
+  background-color: #eee;
+  padding: 10px;
+  box-shadow: 2px 0 2px rgba(0,0,0,0.2);
+  font-size: small;
+}
+
+.pack-content {
+  margin: 10px;
+}
+
+.pack-filter-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #bbb;
+  padding-bottom: 10px;
+}
+
+.pack-filter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+legend {
+  font-weight: bold;
+}
+
+fieldset {
+  border: 1px solid black;
+}
+
+
 /* Styles for mobile phones */
 @media (max-width: 768px) {
     .pack-grid {

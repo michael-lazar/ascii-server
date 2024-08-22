@@ -9,7 +9,75 @@
   <a href="{% url 'textmode-pack' pack.name %}">{{ pack.name }}</a>
 {% endblock %}
 
+{% block extrahead %}{{ block.super }}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var toggleAll = document.getElementById('toggleAllArtists');
+    var checkboxes = document.querySelectorAll('.filter-artists-options input[type="checkbox"]');
+
+    // Function to update the toggleAll checkbox based on other checkboxes
+    function updateToggleAllArtistsCheckbox() {
+      var allChecked = true;
+      var allUnchecked = true;
+      checkboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+          allUnchecked = false;
+        } else {
+          allChecked = false;
+        }
+      });
+
+      toggleAll.checked = allChecked;
+      toggleAll.indeterminate = !allChecked && !allUnchecked;
+    }
+
+    // Attach event listener to each checkbox in the artist filter
+    checkboxes.forEach(function(checkbox) {
+      checkbox.addEventListener('change', function () {
+        updateToggleAllArtistsCheckbox();
+      });
+    });
+
+    // Event listener for the toggleAll checkbox
+    toggleAll.addEventListener('change', function () {
+      checkboxes.forEach(function(checkbox) {
+        checkbox.checked = toggleAll.checked;
+      });
+      updateToggleAllArtistsCheckbox();  // Ensure proper state after a toggle all action
+    });
+
+    window.resetFilters = function () {
+      checkboxes.forEach(function(checkbox) {
+        checkbox.checked = true;
+      });
+      updateToggleAllArtistsCheckbox();
+    }
+
+    updateToggleAllArtistsCheckbox();
+  });
+</script>
+{% endblock %}
+
 {% block content %}
-  <h1>{{ pack.name }}</h1>
-  {% include 'textmode/fragments/artfile_grid.html' %}
+  <div class="pack-body">
+    <div class="pack-filter">
+      <form method="get" class="pack-filter-form">
+        <div class="pack-filter-title">
+          <span>Filter by</span>
+          <button type="button" onclick="resetFilters()">Reset all</button>
+        </div>
+        <fieldset class="filter-artists">
+            <legend><input type="checkbox" id="toggleAllArtists">Artist</legend>
+            <div class="filter-artists-options">
+              {{ form.artist }}
+            </div>
+        </fieldset>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+    <div class="pack-content">
+      <h1>{{ pack.name }}</h1>
+      {% include 'textmode/fragments/artfile_grid.html' %}
+    </div>
+  </div>
 {% endblock %}
