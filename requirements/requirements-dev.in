@@ -5,6 +5,7 @@ factory-boy
 freezegun
 mypy
 pip-tools
+pytailwindcss
 pytest
 pytest-django
 selenium

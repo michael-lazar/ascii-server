@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+source venv/bin/activate
+tailwindcss \
+  -i ./ascii/core/static/tailwind/input.css \
+  -o ./ascii/core/static/tailwind/output.css \
+  "$@"

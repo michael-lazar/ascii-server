@@ -924,6 +924,10 @@ pysocks==1.7.1 \
     --hash=sha256:2725bd0a9925919b9b51739eea5f9e2bae91e83288108a9ad338b2e3a4435ee5 \
     --hash=sha256:3f8804571ebe159c380ac6de37643bb4685970655d3bba243530d6558b799aa0
     # via urllib3
+pytailwindcss==0.2.0 \
+    --hash=sha256:112718583a33f42c57b2718270dd0e0605574da0023cab4829fad3a98ebe450b \
+    --hash=sha256:30e7bd3b78de19a39a7e66329db02d393ee540f010924397b4d780e85041fae4
+    # via -r requirements/requirements-dev.in
 pytest==8.1.1 \
     --hash=sha256:2a8386cfc11fa9d2c50ee7b2a57e7d898ef90470a7a34c4b949ff59662bb78b7 \
     --hash=sha256:ac978141a75948948817d360297b7aae0fcb9d6ff6bc9ec6d514b85d5a65c044
