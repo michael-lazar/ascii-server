@@ -14,6 +14,7 @@ asgiref==3.8.1 \
     # via
     #   -r requirements/requirements.txt
     #   django
+    #   django-browser-reload
 attrs==23.2.0 \
     --hash=sha256:935dc3b529c262f6cf76e50877d35a4bd3c1de194fd41f47a2b7ae8f19971f30 \
     --hash=sha256:99b87a485a5820b23b879f04c2305b44b951b502fd64be915879d77a7e8fc6f1
@@ -312,12 +313,17 @@ django==4.2.11 \
     --hash=sha256:ddc24a0a8280a0430baa37aff11f28574720af05888c62b7cfe71d219f4599d3
     # via
     #   -r requirements/requirements.txt
+    #   django-browser-reload
     #   django-extensions
     #   django-stubs
     #   django-stubs-ext
 django-admin-interface==0.28.6 \
     --hash=sha256:444dea3caa1c878c2c0210662b0584b8ad9c7235955f0bbd04680733a3526b0f \
     --hash=sha256:c5dc5ef6865c9683b6ecd630fe588ef369350ee27afb89b24d56e6cdda914355
+    # via -r requirements/requirements.txt
+django-browser-reload==1.15.0 \
+    --hash=sha256:55b72335568b988e3a2beddb1703db6951516355925d3fc9c587f0bbd9e8efaa \
+    --hash=sha256:ed094386c587a95ff4f34a0d302ecd58f15e919784c4c76a97f7cb977446104c
     # via -r requirements/requirements.txt
 django-cleanup==8.1.0 \
     --hash=sha256:70df905076a44e7a111b31198199af633dee08876e199e6dce36ca8dd6b8b10f \
