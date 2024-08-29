@@ -75,7 +75,12 @@ class TextmodeArtfileView(TemplateView):
         pack = get_object_or_404(ArtPack, name=kwargs["pack"])
         artfile = get_object_or_404(ArtFile, pack=pack, name=kwargs["artfile"])
 
-        return {"pack": pack, "artfile": artfile}
+        return {
+            "pack": pack,
+            "artfile": artfile,
+            "next": artfile.get_next(),
+            "prev": artfile.get_prev(),
+        }
 
 
 class TextmodeTagListView(TemplateView):

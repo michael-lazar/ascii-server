@@ -92,6 +92,10 @@ class ArtPack(BaseModel):
     def __str__(self):
         return self.name
 
+    @property
+    def public_url(self) -> str:
+        return reverse("textmode-pack", args=[self.name])
+
 
 class ArtFileQuerySet(models.QuerySet):
     pass
@@ -200,3 +204,20 @@ class ArtFile(BaseModel):
     @property
     def grid_height(self) -> int:
         return int(self.grid_width * (self.image_tn.height / self.image_tn.width))
+
+    def get_next(self) -> ArtFile | None:
+        qs = self.pack.artfiles.filter(name__gt=self.name, is_fileid=False)
+        return qs.order_by("name").first()
+
+    def get_prev(self) -> ArtFile | None:
+        qs = self.pack.artfiles.filter(name__lt=self.name, is_fileid=False)
+        return qs.order_by("-name").first()
+
+    def get_artist_tags(self) -> ArtFileTagQuerySet:
+        return ArtFileTag.objects.filter(category=TagCategory.ARTIST, artfiles=self)
+
+    def get_group_tags(self) -> ArtFileTagQuerySet:
+        return ArtFileTag.objects.filter(category=TagCategory.GROUP, artfiles=self)
+
+    def get_content_tags(self) -> ArtFileTagQuerySet:
+        return ArtFileTag.objects.filter(category=TagCategory.CONTENT, artfiles=self)

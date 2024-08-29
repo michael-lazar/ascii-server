@@ -10,9 +10,14 @@
 {% block body %}
 <div class="header">
   <div class="title"><a href="{% url 'textmode-index' %}">[textmode]</a></div>
-  <div class="breadcrumbs">
-    <a href="{% url 'textmode-index' %}">home</a>
-    {% block breadcrumbs %}{% endblock %}
+  <div class="header-nav">
+    <div class="breadcrumbs">
+      <a href="{% url 'textmode-index' %}">home</a>
+      {% block breadcrumbs %}{% endblock %}
+    </div>
+    <div class="header-links">
+      {% block headerlinks %}{% endblock %}
+    </div>
   </div>
 </div>
 <div class="content">

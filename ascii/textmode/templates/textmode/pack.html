@@ -9,6 +9,12 @@
   <a href="{% url 'textmode-pack' pack.name %}">{{ pack.name }}</a>
 {% endblock %}
 
+{% block headerlinks %}
+  {% if user.is_staff %}
+  <div><a href="{{ pack.change_url }}">edit</a></div>
+  {% endif %}
+{% endblock %}
+
 {% block extrahead %}{{ block.super }}
 <script>
   document.addEventListener('DOMContentLoaded', function () {
