@@ -221,3 +221,20 @@ class ArtFile(BaseModel):
 
     def get_content_tags(self) -> ArtFileTagQuerySet:
         return ArtFileTag.objects.filter(category=TagCategory.CONTENT, artfiles=self)
+
+    def get_sauce_display(self) -> dict[str, str]:
+        data = {}
+        if self.title:
+            data["Title"] = self.title
+        if self.author:
+            data["Author"] = self.author
+        if self.group:
+            data["Group"] = self.group
+        if self.date:
+            data["Date"] = self.date.strftime("%Y-%m-%d")
+        if self.datatype is not None:
+            data["Data Type"] = self.get_datatype_display()
+        if self.filetype is not None:
+            data["File Type"] = self.get_filetype_display()
+
+        return data

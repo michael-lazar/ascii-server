@@ -18,7 +18,62 @@
 {% endblock %}
 
 {% block content %}
-  <div class="artfile-main">
+  <div class="artfile-body">
+    <div class="sidebar">
+      <h2>File Information</h2>
+      <h3>Download</h3>
+      <a href="{{ artfile.raw_file.url }}" download>{{ artfile.name }}</a>
+      <h3>Preview</h3>
+      {% if artfile.image_tn %}
+        <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}">
+      {% else %}
+        -
+      {% endif %}
+      <h3>Sauce</h3>
+      {% if sauce %}
+        <dl>
+          {% for name, val in sauce.items %}
+            <dt>{{ name }}</dt>
+            <dd>{{ val }}</dd>
+          {% endfor %}
+        </dl>
+      {% else %}
+        -
+      {% endif %}
+      <h3>Tags</h3>
+      <dl>
+        <dt>artists</dt>
+        <dd>
+          <span class="sidebar-tags">
+          {% for tag in artfile.get_artist_tags %}
+            <a href="">[{{ tag.name }}]</a>
+          {% empty %}
+            -
+          {% endfor %}
+          </span>
+        </dd>
+        <dt>groups</dt>
+        <dd>
+          <span class="sidebar-tags">
+          {% for tag in artfile.get_group_tags %}
+            <a href="">[{{ tag.name }}]</a>
+          {% empty %}
+            -
+          {% endfor %}
+          </span>
+        </dd>
+        <dt>content</dt>
+        <dd>
+          <span class="sidebar-tags">
+          {% for tag in artfile.get_content_tags %}
+            <a href="">[{{ tag.name }}]</a>
+          {% empty %}
+            -
+          {% endfor %}
+          </span>
+        </dd>
+      </dl>
+    </div>
     <div class="artfile-content">
       <div class="artfile-quick-links">
         <span>
@@ -49,56 +104,6 @@
           {% if next %}<a href="{{ next.public_url }}">Next &gt;&gt;</a>{% endif %}
         </span>
       </div>
-    </div>
-    <div class="artfile-details">
-      <h3>File</h3>
-      <dl>
-        <dt>Download</dt>
-        <dd><a href="{{ artfile.raw_file.url }}" download>{{ artfile.name }}</a></dd>
-        <dt>Preview</dt>
-        <dd>
-          {% if artfile.image_tn %}
-            <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}">
-          {% else %}
-            -
-          {% endif %}
-        </dd>
-        <h3>Sauce</h3>
-        <dl>
-          <dt>Title</dt>
-          <dd>{{ artfile.title|default:"-" }}</dd>
-          <dt>Author</dt>
-          <dd>{{ artfile.author|default:"-" }}</dd>
-          <dt>Group</dt>
-          <dd>{{ artfile.group|default:"-" }}</dd>
-          <dt>Date</dt>
-          <dd>{{ artfile.date|date:"Y-m-d"|default:"-" }}</dd>
-          <dt>Data Type</dt>
-          <dd>{{ artfile.get_datatype_display|default:"-" }}</dd>
-          <dt>File Type</dt>
-          <dd>{{ artfile.get_filetype_display|default:"-" }}</dd>
-        </dl>
-        <h3>Tags</h3>
-        <dl>
-          <dt>artists</dt>
-          <dl>
-            {% for tag in artfile.get_artist_tags %}
-              <a href="">{{ tag.name }}</a>
-            {% endfor %}
-          </dl>
-          <dt>groups</dt>
-          <dl>
-            {% for tag in artfile.get_group_tags %}
-              <a href="">{{ tag.name }}</a>
-            {% endfor %}
-          </dl>
-          <dt>content</dt>
-          <dl>
-            {% for tag in artfile.get_content_tags %}
-              <a href="">{{ tag.name }}</a>
-            {% endfor %}
-          </dl>
-        </dl>
     </div>
   </div>
 {% endblock %}

@@ -10,7 +10,6 @@ from ascii.textmode.models import ArtFile, ArtFileTag, ArtPack
 
 
 class TextmodeIndexView(TemplateView):
-
     template_name = "textmode/index.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
@@ -34,7 +33,6 @@ class TextmodeIndexView(TemplateView):
 
 
 class TextmodePackView(TemplateView):
-
     template_name = "textmode/pack.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
@@ -56,7 +54,6 @@ class TextmodePackView(TemplateView):
 
 
 class TextmodePackListView(TemplateView):
-
     template_name = "textmode/pack_list.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
@@ -68,7 +65,6 @@ class TextmodePackListView(TemplateView):
 
 
 class TextmodeArtfileView(TemplateView):
-
     template_name = "textmode/artfile.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
@@ -80,11 +76,11 @@ class TextmodeArtfileView(TemplateView):
             "artfile": artfile,
             "next": artfile.get_next(),
             "prev": artfile.get_prev(),
+            "sauce": artfile.get_sauce_display(),
         }
 
 
 class TextmodeTagListView(TemplateView):
-
     template_name = "textmode/tag_list.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
@@ -100,7 +96,6 @@ class TextmodeTagListView(TemplateView):
 
 
 class TextmodeTagCategoryListView(TemplateView):
-
     template_name = "textmode/tag_category_list.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
