@@ -209,7 +209,8 @@ h1 {
 
 .sidebar-legend-clear {
     font-weight: normal;
-    margin-left: 5px
+    margin: auto 4px;
+    padding: 0 2px;
 }
 
 .pack-filter-form {

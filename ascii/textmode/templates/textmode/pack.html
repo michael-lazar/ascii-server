@@ -6,7 +6,7 @@
   <span>&gt;</span>
   <a href="{% url 'textmode-pack-list' %}">packs</a>
   <span>&gt;</span>
-  <a href="{% url 'textmode-pack' pack.name %}">{{ pack.name }}</a>
+  <a href="{{ pack.public_url }}">{{ pack.name }}</a>
 {% endblock %}
 
 {% block headerlinks %}
@@ -15,17 +15,54 @@
   {% endif %}
 {% endblock %}
 
+{% block extrahead %}{{ block.super }}
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var form = document.getElementById("packFilterForm");
+      form.addEventListener("change", function(event) {
+        form.submit();
+      });
+
+      var clearButtons = document.querySelectorAll(".sidebar-legend-clear");
+      clearButtons.forEach(function(button) {
+        button.addEventListener("click", function() {
+          var fieldset = button.closest("fieldset");
+          var inputs = fieldset.querySelectorAll("input:not([type='submit']), select, textarea");
+          inputs.forEach(function(input) {
+            if (input.type === "checkbox" || input.type === "radio") {
+              input.checked = false;
+            } else {
+              input.value = "";
+            }
+            if (input.tagName === "SELECT") {
+              input.selectedIndex = 0;
+            }
+          });
+
+          form.submit();
+        });
+      });
+
+      var clearAllButton = document.getElementById("packFilterClearAll");
+      clearAllButton.addEventListener("click", function() {
+        window.location.replace("{{ pack.public_url }}");
+      });
+
+    });
+  </script>
+{% endblock %}
+
 {% block content %}
   <div class="pack-body">
     <div class="sidebar">
-      <form method="get" class="pack-filter-form">
+      <form method="get" class="pack-filter-form" id="packFilterForm">
         <h2>
           <span>Filter by</span>
-          <button type="button">Clear all</button>
+          <button type="button" id="packFilterClearAll" {% if not form.data %}disabled{% endif %}>clear all</button>
         </h2>
         <fieldset>
           <legend>Artist
-            <button class="sidebar-legend-clear">clear</button>
+            <button class="sidebar-legend-clear" {% if not form.artist.value %}disabled{% endif %}>clear</button>
           </legend>
           <div>{{ form.artist }}</div>
         </fieldset>
