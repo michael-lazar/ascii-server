@@ -4,7 +4,7 @@ import itertools
 import os
 
 from django.db import models
-from django.db.models import Count, Manager, Prefetch
+from django.db.models import Count, Exists, Manager, OuterRef, Prefetch
 from django.utils import timezone
 
 from ascii.core.models import BaseModel
@@ -98,7 +98,13 @@ class ArtPack(BaseModel):
 
 
 class ArtFileQuerySet(models.QuerySet):
-    pass
+
+    def not_tagged(self, category: TagCategory) -> ArtFileQuerySet:
+        """
+        Return files that do not contain a tag within the given category.
+        """
+        tags_in_category = ArtFileTag.objects.filter(category=category, artfiles=OuterRef("pk"))
+        return self.exclude(Exists(tags_in_category))
 
 
 ArtFileManager = Manager.from_queryset(ArtFileQuerySet)  # noqa

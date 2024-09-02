@@ -207,6 +207,11 @@ h1 {
     word-break: break-all;
 }
 
+.sidebar-legend-clear {
+    font-weight: normal;
+    margin-left: 5px
+}
+
 .pack-filter-form {
     display: flex;
     flex-direction: column;

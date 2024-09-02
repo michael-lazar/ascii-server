@@ -43,8 +43,11 @@ class TextmodePackView(TemplateView):
         form = GalleryFilterForm(artfiles, data=self.request.GET)
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            if cleaned_data["artist"]:
-                artfiles = artfiles.filter(tags__in=cleaned_data["artist"])
+            if tag := cleaned_data["artist"]:
+                if tag == "_unknown":
+                    artfiles = artfiles.not_tagged(TagCategory.ARTIST)
+                else:
+                    artfiles = artfiles.filter(tags=tag)
 
         return {
             "pack": pack,
