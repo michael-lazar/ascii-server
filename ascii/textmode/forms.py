@@ -23,15 +23,35 @@ class ArtFileTagChoiceField(forms.ModelChoiceField):
     @property
     def choices(self):
         yield "", "all"
+
         if self.unknown_count:
-            yield "_unknown", f"unknown ({self.unknown_count})"
-        yield from super().choices
+            yield "_unknown", f"not set ({self.unknown_count})"
+
+        for choice in super().choices:
+            if choice[0]:
+                yield choice
 
     def to_python(self, value):
         if value == "_unknown":
             return value
 
         return super().to_python(value)
+
+
+class FileExtensionChoiceField(forms.ChoiceField):
+
+    def __init__(self, artfiles: ArtFileQuerySet, **kwargs):
+        extension_counts = dict(artfiles.count_file_extensions())
+
+        choices = [("", "all")]
+
+        if unknown_count := extension_counts.pop("", 0):
+            choices.append(("_unknown", f"blank ({unknown_count})"))
+
+        for ext, count in extension_counts.items():
+            choices.append((ext, f"{ext[1:]} ({count})"))
+
+        super().__init__(choices=choices, **kwargs)
 
 
 class GalleryFilterForm(forms.Form):
@@ -43,7 +63,10 @@ class GalleryFilterForm(forms.Form):
             category=TagCategory.ARTIST,
             artfiles=artfiles,
             required=False,
-            to_field_name="name",
-            label="Artist",
+            widget=forms.RadioSelect,
+        )
+        self.fields["extension"] = FileExtensionChoiceField(
+            artfiles=artfiles,
+            required=False,
             widget=forms.RadioSelect,
         )

@@ -1,9 +1,24 @@
-body {
+html, body {
+    padding: 0;
     margin: 0;
 }
 
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+}
+
+
 h1 {
     text-transform: uppercase;
+}
+
+input[type="radio"] {
+    margin-top: -1px;
+    vertical-align: middle;
 }
 
 .header {
@@ -207,10 +222,13 @@ h1 {
     word-break: break-all;
 }
 
-.sidebar-legend-clear {
-    font-weight: normal;
-    margin: auto 4px;
-    padding: 0 2px;
+.sidebar select {
+    width: 100%;
+}
+
+.sidebar-choice-field div {
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 .pack-filter-form {

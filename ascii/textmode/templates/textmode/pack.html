@@ -43,9 +43,12 @@
         </h2>
         <fieldset>
           <legend>Artist</legend>
-          <div>{{ form.artist }}</div>
+          {{ form.artist }}
         </fieldset>
-        <input type="submit" value="Submit">
+        <fieldset>
+          <legend>File Extension</legend>
+          {{ form.extension }}
+        </fieldset>
       </form>
     </div>
     <div class="pack-content">

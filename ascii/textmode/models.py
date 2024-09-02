@@ -106,6 +106,15 @@ class ArtFileQuerySet(models.QuerySet):
         tags_in_category = ArtFileTag.objects.filter(category=category, artfiles=OuterRef("pk"))
         return self.exclude(Exists(tags_in_category))
 
+    def count_file_extensions(self) -> list[tuple[str, int]]:
+        qs = (
+            self.values("file_extension")
+            .annotate(count=Count("id"))
+            .order_by("file_extension")
+            .values_list("file_extension", "count")
+        )
+        return list(qs)
+
 
 ArtFileManager = Manager.from_queryset(ArtFileQuerySet)  # noqa
 
@@ -135,7 +144,7 @@ class ArtFile(BaseModel):
     is_fileid = models.BooleanField(default=False, db_index=True)
 
     raw_file = models.FileField(upload_to=upload_to_raw)
-    file_extension = models.CharField(max_length=20, blank=True)
+    file_extension = models.CharField(max_length=20, blank=True, db_index=True)
     filesize = models.PositiveIntegerField(default=0, db_index=True)
 
     image_tn = models.ImageField(
@@ -190,9 +199,12 @@ class ArtFile(BaseModel):
         return self.name
 
     def save(self, *args, **kwargs):
+        self.file_extension = os.path.splitext(self.name)[1].lower()
+
         if self.raw_file:
             self.file_size = self.raw_file.size
-            self.file_extension = os.path.splitext(self.raw_file.name)[1].lower()
+        else:
+            self.file_size = 0
 
         super().save(*args, **kwargs)
 

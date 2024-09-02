@@ -49,6 +49,12 @@ class TextmodePackView(TemplateView):
                 else:
                     artfiles = artfiles.filter(tags=tag)
 
+            if extension := cleaned_data["extension"]:
+                if extension == "_unknown":
+                    artfiles = artfiles.filter(file_extension="")
+                else:
+                    artfiles = artfiles.filter(file_extension=extension)
+
         return {
             "pack": pack,
             "artfiles": artfiles,

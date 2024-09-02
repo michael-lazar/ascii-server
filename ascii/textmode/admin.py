@@ -85,7 +85,7 @@ class ArtFileAdmin(admin.ModelAdmin):
     ]
     search_fields = ["name", "pack__name", "title", "author", "group"]
     autocomplete_fields = ["pack", "tags"]
-    readonly_fields = ["created_at"]
+    readonly_fields = ["created_at", "filesize", "file_extension"]
     formfield_overrides = {
         models.JSONField: {"widget": FormattedJSONWidget},
         models.ImageField: {"widget": ImagePreviewWidget},
