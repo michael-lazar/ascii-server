@@ -22,6 +22,7 @@ class ArtFileTagChoiceField(forms.ModelChoiceField):
 
     @property
     def choices(self):
+        yield "", "all"
         if self.unknown_count:
             yield "_unknown", f"unknown ({self.unknown_count})"
         yield from super().choices
@@ -44,5 +45,5 @@ class GalleryFilterForm(forms.Form):
             required=False,
             to_field_name="name",
             label="Artist",
-            widget=forms.RadioSelect(attrs={"hx-trigger": "change"}),
+            widget=forms.RadioSelect,
         )

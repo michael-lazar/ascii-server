@@ -18,29 +18,10 @@
 {% block extrahead %}{{ block.super }}
   <script>
     document.addEventListener("DOMContentLoaded", function() {
+
       var form = document.getElementById("packFilterForm");
-      form.addEventListener("change", function(event) {
+      form.addEventListener("change", function() {
         form.submit();
-      });
-
-      var clearButtons = document.querySelectorAll(".sidebar-legend-clear");
-      clearButtons.forEach(function(button) {
-        button.addEventListener("click", function() {
-          var fieldset = button.closest("fieldset");
-          var inputs = fieldset.querySelectorAll("input:not([type='submit']), select, textarea");
-          inputs.forEach(function(input) {
-            if (input.type === "checkbox" || input.type === "radio") {
-              input.checked = false;
-            } else {
-              input.value = "";
-            }
-            if (input.tagName === "SELECT") {
-              input.selectedIndex = 0;
-            }
-          });
-
-          form.submit();
-        });
       });
 
       var clearAllButton = document.getElementById("packFilterClearAll");
@@ -61,9 +42,7 @@
           <button type="button" id="packFilterClearAll" {% if not form.data %}disabled{% endif %}>clear all</button>
         </h2>
         <fieldset>
-          <legend>Artist
-            <button class="sidebar-legend-clear" {% if not form.artist.value %}disabled{% endif %}>clear</button>
-          </legend>
+          <legend>Artist</legend>
           <div>{{ form.artist }}</div>
         </fieldset>
         <input type="submit" value="Submit">
