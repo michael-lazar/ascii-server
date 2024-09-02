@@ -4,7 +4,7 @@ import itertools
 import os
 
 from django.db import models
-from django.db.models import Count, Exists, Manager, OuterRef, Prefetch
+from django.db.models import Count, Exists, Manager, OuterRef, Prefetch, Q
 from django.utils import timezone
 
 from ascii.core.models import BaseModel
@@ -115,6 +115,14 @@ class ArtFileQuerySet(models.QuerySet):
         )
         return list(qs)
 
+    def annotate_artist_count(self):
+        """
+        Count the number of artist tags associated with the file.
+        """
+        return self.annotate(
+            artist_count=Count("tags", filter=Q(tags__category=TagCategory.ARTIST))
+        )
+
 
 ArtFileManager = Manager.from_queryset(ArtFileQuerySet)  # noqa
 
@@ -188,6 +196,9 @@ class ArtFile(BaseModel):
     )
 
     objects = ArtFileManager()
+
+    # Annotated fields
+    artist_count: int
 
     class Meta:
         ordering = ["id"]

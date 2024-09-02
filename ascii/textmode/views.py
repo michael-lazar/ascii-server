@@ -38,7 +38,11 @@ class TextmodePackView(TemplateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         pack = get_object_or_404(ArtPack, name=kwargs["pack"])
 
-        artfiles = pack.artfiles.select_related("pack").order_by("-is_fileid", "name")
+        artfiles = (
+            pack.artfiles.select_related("pack")
+            .annotate_artist_count()
+            .order_by("-is_fileid", "name")
+        )
 
         form = GalleryFilterForm(artfiles, data=self.request.GET)
         if form.is_valid():
@@ -50,10 +54,16 @@ class TextmodePackView(TemplateView):
                     artfiles = artfiles.filter(tags=tag)
 
             if extension := cleaned_data["extension"]:
-                if extension == "_unknown":
+                if extension == "_none":
                     artfiles = artfiles.filter(file_extension="")
                 else:
                     artfiles = artfiles.filter(file_extension=extension)
+
+            if collab := cleaned_data["collab"]:
+                if collab == "solo":
+                    artfiles = artfiles.filter(artist_count=1)
+                elif collab == "joint":
+                    artfiles = artfiles.filter(artist_count__gt=1)
 
         return {
             "pack": pack,

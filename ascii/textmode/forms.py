@@ -1,3 +1,5 @@
+from collections import Counter
+
 from django import forms
 from django.db.models import Count
 
@@ -46,10 +48,30 @@ class FileExtensionChoiceField(forms.ChoiceField):
         choices = [("", "all")]
 
         if unknown_count := extension_counts.pop("", 0):
-            choices.append(("_unknown", f"blank ({unknown_count})"))
+            choices.append(("_none", f"none ({unknown_count})"))
 
         for ext, count in extension_counts.items():
             choices.append((ext, f"{ext[1:]} ({count})"))
+
+        super().__init__(choices=choices, **kwargs)
+
+
+class CollabChoiceField(forms.ChoiceField):
+
+    def __init__(self, artfiles: ArtFileQuerySet, **kwargs):
+
+        counter = Counter()
+        for artfile in artfiles.all():
+            if artfile.artist_count == 1:
+                counter["solo"] += 1
+            elif artfile.artist_count > 1:
+                counter["joint"] += 1
+
+        choices = [("", "all")]
+        if count := counter["solo"]:
+            choices.append(("solo", f"solo ({count})"))
+        if count := counter["joint"]:
+            choices.append(("joint", f"joint ({count})"))
 
         super().__init__(choices=choices, **kwargs)
 
@@ -66,6 +88,11 @@ class GalleryFilterForm(forms.Form):
             widget=forms.RadioSelect,
         )
         self.fields["extension"] = FileExtensionChoiceField(
+            artfiles=artfiles,
+            required=False,
+            widget=forms.RadioSelect,
+        )
+        self.fields["collab"] = CollabChoiceField(
             artfiles=artfiles,
             required=False,
             widget=forms.RadioSelect,
