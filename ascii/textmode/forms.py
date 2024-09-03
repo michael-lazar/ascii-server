@@ -176,7 +176,7 @@ class TagFilterForm(forms.Form):
         )
 
 
-class TagSearchForm(forms.Form):
+class SearchBarForm(forms.Form):
     q = forms.CharField(
         required=False,
         label="",

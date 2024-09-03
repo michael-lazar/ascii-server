@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
 from ascii.textmode.choices import TagCategory
-from ascii.textmode.forms import PackFilterForm, TagFilterForm, TagSearchForm
+from ascii.textmode.forms import PackFilterForm, SearchBarForm, TagFilterForm
 from ascii.textmode.models import ArtFile, ArtFileTag, ArtPack
 
 
@@ -67,11 +67,21 @@ class TextmodePackListView(TemplateView):
     template_name = "textmode/pack_list.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        qs = ArtPack.objects.prefetch_fileid().order_by("-year", "-created_at")
+        packs = ArtPack.objects.prefetch_fileid().order_by("-year", "-created_at")
+
+        form = SearchBarForm(data=self.request.GET)
+        if form.is_valid():
+            if q := form.cleaned_data["q"]:
+                packs = packs.filter(name__icontains=q)
+
         # For some reason the generators appear empty if I loop them inside of
         # the template, I need to cast them to lists first.
-        packs_by_year = [(year, list(packs)) for year, packs in qs.group_by_year()]
-        return {"packs_by_year": packs_by_year}
+        packs_by_year = [(year, list(packs)) for year, packs in packs.group_by_year()]
+
+        return {
+            "packs_by_year": packs_by_year,
+            "form": form,
+        }
 
 
 class TextmodeArtfileView(TemplateView):
@@ -126,7 +136,7 @@ class TextmodeTagListView(TemplateView):
         group_tags = ArtFileTag.objects.by_category(TagCategory.GROUP)
         content_tags = ArtFileTag.objects.by_category(TagCategory.CONTENT)
 
-        form = TagSearchForm(data=self.request.GET)
+        form = SearchBarForm(data=self.request.GET)
         if form.is_valid():
             if q := form.cleaned_data["q"]:
                 artist_tags = artist_tags.filter(name__icontains=q)
@@ -151,7 +161,7 @@ class TextmodeTagCategoryListView(TemplateView):
 
         tags = ArtFileTag.objects.by_category(category)
 
-        form = TagSearchForm(data=self.request.GET)
+        form = SearchBarForm(data=self.request.GET)
         if form.is_valid():
             if q := form.cleaned_data["q"]:
                 tags = tags.filter(name__icontains=q)

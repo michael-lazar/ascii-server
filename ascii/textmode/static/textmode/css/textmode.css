@@ -114,12 +114,6 @@ input[type="radio"] {
     padding: 10px 40px;
 }
 
-.pack-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
 .pack-title {
     text-align: center;
     font-size: 12px;
@@ -321,14 +315,19 @@ fieldset {
     justify-content: space-between;
 }
 
-.tags-search {
+.searchbar {
     margin: 20px 40px;
     display: flex;
     gap: 5px;
 }
 
-.tags-search input {
+.searchbar input {
     font-size: medium;
+}
+
+.header-shortcuts {
+    display: flex;
+    gap: 10px;
 }
 
 @media (max-width: 768px) {

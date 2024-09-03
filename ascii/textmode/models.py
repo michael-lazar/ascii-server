@@ -249,11 +249,11 @@ class ArtFile(BaseModel):
         return int(self.grid_width * (self.image_tn.height / self.image_tn.width))
 
     def get_next(self) -> ArtFile | None:
-        qs = self.pack.artfiles.filter(name__gt=self.name, is_fileid=False)
+        qs = self.pack.artfiles.filter(name__gt=self.name)
         return qs.order_by("name").first()
 
     def get_prev(self) -> ArtFile | None:
-        qs = self.pack.artfiles.filter(name__lt=self.name, is_fileid=False)
+        qs = self.pack.artfiles.filter(name__lt=self.name)
         return qs.order_by("-name").first()
 
     def get_artist_tags(self) -> ArtFileTagQuerySet:
@@ -277,7 +277,7 @@ class ArtFile(BaseModel):
             data["Date"] = self.date.strftime("%Y-%m-%d")
         if self.datatype is not None:
             data["Data Type"] = self.get_datatype_display()
-        if self.filetype is not None:
+        if self.filetype:
             data["File Type"] = self.get_filetype_display()
 
         return data
