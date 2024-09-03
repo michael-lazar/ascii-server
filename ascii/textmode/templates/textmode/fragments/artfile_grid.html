@@ -1,21 +1,20 @@
 <div class="artfile-grid grid" data-masonry='{
-  "columnWidth": 176,
-  "itemSelector": ".grid-item",
+  "columnWidth": 170,
+  "itemSelector": ".artfile-card",
   "transitionDuration": 0,
-  "horizontalOrder": true,
   "gutter": 20
   }'>
   {% for artfile in artfiles %}
-    <div class="artfile-item grid-item {% if artfile.is_fileid %}grid-item-wide{% endif %}">
-      <a href="{{ artfile.public_url }}">
+    <a href="{{ artfile.public_url }}">
+      <div class="artfile-card {% if artfile.is_fileid %}artfile-card-wide{% endif %}">
         {% if artfile.image_tn %}
-          <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}" width="{{ artfile.grid_width }}"
-               height="{{ artfile.grid_height }}">
+          <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}" width="{{ artfile.thumb_width }}"
+               height="{{ artfile.thumb_height }}">
         {% endif %}
-        <div class="artfile-title">
+        <div class="artfile-card-title">
           {{ artfile.name }}
         </div>
-      </a>
-    </div>
+      </div>
+    </a>
   {% endfor %}
 </div>

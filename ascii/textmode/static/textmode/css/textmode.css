@@ -83,35 +83,35 @@ input[type="radio"] {
     flex-grow: 1;
 }
 
-.artfile-item {
+.artfile-card {
     background: black;
-    padding: 8px;
+    padding: 5px;
     margin: 10px auto;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
-    line-break: anywhere;
     height: fit-content;
-    width: 160px;
+    width: 170px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    box-sizing: border-box;
+    align-items: stretch;
 }
 
-.grid-item-wide {
-    width: 356px;
+.artfile-card-wide {
+    width: 360px;
 }
 
-.artfile-item a {
-    text-decoration: none;
-}
-
-.artfile-item img {
-    display: block;
-    margin-bottom: 8px;
-    object-fit: contain;
-}
-
-.artfile-title {
+.artfile-card-title {
     text-align: center;
-    font-size: 12px;
-    color: white;
+    font-size: x-small;
     word-wrap: break-word;
+    color: black;
+    background: #ccc;
+    padding: 5px 10px;
+}
+
+.artfile-card a {
+    text-decoration: none;
 }
 
 .pack-grid {
@@ -123,10 +123,12 @@ input[type="radio"] {
 
 .pack-title {
     text-align: center;
-    font-size: 12px;
-    color: white;
+    font-size: smaller;
+    color: black;
+    background: #ccc;
     word-wrap: anywhere;
     text-decoration: none;
+    padding: 5px 10px;
 }
 
 .pack-card {

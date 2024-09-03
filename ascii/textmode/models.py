@@ -238,15 +238,16 @@ class ArtFile(BaseModel):
         return reverse("textmode-artfile", args=[self.pack.name, self.name])
 
     @property
-    def grid_width(self) -> int:
+    def thumb_width(self) -> int:
         if self.is_fileid:
-            return 356
+            # 2*160px image + 2*5px padding + 20px gap
+            return 350
 
         return 160
 
     @property
-    def grid_height(self) -> int:
-        return int(self.grid_width * (self.image_tn.height / self.image_tn.width))
+    def thumb_height(self) -> int:
+        return int(self.thumb_width * (self.image_tn.height / self.image_tn.width))
 
     def get_next(self) -> ArtFile | None:
         qs = self.pack.artfiles.filter(name__gt=self.name)
