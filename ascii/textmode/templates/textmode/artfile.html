@@ -1,6 +1,6 @@
 {% extends "textmode/base.html" %}
 
-{% load static %}
+{% load static %}{% load core_tags %}
 
 {% block breadcrumbs %}
   <span>&gt;</span>
@@ -20,15 +20,6 @@
 {% block content %}
   <div class="artfile-body">
     <div class="sidebar">
-      <h2>File Information</h2>
-      <h3>Download</h3>
-      <a href="{{ artfile.raw_file.url }}" download>{{ artfile.name }}</a>
-      <h3>Preview</h3>
-      {% if artfile.image_tn %}
-        <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}">
-      {% else %}
-        -
-      {% endif %}
       <h3>Sauce</h3>
       {% if sauce %}
         <dl>
@@ -40,11 +31,17 @@
       {% else %}
         -
       {% endif %}
+      <h3>Preview</h3>
+      {% if artfile.image_tn %}
+        <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}">
+      {% else %}
+        -
+      {% endif %}
       <h3>Tags</h3>
       <dl>
         <dt>Artist</dt>
         <dd>
-          <span class="sidebar-tags">
+          <span class="sidebar-list">
           {% for tag in artfile.get_artist_tags %}
             <a href="{{ tag.public_url }}">{{ tag.name }}</a>
           {% empty %}
@@ -54,7 +51,7 @@
         </dd>
         <dt>Group</dt>
         <dd>
-          <span class="sidebar-tags">
+          <span class="sidebar-list">
           {% for tag in artfile.get_group_tags %}
             <a href="{{ tag.public_url }}">{{ tag.name }}</a>
           {% empty %}
@@ -64,7 +61,7 @@
         </dd>
         <dt>Content</dt>
         <dd>
-          <span class="sidebar-tags">
+          <span class="sidebar-list">
           {% for tag in artfile.get_content_tags %}
             <a href="{{ tag.public_url }}">{{ tag.name }}</a>
           {% empty %}
@@ -74,8 +71,12 @@
         </dd>
       </dl>
     </div>
-    <div class="artfile-content">
-      <div class="artfile-quick-links">
+    <div class="artfile-content-wrapper">
+      <h1>File: {{ artfile.name }}
+        <a class="header-link" href="{{ artfile.raw_file.url }}">({{ artfile.name|get_extension }})</a>
+      </h1>
+      <div class="artfile-content">
+        <div class="artfile-quick-links">
         <span>
           {% if prev %}
             <a href="{{ prev.public_url }}">&lt;&lt; Previous</a>
@@ -83,31 +84,28 @@
             <span style="visibility: hidden">&lt;&lt; Previous</span>
           {% endif %}
         </span>
-        <a href="{{ pack.public_url }}">Index</a>
-        <span>
+          <a href="{{ pack.public_url }}">Index</a>
+          <span>
           {% if next %}
             <a href="{{ next.public_url }}">Next &gt;&gt;</a>
           {% else %}
             <span style="visibility: hidden">Next &gt;&gt;</span>
           {% endif %}
         </span>
-      </div>
-      <span>
-        <b>{{ artfile.name }}</b>
-      </span>
-      {% if artfile.image_x1 %}
-        <div class="artfile-image-container">
-          <img src="{{ artfile.image_x1.url }}" alt="{{ artfile.name }}">
         </div>
-        {% if artfile.title and artfile.author %}
-          <div>{{ artfile.title }} by {{ artfile.author }}</div>
+        {% if artfile.image_x1 %}
+          <div class="artfile-image-container">
+            <img src="{{ artfile.image_x1.url }}" alt="{{ artfile.name }}">
+          </div>
+          {% if artfile.title and artfile.author %}
+            <div>{{ artfile.title }} by {{ artfile.author }}</div>
+          {% endif %}
+        {% else %}
+          <div>
+            Preview not available. <a href="{{ artfile.raw_file.url }}">(open file)</a>
+          </div>
         {% endif %}
-      {% else %}
-        <div>
-          Preview not available. <a href="{{ artfile.raw_file.url }}">(open file)</a>
-        </div>
-      {% endif %}
-      <div class="artfile-quick-links">
+        <div class="artfile-quick-links">
         <span>
           {% if prev %}
             <a href="{{ prev.public_url }}">&lt;&lt; Previous</a>
@@ -115,14 +113,15 @@
             <span style="visibility: hidden">&lt;&lt; Previous</span>
           {% endif %}
         </span>
-        <a href="{{ pack.public_url }}">Index</a>
-        <span>
+          <a href="{{ pack.public_url }}">Index</a>
+          <span>
           {% if next %}
             <a href="{{ next.public_url }}">Next &gt;&gt;</a>
           {% else %}
             <span style="visibility: hidden">Next &gt;&gt;</span>
           {% endif %}
         </span>
+        </div>
       </div>
     </div>
   </div>
