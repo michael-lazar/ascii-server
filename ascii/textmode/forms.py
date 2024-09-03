@@ -4,19 +4,18 @@ from django import forms
 from django.db.models import Count
 
 from ascii.textmode.choices import TagCategory
-from ascii.textmode.models import ArtFileQuerySet, ArtFileTag
+from ascii.textmode.models import ArtFileQuerySet, ArtFileTag, ArtPack
 
 
 class ArtFileTagChoiceField(forms.ModelChoiceField):
 
     def __init__(self, category: TagCategory, artfiles: ArtFileQuerySet, **kwargs):
+        self.unknown_count = artfiles.not_tagged(category).count()
+
         tags_qs = ArtFileTag.objects.filter(category=category, artfiles__in=artfiles)
         tags_qs = tags_qs.order_by("name").annotate(artfile_count=Count("name"))
 
         initial = tags_qs.values_list("id", flat=True)
-
-        self.unknown_count = artfiles.not_tagged(category).count()
-
         super().__init__(queryset=tags_qs, initial=initial, **kwargs)
 
     def label_from_instance(self, obj: ArtFileTag) -> str:
@@ -38,6 +37,27 @@ class ArtFileTagChoiceField(forms.ModelChoiceField):
             return value
 
         return super().to_python(value)
+
+
+class PackChoiceField(forms.ModelChoiceField):
+
+    def __init__(self, artfiles: ArtFileQuerySet, **kwargs):
+        packs_qs = ArtPack.objects.filter(artfiles__in=artfiles)
+        packs_qs = packs_qs.order_by("year", "name").annotate(artfile_count=Count("name"))
+
+        initial = packs_qs.values_list("id", flat=True)
+        super().__init__(queryset=packs_qs, initial=initial, **kwargs)
+
+    def label_from_instance(self, obj: ArtPack) -> str:
+        return f"{obj.year} - {obj.name} ({obj.artfile_count})"
+
+    @property
+    def choices(self):
+        yield "", "all"
+
+        for choice in super().choices:
+            if choice[0]:
+                yield choice
 
 
 class FileExtensionChoiceField(forms.ChoiceField):
@@ -76,7 +96,7 @@ class CollabChoiceField(forms.ChoiceField):
         super().__init__(choices=choices, **kwargs)
 
 
-class GalleryFilterForm(forms.Form):
+class PackFilterForm(forms.Form):
 
     def __init__(self, artfiles: ArtFileQuerySet, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -86,15 +106,38 @@ class GalleryFilterForm(forms.Form):
             artfiles=artfiles,
             required=False,
             to_field_name="name",
-            widget=forms.RadioSelect(attrs={"class": "sidebar-choice-field"}),
-        )
-        self.fields["extension"] = FileExtensionChoiceField(
-            artfiles=artfiles,
-            required=False,
+            label="Artist",
             widget=forms.RadioSelect(attrs={"class": "sidebar-choice-field"}),
         )
         self.fields["collab"] = CollabChoiceField(
             artfiles=artfiles,
             required=False,
+            label="Collab",
+            widget=forms.RadioSelect(attrs={"class": "sidebar-choice-field"}),
+        )
+        self.fields["extension"] = FileExtensionChoiceField(
+            artfiles=artfiles,
+            required=False,
+            label="File Extension",
+            widget=forms.RadioSelect(attrs={"class": "sidebar-choice-field"}),
+        )
+
+
+class TagFilterForm(forms.Form):
+
+    def __init__(self, artfiles: ArtFileQuerySet, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["pack"] = PackChoiceField(
+            artfiles=artfiles,
+            required=False,
+            to_field_name="name",
+            label="Pack",
+            widget=forms.RadioSelect(attrs={"class": "sidebar-choice-field"}),
+        )
+        self.fields["extension"] = FileExtensionChoiceField(
+            artfiles=artfiles,
+            required=False,
+            label="File Extension",
             widget=forms.RadioSelect(attrs={"class": "sidebar-choice-field"}),
         )

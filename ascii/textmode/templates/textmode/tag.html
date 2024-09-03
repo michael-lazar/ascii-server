@@ -4,9 +4,11 @@
 
 {% block breadcrumbs %}
   <span>&gt;</span>
-  <a href="{% url 'textmode-pack-list' %}">packs</a>
+  <a href="{% url 'textmode-tag-list' %}">tags</a>
   <span>&gt;</span>
-  <a href="{{ pack.public_url }}">{{ pack.name }}</a>
+  <a href="{% url 'textmode-tag-category-list' tag.category %}">{{ tag.category }}</a>
+  <span>&gt;</span>
+  <a href="{{ tag.public_url }}">{{ tag.name }}</a>
 {% endblock %}
 
 {% block headerlinks %}
@@ -32,7 +34,7 @@
       {% include 'textmode/fragments/artfile_filter.html' %}
     </div>
     <div class="pack-content">
-      <h1>Pack: {{ pack.name }} ({{ pack.year }})</h1>
+      <h1>{{ tag.category }}: {{ tag.name }}</h1>
       {% include 'textmode/fragments/artfile_grid.html' %}
     </div>
   </div>

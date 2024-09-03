@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
 from ascii.textmode.choices import TagCategory
-from ascii.textmode.forms import GalleryFilterForm
+from ascii.textmode.forms import PackFilterForm, TagFilterForm
 from ascii.textmode.models import ArtFile, ArtFileTag, ArtPack
 
 
@@ -44,32 +44,29 @@ class TextmodePackView(TemplateView):
             .order_by("-is_fileid", "name")
         )
 
-        form = GalleryFilterForm(artfiles, data=self.request.GET)
+        form = PackFilterForm(artfiles, data=self.request.GET)
         if form.is_valid():
-            cleaned_data = form.cleaned_data
-            if tag := cleaned_data["artist"]:
+            if tag := form.cleaned_data["artist"]:
                 if tag == "_unknown":
                     artfiles = artfiles.not_tagged(TagCategory.ARTIST)
                 else:
                     artfiles = artfiles.filter(tags=tag)
 
-            if extension := cleaned_data["extension"]:
+            if extension := form.cleaned_data["extension"]:
                 if extension == "_none":
                     artfiles = artfiles.filter(file_extension="")
                 else:
                     artfiles = artfiles.filter(file_extension=extension)
 
-            if collab := cleaned_data["collab"]:
+            if collab := form.cleaned_data["collab"]:
                 if collab == "solo":
                     artfiles = artfiles.filter(artist_count__lte=1)
                 elif collab == "joint":
                     artfiles = artfiles.filter(artist_count__gt=1)
 
-        return {
-            "pack": pack,
-            "artfiles": artfiles,
-            "form": form,
-        }
+        is_filtered = any(form.cleaned_data.values())
+
+        return {"pack": pack, "artfiles": artfiles, "form": form, "is_filtered": is_filtered}
 
 
 class TextmodePackListView(TemplateView):
@@ -96,6 +93,33 @@ class TextmodeArtfileView(TemplateView):
             "next": artfile.get_next(),
             "prev": artfile.get_prev(),
             "sauce": artfile.get_sauce_display(),
+        }
+
+
+class TextmodeTagView(TemplateView):
+    template_name = "textmode/tag.html"
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        tag = get_object_or_404(ArtFileTag, category=kwargs["category"], name=kwargs["name"])
+        artfiles = tag.artfiles.select_related("pack").order_by("-is_fileid", "name")
+
+        form = TagFilterForm(artfiles, data=self.request.GET)
+        if form.is_valid():
+            if extension := form.cleaned_data["extension"]:
+                if extension == "_none":
+                    artfiles = artfiles.filter(file_extension="")
+                else:
+                    artfiles = artfiles.filter(file_extension=extension)
+            if pack := form.cleaned_data["pack"]:
+                artfiles = artfiles.filter(pack=pack)
+
+        is_filtered = any(form.cleaned_data.values())
+
+        return {
+            "tag": tag,
+            "artfiles": artfiles,
+            "form": form,
+            "is_filtered": is_filtered,
         }
 
 

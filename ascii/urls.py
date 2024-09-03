@@ -18,6 +18,7 @@ from ascii.textmode.views import (
     TextmodePackView,
     TextmodeTagCategoryListView,
     TextmodeTagListView,
+    TextmodeTagView,
 )
 
 urlpatterns = [
@@ -30,6 +31,11 @@ urlpatterns = [
         "textmode/tags/<slug:category>/",
         TextmodeTagCategoryListView.as_view(),
         name="textmode-tag-category-list",
+    ),
+    path(
+        "textmode/tags/<slug:category>/<str:name>/",
+        TextmodeTagView.as_view(),
+        name="textmode-tag",
     ),
     path(
         "textmode/pack/<slug:pack>/a/<str:artfile>",

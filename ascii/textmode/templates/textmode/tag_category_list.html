@@ -11,9 +11,9 @@
 
 {% block content %}
   <h1>{{ category }} Tags</h1>
-  <div class="tag-column">
+  <div class="tag-list">
     {% for tag in tags %}
-      <li class="tag-list-item">{{ tag.name }} ({{ tag.artfile_count }})</li>
+      <li class="tag-list-item"><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
     {% endfor %}
   </div>
 {% endblock %}

@@ -47,6 +47,10 @@ class ArtFileTag(BaseModel):
     def __str__(self):
         return f"{self.category}: {self.name}"
 
+    @property
+    def public_url(self) -> str:
+        return reverse("textmode-tag", args=[self.category, self.name])
+
 
 class ArtPackQuerySet(models.QuerySet):
 

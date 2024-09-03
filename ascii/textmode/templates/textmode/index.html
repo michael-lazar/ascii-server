@@ -6,32 +6,32 @@
   <h1>By Pack <a class="header-link" href="{% url 'textmode-pack-list' %}">(view all)</a></h1>
   <div class="pack-grid">
     {% for pack in packs %}
-    <div class="pack-card">
+      <div class="pack-card">
         <a href="{% url 'textmode-pack' pack.name %}">
-          <img alt="{{ pack.name }}" src="{{ pack.fileid.0.image_tn.url }}" >
+          <img alt="{{ pack.name }}" src="{{ pack.fileid.0.image_tn.url }}">
           <div class="pack-title">
             {{ pack.name }}
           </div>
         </a>
-    </div>
+      </div>
     {% endfor %}
   </div>
-  <h1>By Artist <a class="header-link" href="{% url 'textmode-tag-category-list' 'artist'%}">(view all)</a></h1>
+  <h1>By Artist <a class="header-link" href="{% url 'textmode-tag-category-list' 'artist' %}">(view all)</a></h1>
   <ul class="tag-list">
     {% for tag in artist_tags %}
-      <li class="tag-list-item">{{ tag.name }} ({{ tag.artfile_count }})</li>
+      <li class="tag-list-item"><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
     {% endfor %}
   </ul>
-  <h1>By Group <a class="header-link" href="{% url 'textmode-tag-category-list' 'group'%}">(view all)</a></h1>
+  <h1>By Group <a class="header-link" href="{% url 'textmode-tag-category-list' 'group' %}">(view all)</a></h1>
   <ul class="tag-list">
     {% for tag in group_tags %}
-      <li class="tag-list-item">{{ tag.name }} ({{ tag.artfile_count }})</li>
+      <li class="tag-list-item"><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
     {% endfor %}
   </ul>
-  <h1>By Content <a class="header-link" href="{% url 'textmode-tag-category-list' 'content'%}">(view all)</a></h1>
+  <h1>By Content <a class="header-link" href="{% url 'textmode-tag-category-list' 'content' %}">(view all)</a></h1>
   <ul class="tag-list">
     {% for tag in content_tags %}
-      <li class="tag-list-item">{{ tag.name }} ({{ tag.artfile_count }})</li>
+      <li class="tag-list-item"><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
     {% endfor %}
   </ul>
 {% endblock %}

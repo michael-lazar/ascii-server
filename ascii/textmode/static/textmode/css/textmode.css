@@ -8,12 +8,25 @@ html {
 }
 
 body {
-    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
-
 
 h1 {
     text-transform: uppercase;
+    font-size: larger;
+}
+
+h1 .header-link {
+    font-size: medium;
+    text-decoration: none;
+    text-transform: none;
+    vertical-align: middle;
+}
+
+h2 {
+    font-size: large;
 }
 
 input[type="radio"] {
@@ -58,7 +71,8 @@ input[type="radio"] {
 }
 
 .content {
-    margin: 10px;
+    padding: 10px;
+    flex-grow: 1;
 }
 
 .artfile-item {
@@ -136,22 +150,15 @@ input[type="radio"] {
 }
 
 .tag-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    column-width: 200px;
+    column-gap: 20px;
     list-style: none;
     padding: 0 40px;
 }
 
 .tag-list-item {
     padding: 4px;
-}
-
-.header-link {
-    font-size: medium;
-    text-decoration: none;
-    text-transform: none;
-    vertical-align: middle;
+    break-inside: avoid;
 }
 
 .pack-body {
@@ -207,12 +214,12 @@ input[type="radio"] {
 }
 
 .sidebar dt {
-    margin-bottom: 3px;
+    margin-bottom: 5px;
     font-weight: bold;
 }
 
 .sidebar dd {
-    margin-bottom: 3px;
+    margin-bottom: 5px;
     margin-left: 10px;
 }
 
