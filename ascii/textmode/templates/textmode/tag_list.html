@@ -9,6 +9,10 @@
 
 {% block content %}
   <h1>Tags</h1>
+  <form method="get" class="tags-search">
+    {{ form }}
+    <input type="submit" value="Go">
+  </form>
   <h2>Artist</h2>
   <ul class="tag-list">
     {% for tag in artist_tags %}

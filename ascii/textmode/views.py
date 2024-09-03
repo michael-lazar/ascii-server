@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
 from ascii.textmode.choices import TagCategory
-from ascii.textmode.forms import PackFilterForm, TagFilterForm
+from ascii.textmode.forms import PackFilterForm, TagFilterForm, TagSearchForm
 from ascii.textmode.models import ArtFile, ArtFileTag, ArtPack
 
 
@@ -46,18 +46,12 @@ class TextmodePackView(TemplateView):
 
         form = PackFilterForm(artfiles, data=self.request.GET)
         if form.is_valid():
-            if tag := form.cleaned_data["artist"]:
-                if tag == "_unknown":
-                    artfiles = artfiles.not_tagged(TagCategory.ARTIST)
-                else:
-                    artfiles = artfiles.filter(tags=tag)
-
+            if artist := form.cleaned_data["artist"]:
+                artfiles = artfiles.filter(tags=artist)
+            if group := form.cleaned_data["group"]:
+                artfiles = artfiles.filter(tags=group)
             if extension := form.cleaned_data["extension"]:
-                if extension == "_none":
-                    artfiles = artfiles.filter(file_extension="")
-                else:
-                    artfiles = artfiles.filter(file_extension=extension)
-
+                artfiles = artfiles.filter(file_extension=extension)
             if collab := form.cleaned_data["collab"]:
                 if collab == "solo":
                     artfiles = artfiles.filter(artist_count__lte=1)
@@ -105,11 +99,12 @@ class TextmodeTagView(TemplateView):
 
         form = TagFilterForm(artfiles, data=self.request.GET)
         if form.is_valid():
+            if artist := form.cleaned_data["artist"]:
+                artfiles = artfiles.filter(tags=artist)
+            if group := form.cleaned_data["group"]:
+                artfiles = artfiles.filter(tags=group)
             if extension := form.cleaned_data["extension"]:
-                if extension == "_none":
-                    artfiles = artfiles.filter(file_extension="")
-                else:
-                    artfiles = artfiles.filter(file_extension=extension)
+                artfiles = artfiles.filter(file_extension=extension)
             if pack := form.cleaned_data["pack"]:
                 artfiles = artfiles.filter(pack=pack)
 
@@ -131,10 +126,18 @@ class TextmodeTagListView(TemplateView):
         group_tags = ArtFileTag.objects.by_category(TagCategory.GROUP)
         content_tags = ArtFileTag.objects.by_category(TagCategory.CONTENT)
 
+        form = TagSearchForm(data=self.request.GET)
+        if form.is_valid():
+            if q := form.cleaned_data["q"]:
+                artist_tags = artist_tags.filter(name__icontains=q)
+                group_tags = group_tags.filter(name__icontains=q)
+                content_tags = content_tags.filter(name__icontains=q)
+
         return {
             "artist_tags": artist_tags,
             "group_tags": group_tags,
             "content_tags": content_tags,
+            "form": form,
         }
 
 
@@ -148,4 +151,13 @@ class TextmodeTagCategoryListView(TemplateView):
 
         tags = ArtFileTag.objects.by_category(category)
 
-        return {"tags": tags, "category": category}
+        form = TagSearchForm(data=self.request.GET)
+        if form.is_valid():
+            if q := form.cleaned_data["q"]:
+                tags = tags.filter(name__icontains=q)
+
+        return {
+            "tags": tags,
+            "category": category,
+            "form": form,
+        }

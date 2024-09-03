@@ -51,21 +51,21 @@ class Sauce:
         return datetime.strptime(str(date_int), "%Y%m%d").date()
 
     @cached_property
-    def datatype(self) -> DataType:
+    def datatype(self) -> DataType | None:
         datatype = self.data.get("Datatype")
         if datatype is None:
-            return DataType.NONE
+            return None
 
         return DataType(datatype)
 
     @cached_property
-    def filetype(self) -> FileType:
+    def filetype(self) -> FileType | None:
         if self.datatype is None:
-            return FileType.NONE
+            return None
 
         filetype = self.data.get("Filetype")
         if filetype is None:
-            return FileType.NONE
+            return None
 
         match self.datatype:
             case DataType.NONE:

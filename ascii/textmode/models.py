@@ -185,8 +185,18 @@ class ArtFile(BaseModel):
     author = models.CharField(max_length=20, blank=True, db_index=True)
     group = models.CharField(max_length=20, blank=True, db_index=True)
     date = models.DateField(blank=True, null=True, db_index=True)
-    datatype = models.IntegerField(choices=DataType.choices, db_index=True)
-    filetype = models.CharField(choices=FileType.choices, max_length=20, db_index=True)
+    datatype = models.IntegerField(
+        choices=DataType.choices,
+        blank=True,
+        null=True,
+        db_index=True,
+    )
+    filetype = models.CharField(
+        choices=FileType.choices,
+        max_length=20,
+        blank=True,
+        db_index=True,
+    )
     pixel_width = models.IntegerField(blank=True, null=True, db_index=True)
     pixel_height = models.IntegerField(blank=True, null=True, db_index=True)
     character_width = models.IntegerField(blank=True, null=True, db_index=True)
