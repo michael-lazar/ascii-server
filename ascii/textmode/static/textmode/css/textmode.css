@@ -15,6 +15,7 @@ body {
 
 h1 {
     text-transform: uppercase;
+    margin: 5px 0;
     font-size: larger;
 }
 
@@ -26,7 +27,7 @@ h1 .header-link {
 }
 
 h2 {
-    font-size: large;
+    font-size: larger;
 }
 
 input[type="radio"] {
@@ -110,7 +111,7 @@ input[type="radio"] {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    padding: 0 40px;
+    padding: 10px 40px;
 }
 
 .pack-list {
