@@ -201,13 +201,18 @@ input[type="radio"] {
     margin: 0;
 }
 
+.sidebar h3 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 .sidebar dt {
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     font-weight: bold;
 }
 
 .sidebar dd {
-    margin-bottom: 10px;
+    margin-bottom: 3px;
     margin-left: 10px;
 }
 
@@ -229,6 +234,17 @@ input[type="radio"] {
 .sidebar-choice-field div {
     padding-top: 2px;
     padding-bottom: 2px;
+}
+
+.sidebar-clear-link {
+    font-weight: normal;
+    font-size: small;
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+.sidebar-clear-link:visited {
+    color: darkblue;
 }
 
 .pack-filter-form {

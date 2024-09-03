@@ -109,7 +109,7 @@ class ArtFileQuerySet(models.QuerySet):
     def count_file_extensions(self) -> list[tuple[str, int]]:
         qs = (
             self.values("file_extension")
-            .annotate(count=Count("id"))
+            .annotate(count=Count("id", distinct=True))
             .order_by("file_extension")
             .values_list("file_extension", "count")
         )

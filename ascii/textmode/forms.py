@@ -51,7 +51,7 @@ class FileExtensionChoiceField(forms.ChoiceField):
             choices.append(("_none", f"none ({unknown_count})"))
 
         for ext, count in extension_counts.items():
-            choices.append((ext, f"{ext[1:]} ({count})"))
+            choices.append((ext, f"{ext} ({count})"))
 
         super().__init__(choices=choices, **kwargs)
 
@@ -85,15 +85,16 @@ class GalleryFilterForm(forms.Form):
             category=TagCategory.ARTIST,
             artfiles=artfiles,
             required=False,
-            widget=forms.RadioSelect,
+            to_field_name="name",
+            widget=forms.RadioSelect(attrs={"class": "sidebar-choice-field"}),
         )
         self.fields["extension"] = FileExtensionChoiceField(
             artfiles=artfiles,
             required=False,
-            widget=forms.RadioSelect,
+            widget=forms.RadioSelect(attrs={"class": "sidebar-choice-field"}),
         )
         self.fields["collab"] = CollabChoiceField(
             artfiles=artfiles,
             required=False,
-            widget=forms.RadioSelect,
+            widget=forms.RadioSelect(attrs={"class": "sidebar-choice-field"}),
         )

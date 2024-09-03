@@ -18,17 +18,10 @@
 {% block extrahead %}{{ block.super }}
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-
       var form = document.getElementById("packFilterForm");
       form.addEventListener("change", function() {
         form.submit();
       });
-
-      var clearAllButton = document.getElementById("packFilterClearAll");
-      clearAllButton.addEventListener("click", function() {
-        window.location.replace("{{ pack.public_url }}");
-      });
-
     });
   </script>
 {% endblock %}
@@ -37,21 +30,21 @@
   <div class="pack-body">
     <div class="sidebar">
       <form method="get" class="pack-filter-form" id="packFilterForm">
-        <h2>
-          <span>Filter by</span>
-          <button type="button" id="packFilterClearAll" {% if not form.data %}disabled{% endif %}>clear all</button>
-        </h2>
+        <h2>Filter by</h2>
+        <div>Results: {{ artfiles.count }}{% if form.data %}
+          <a href="{{ pack.public_url }}" class="sidebar-clear-link">[clear filter]</a>{% endif %}
+        </div>
         <fieldset>
           <legend>Artist</legend>
           {{ form.artist }}
         </fieldset>
         <fieldset>
-          <legend>File Extension</legend>
-          {{ form.extension }}
-        </fieldset>
-        <fieldset>
           <legend>Collab</legend>
           {{ form.collab }}
+        </fieldset>
+        <fieldset>
+          <legend>File Extension</legend>
+          {{ form.extension }}
         </fieldset>
       </form>
     </div>

@@ -61,7 +61,7 @@ class TextmodePackView(TemplateView):
 
             if collab := cleaned_data["collab"]:
                 if collab == "solo":
-                    artfiles = artfiles.filter(artist_count=1)
+                    artfiles = artfiles.filter(artist_count__lte=1)
                 elif collab == "joint":
                     artfiles = artfiles.filter(artist_count__gt=1)
 
