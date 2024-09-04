@@ -2,6 +2,8 @@
 
 {% load static %}
 
+{% block title %}tags/{{ tag.category }}/{{ tag.name }}{% endblock %}
+
 {% block breadcrumbs %}
   <span>&gt;</span>
   <a href="{% url 'textmode-tag-list' %}">tags</a>

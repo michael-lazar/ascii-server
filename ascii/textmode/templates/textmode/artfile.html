@@ -2,6 +2,8 @@
 
 {% load static %}{% load core_tags %}
 
+{% block title %}{{ pack.year }}/{{ pack.name }}/{{ artfile.name }}{% endblock %}
+
 {% block breadcrumbs %}
   <span>&gt;</span>
   <a href="{% url 'textmode-pack-list' %}">packs</a>
