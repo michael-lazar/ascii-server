@@ -4,18 +4,8 @@
 
 {% block content %}
   <h1>By Pack <a class="header-link" href="{% url 'textmode-pack-list' %}">(view all)</a></h1>
-  <div class="pack-grid">
-    {% for pack in packs %}
-      <div class="pack-card">
-        <a href="{% url 'textmode-pack' pack.name %}">
-          <img alt="{{ pack.name }}" src="{{ pack.fileid.0.image_tn.url }}">
-          <div class="pack-title">
-            {{ pack.name }}
-          </div>
-        </a>
-      </div>
-    {% endfor %}
-  </div>
+  {% include "textmode/fragments/pack_grid.html" %}
+
   <h1>By Artist <a class="header-link" href="{% url 'textmode-tag-category-list' 'artist' %}">(view all)</a></h1>
   <ul class="tag-list">
     {% for tag in artist_tags %}

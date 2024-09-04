@@ -15,17 +15,6 @@
   </form>
   {% for year, packs in packs_by_year %}
     <h2>{{ year }}</h2>
-    <div class="pack-grid">
-      {% for pack in packs %}
-        <div class="pack-card">
-          <a href="{% url 'textmode-pack' pack.name %}">
-            <img alt="{{ pack.name }}" src="{{ pack.fileid.0.image_tn.url }}">
-            <div class="pack-title">
-              {{ pack.name }}
-            </div>
-          </a>
-        </div>
-      {% endfor %}
-    </div>
+    {% include "textmode/fragments/pack_grid.html" %}
   {% endfor %}
 {% endblock %}
