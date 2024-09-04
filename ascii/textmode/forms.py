@@ -28,7 +28,7 @@ class PackChoiceField(forms.ModelChoiceField):
         super().__init__(queryset=queryset, initial=initial, **kwargs)
 
     def label_from_instance(self, obj: ArtPack) -> str:
-        return f"{obj.name} ({obj.artfile_count})"
+        return f"{obj.year} / {obj.name} ({obj.artfile_count})"
 
 
 class FileExtensionChoiceField(forms.ChoiceField):

@@ -27,11 +27,11 @@
 {% endblock %}
 
 {% block content %}
-  <div class="pack-body">
+  <div class="artfile-body">
     <div class="sidebar">
       {% include 'textmode/fragments/artfile_filter.html' %}
     </div>
-    <div class="pack-content">
+    <div class="artfile-content-wrapper">
       <h1>{{ pack.year }} / {{ pack.name }} <a class="header-link" href="{{ pack.zip_file.url }}">(.zip)</a></h1>
       {% include 'textmode/fragments/artfile_grid.html' %}
     </div>

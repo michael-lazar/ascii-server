@@ -1,4 +1,4 @@
-<div class="artfile-grid grid" data-masonry='{
+<div class="artfile-grid" data-masonry='{
   "columnWidth": 170,
   "itemSelector": ".artfile-card",
   "transitionDuration": 0,
@@ -11,6 +11,9 @@
           <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}" width="{{ artfile.thumb_width }}"
                height="{{ artfile.thumb_height }}">
         {% endif %}
+        <div class="artfile-card-pack">
+          {{ artfile.pack.year }} / {{ artfile.pack.name }}
+        </div>
         <div class="artfile-card-title">
           {{ artfile.name }}
         </div>

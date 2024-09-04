@@ -16,9 +16,9 @@
     <input type="submit" value="Go">
   </form>
   <h2>{{ category|title }}</h2>
-  <div class="tag-list">
+  <ul class="tag-list">
     {% for tag in tags %}
       <li class="tag-list-item"><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
     {% endfor %}
-  </div>
+  </ul>
 {% endblock %}

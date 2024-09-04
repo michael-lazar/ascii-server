@@ -18,15 +18,15 @@ h1 {
     margin: 5px 0;
     font-size: larger;
     background: #eee;
-    padding: 4px;
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    padding: 8px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
 h2 {
     font-size: larger;
     background: #eee;
     padding: 4px;
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
 .header-link {
@@ -54,6 +54,7 @@ input[type="radio"] {
     gap: 20px;
     overflow: hidden;
     text-shadow: -1px -1px 2px black;
+    max-width: 100%;
 }
 
 .header a {
@@ -68,19 +69,29 @@ input[type="radio"] {
     gap: 10px;
 }
 
+.header-shortcuts {
+    display: flex;
+    gap: 10px;
+}
+
+.header-breadcrumbs {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 7ch;
+    flex: 1;
+}
+
 .title a {
     text-decoration: none;
     color: white;
 }
 
-.breadcrumbs {
-    display: flex;
-    gap: 5px
-}
-
 .content {
     padding: 10px;
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .artfile-card {
@@ -92,7 +103,6 @@ input[type="radio"] {
     width: 170px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
     box-sizing: border-box;
     align-items: stretch;
 }
@@ -101,13 +111,22 @@ input[type="radio"] {
     width: 360px;
 }
 
+.artfile-card-pack {
+    text-align: center;
+    font-size: x-small;
+    word-wrap: break-word;
+    color: black;
+    background: #aaa;
+    padding: 5px;
+}
+
 .artfile-card-title {
     text-align: center;
     font-size: x-small;
     word-wrap: break-word;
     color: black;
     background: #ccc;
-    padding: 5px 10px;
+    padding: 5px;
 }
 
 .artfile-card a {
@@ -158,6 +177,7 @@ input[type="radio"] {
     column-gap: 20px;
     list-style: none;
     padding: 0 40px;
+    font-size: small;
 }
 
 .tag-list-item {
@@ -165,24 +185,17 @@ input[type="radio"] {
     break-inside: avoid;
 }
 
-.pack-body {
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 10px;
-    margin: -10px;
-}
-
 .sidebar {
     display: flex;
     flex-direction: column;
     background-color: #eee;
-    padding: 10px;
+    padding-top: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
     box-shadow: 2px 0 2px rgba(0, 0, 0, 0.2);
     font-size: small;
-}
-
-.pack-content {
-    margin: 10px;
+    width: 200px;
 }
 
 .sidebar h2 {
@@ -192,8 +205,6 @@ input[type="radio"] {
     border-bottom: 1px solid #bbb;
     padding-bottom: 10px;
     font-size: medium;
-    margin-top: 0;
-    margin-bottom: 0;
     background-color: #eee;
     box-shadow: none;
 }
@@ -233,7 +244,8 @@ input[type="radio"] {
     width: 160px;
     background: black;
     padding: 8px;
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2)
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+    align-self: center;
 }
 
 .sidebar a {
@@ -246,6 +258,11 @@ input[type="radio"] {
 
 .sidebar label {
     word-break: break-all;
+}
+
+.sidebar-choice-field {
+    column-width: 150px;
+    column-gap: 5px;
 }
 
 .sidebar-choice-field div {
@@ -279,14 +296,19 @@ fieldset {
 }
 
 .artfile-body {
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 10px;
+    display: flex;
+    flex: 1;
     margin: -10px;
+    word-break: break-word;
 }
 
 .artfile-content-wrapper {
     margin: 10px;
+    flex: 1;
+}
+
+.artfile-content-wrapper h1 {
+    text-align: center;
 }
 
 .artfile-content {
@@ -314,14 +336,6 @@ fieldset {
     max-height: 100%;
 }
 
-.artfile-details {
-    box-shadow: -2px 2px 2px rgba(0, 0, 0, 0.2);
-    background-color: #eee;
-    padding: 10px;
-    font-size: small;
-    white-space: normal;
-    width: 250px;
-}
 
 .artfile-quick-links {
     display: flex;
@@ -340,24 +354,19 @@ fieldset {
     font-size: medium;
 }
 
-.header-shortcuts {
-    display: flex;
-    gap: 10px;
-}
-
 @media (max-width: 768px) {
     .pack-grid {
         padding: 0;
         justify-content: center;
     }
 
-    .artfile-main {
-        flex-direction: column;
-        align-items: normal;
+    .sidebar {
+        width: auto;
+        box-shadow: 2px 0 2px rgba(0, 0, 0, 0.2);
     }
 
-    .artfile-details {
-        flex: 1;
-        box-shadow: 0 -2px 2px rgba(0, 0, 0, 0.2);
+    .artfile-body {
+        flex-direction: column-reverse;
+        align-items: normal;
     }
 }

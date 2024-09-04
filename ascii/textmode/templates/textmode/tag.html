@@ -29,12 +29,12 @@
 {% endblock %}
 
 {% block content %}
-  <div class="pack-body">
+  <div class="artfile-body">
     <div class="sidebar">
       {% include 'textmode/fragments/artfile_filter.html' %}
     </div>
-    <div class="pack-content">
-      <h1>{{ tag.category }}: {{ tag.name }}</h1>
+    <div class="artfile-content-wrapper">
+      <h1>{{ tag.category }} / {{ tag.name }}</h1>
       {% include 'textmode/fragments/artfile_grid.html' %}
     </div>
   </div>
