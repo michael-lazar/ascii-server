@@ -20,8 +20,23 @@ class ArtFileTagQuerySet(models.QuerySet):
     def visible(self) -> ArtFileTagQuerySet:
         return self.filter(artfiles__isnull=False)
 
-    def by_category(self, category: TagCategory) -> ArtFileTagQuerySet:
+    def for_tag_list(self, category: TagCategory) -> ArtFileTagQuerySet:
         return self.visible().filter(category=category).annotate_artfile_count().order_by("name")
+
+    def artists(self) -> ArtFileTagQuerySet:
+        return self.filter(category=TagCategory.ARTIST)
+
+    def groups(self) -> ArtFileTagQuerySet:
+        return self.filter(category=TagCategory.GROUP)
+
+    def content(self) -> ArtFileTagQuerySet:
+        return self.filter(category=TagCategory.CONTENT)
+
+    def search(self, text: str) -> ArtFileTagQuerySet:
+        if len(text) < 2:
+            return self.none()
+
+        return self.visible().filter(name__icontains=text).distinct()
 
 
 ArtFileTagManager = Manager.from_queryset(ArtFileTagQuerySet)  # noqa
@@ -68,6 +83,12 @@ class ArtPackQuerySet(models.QuerySet):
 
     def group_by_year(self):
         return itertools.groupby(self, key=lambda obj: obj.year)
+
+    def search(self, text: str) -> ArtPackQuerySet:
+        if len(text) < 2:
+            return self.none()
+
+        return self.filter(name__icontains=text)
 
 
 ArtPackManager = Manager.from_queryset(ArtPackQuerySet)  # noqa
@@ -127,6 +148,12 @@ class ArtFileQuerySet(models.QuerySet):
         return self.annotate(
             artist_count=Count("tags", filter=Q(tags__category=TagCategory.ARTIST))
         )
+
+    def search(self, text: str) -> ArtFileQuerySet:
+        if len(text) < 2:
+            return self.none()
+
+        return self.filter(name__icontains=text)
 
 
 ArtFileManager = Manager.from_queryset(ArtFileQuerySet)  # noqa

@@ -37,7 +37,7 @@
     </div>
     <div class="artfile-content-wrapper">
       <h1>{{ tag.category }} / {{ tag.name }}</h1>
-      {% include 'textmode/fragments/artfile_grid.html' %}
+      {% include 'textmode/fragments/artfile_grid.html' with show_pack_name=1 %}
     </div>
   </div>
 {% endblock %}

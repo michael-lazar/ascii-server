@@ -18,7 +18,7 @@
   <h2>{{ category|title }}</h2>
   <ul class="tag-list">
     {% for tag in tags %}
-      <li class="tag-list-item"><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
+      <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
     {% endfor %}
   </ul>
 {% endblock %}

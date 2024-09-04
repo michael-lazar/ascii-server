@@ -11,9 +11,11 @@
           <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}" width="{{ artfile.thumb_width }}"
                height="{{ artfile.thumb_height }}">
         {% endif %}
-        <div class="artfile-card-pack">
-          {{ artfile.pack.year }} / {{ artfile.pack.name }}
-        </div>
+        {% if show_pack_name %}
+          <div class="artfile-card-pack">
+            {{ artfile.pack.year }} / {{ artfile.pack.name }}
+          </div>
+        {% endif %}
         <div class="artfile-card-title">
           {{ artfile.name }}
         </div>

@@ -29,6 +29,11 @@ h2 {
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
+h3 {
+    font-size: large;
+    margin: 10px;
+}
+
 .header-link {
     font-size: small;
     text-decoration: none;
@@ -133,6 +138,10 @@ input[type="radio"] {
     text-decoration: none;
 }
 
+.artfile-card img {
+    margin-bottom: 5px;
+}
+
 .pack-grid {
     display: flex;
     flex-wrap: wrap;
@@ -180,9 +189,26 @@ input[type="radio"] {
     font-size: small;
 }
 
-.tag-list-item {
+.tag-list li {
     padding: 4px;
     break-inside: avoid;
+}
+
+.tag-search-results {
+    list-style: none;
+    padding: 0 40px;
+    font-size: small;
+    margin: 0;
+}
+
+.tag-search-results li {
+    padding: 4px;
+    break-inside: avoid;
+}
+
+.search-total {
+    font-style: italic;
+    margin: 20px 10px;
 }
 
 .sidebar {
@@ -219,15 +245,14 @@ input[type="radio"] {
     font-weight: bold;
     border-bottom: 1px solid #bbb;
     padding-bottom: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .sidebar dl {
     margin: 0;
-}
-
-.sidebar h3 {
-    margin-top: 10px;
-    margin-bottom: 10px;
 }
 
 .sidebar dt {
@@ -284,7 +309,10 @@ input[type="radio"] {
 .pack-filter-form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+}
+
+.pack-filter-form fieldset {
+    margin: 10px 0;
 }
 
 legend {
@@ -352,6 +380,10 @@ fieldset {
 
 .searchbar input {
     font-size: medium;
+}
+
+.artfile-search-results {
+    margin: 10px 40px;
 }
 
 @media (max-width: 768px) {

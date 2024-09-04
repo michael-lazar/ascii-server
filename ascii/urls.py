@@ -16,6 +16,7 @@ from ascii.textmode.views import (
     TextmodeIndexView,
     TextmodePackListView,
     TextmodePackView,
+    TextModeSearchView,
     TextmodeTagCategoryListView,
     TextmodeTagListView,
     TextmodeTagView,
@@ -24,6 +25,7 @@ from ascii.textmode.views import (
 urlpatterns = [
     path("", IndexView.as_view(), name="index"),
     path("textmode/", TextmodeIndexView.as_view(), name="textmode-index"),
+    path("textmode/search/", TextModeSearchView.as_view(), name="textmode-search"),
     path("textmode/pack/", TextmodePackListView.as_view(), name="textmode-pack-list"),
     path("textmode/pack/<slug:pack>/", TextmodePackView.as_view(), name="textmode-pack"),
     path("textmode/tags/", TextmodeTagListView.as_view(), name="textmode-tag-list"),

@@ -15,20 +15,23 @@ class TextmodeIndexView(TemplateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         packs = ArtPack.objects.annotate_artfile_count().prefetch_fileid()[:20]
 
-        artist_tags = ArtFileTag.objects.by_category(TagCategory.ARTIST)
+        artist_tags = ArtFileTag.objects.for_tag_list(TagCategory.ARTIST)
         artist_tags = artist_tags.order_by("-artfile_count")[:20]
 
-        group_tags = ArtFileTag.objects.by_category(TagCategory.GROUP)
+        group_tags = ArtFileTag.objects.for_tag_list(TagCategory.GROUP)
         group_tags = group_tags.order_by("-artfile_count")[:20]
 
-        content_tags = ArtFileTag.objects.by_category(TagCategory.CONTENT)
+        content_tags = ArtFileTag.objects.for_tag_list(TagCategory.CONTENT)
         content_tags = content_tags.order_by("-artfile_count")[:20]
+
+        form = SearchBarForm()
 
         return {
             "packs": packs,
             "artist_tags": artist_tags,
             "group_tags": group_tags,
             "content_tags": content_tags,
+            "form": form,
         }
 
 
@@ -132,9 +135,9 @@ class TextmodeTagListView(TemplateView):
     template_name = "textmode/tag_list.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        artist_tags = ArtFileTag.objects.by_category(TagCategory.ARTIST)
-        group_tags = ArtFileTag.objects.by_category(TagCategory.GROUP)
-        content_tags = ArtFileTag.objects.by_category(TagCategory.CONTENT)
+        artist_tags = ArtFileTag.objects.for_tag_list(TagCategory.ARTIST)
+        group_tags = ArtFileTag.objects.for_tag_list(TagCategory.GROUP)
+        content_tags = ArtFileTag.objects.for_tag_list(TagCategory.CONTENT)
 
         form = SearchBarForm(data=self.request.GET)
         if form.is_valid():
@@ -159,7 +162,7 @@ class TextmodeTagCategoryListView(TemplateView):
         if category not in TagCategory:
             raise Http404()
 
-        tags = ArtFileTag.objects.by_category(category)
+        tags = ArtFileTag.objects.for_tag_list(category)
 
         form = SearchBarForm(data=self.request.GET)
         if form.is_valid():
@@ -171,3 +174,31 @@ class TextmodeTagCategoryListView(TemplateView):
             "category": category,
             "form": form,
         }
+
+
+class TextModeSearchView(TemplateView):
+    template_name = "textmode/search.html"
+
+    def get_context_data(self, **kwargs):
+
+        form = SearchBarForm(data=self.request.GET)
+        context = {"form": form}
+
+        if form.is_valid():
+            if q := form.cleaned_data["q"]:
+                packs = ArtPack.objects.prefetch_fileid().search(q)
+                artfiles = ArtFile.objects.select_related("pack").search(q)
+                tags = ArtFileTag.objects.annotate_artfile_count().search(q)
+                total = len(packs) + len(artfiles) + len(tags)
+
+                context.update(
+                    {
+                        "q": q,
+                        "packs": packs,
+                        "artfiles": artfiles,
+                        "tags": tags,
+                        "total": total,
+                    }
+                )
+
+        return context
