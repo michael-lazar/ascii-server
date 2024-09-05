@@ -390,7 +390,7 @@ fieldset {
 }
 
 .artfile-search-results {
-    margin: 10px 40px;
+    margin: 0 40px;
 }
 
 @media (max-width: 768px) {
