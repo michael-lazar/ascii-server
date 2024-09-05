@@ -24,11 +24,15 @@
     <div class="sidebar">
       <h2>File Information</h2>
       <dl>
-        <dt>Pack</dt>
-        <dd><a href="{{ pack.public_url }}">{{ pack.year }} / {{ pack.name }}</a></dd>
         <dt>Raw File</dt>
         <dd><a href="{{ artfile.raw_file.url }}">{{ artfile.name }}</a></dd>
       </dl>
+      <h3>Preview</h3>
+      {% if artfile.image_tn %}
+        <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}">
+      {% else %}
+        -
+      {% endif %}
       <h3>Sauce</h3>
       {% if sauce %}
         <dl>
@@ -38,47 +42,18 @@
           {% endfor %}
         </dl>
       {% else %}
-        -
-      {% endif %}
-      <h3>Preview</h3>
-      {% if artfile.image_tn %}
-        <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}">
-      {% else %}
-        -
+        <dl>
+          <dd>-</dd>
+        </dl>
       {% endif %}
       <h3>Tags</h3>
-      <dl>
-        <dt>Artist</dt>
-        <dd>
-          <span class="sidebar-list">
-          {% for tag in artfile.get_artist_tags %}
-            <a href="{{ tag.public_url }}">{{ tag.name }}</a>
-          {% empty %}
-            -
-          {% endfor %}
-          </span>
-        </dd>
-        <dt>Group</dt>
-        <dd>
-          <span class="sidebar-list">
-          {% for tag in artfile.get_group_tags %}
-            <a href="{{ tag.public_url }}">{{ tag.name }}</a>
-          {% empty %}
-            -
-          {% endfor %}
-          </span>
-        </dd>
-        <dt>Content</dt>
-        <dd>
-          <span class="sidebar-list">
-          {% for tag in artfile.get_content_tags %}
-            <a href="{{ tag.public_url }}">{{ tag.name }}</a>
-          {% empty %}
-            -
-          {% endfor %}
-          </span>
-        </dd>
-      </dl>
+      <ul class="sidebar-list">
+        {% for tag in tags %}
+          <li><a href="{{ tag.public_url }}">{{ tag.category }} / {{ tag.name }} ({{ tag.artfile_count }})</a></li>
+        {% empty %}
+          <li>-</li>
+        {% endfor %}
+      </ul>
     </div>
     <div class="artfile-content-wrapper">
       <h1>{{ pack.year }} / {{ pack.name }} / {{ artfile.name }}</h1>

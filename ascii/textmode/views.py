@@ -13,7 +13,7 @@ class TextmodeIndexView(TemplateView):
     template_name = "textmode/index.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        packs = ArtPack.objects.annotate_artfile_count().prefetch_fileid()[:20]
+        packs = ArtPack.objects.annotate_artfile_count().prefetch_fileid()[:10]
 
         artist_tags = ArtFileTag.objects.for_tag_list(TagCategory.ARTIST)
         artist_tags = artist_tags.order_by("-artfile_count")[:20]
@@ -94,8 +94,17 @@ class TextmodeArtfileView(TemplateView):
         pack = get_object_or_404(ArtPack, name=kwargs["pack"])
         artfile = get_object_or_404(ArtFile, pack=pack, name=kwargs["artfile"])
 
+        # Note the order of the filters is important here!
+        # We need to count the artfiles before applying the filter.
+        tags = (
+            ArtFileTag.objects.order_by("category", "name")
+            .annotate_artfile_count()
+            .filter(artfiles=artfile)
+        )
+
         return {
             "pack": pack,
+            "tags": tags,
             "artfile": artfile,
             "next": artfile.get_next(),
             "prev": artfile.get_prev(),

@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from ascii.core.models import BaseModel
 from ascii.core.utils import reverse
-from ascii.textmode.choices import DataType, FileType, LetterSpacing, TagCategory
+from ascii.textmode.choices import AspectRatio, DataType, FileType, LetterSpacing, TagCategory
 
 
 class ArtFileTagQuerySet(models.QuerySet):
@@ -213,16 +213,17 @@ class ArtFile(BaseModel):
     author = models.CharField(max_length=20, blank=True, db_index=True)
     group = models.CharField(max_length=20, blank=True, db_index=True)
     date = models.DateField(blank=True, null=True, db_index=True)
+    comments = models.TextField(blank=True, db_index=True)
     datatype = models.IntegerField(
         choices=DataType.choices,
         blank=True,
         null=True,
         db_index=True,
     )
-    filetype = models.CharField(
+    filetype = models.IntegerField(
         choices=FileType.choices,
-        max_length=20,
         blank=True,
+        null=True,
         db_index=True,
     )
     pixel_width = models.IntegerField(blank=True, null=True, db_index=True)
@@ -236,6 +237,13 @@ class ArtFile(BaseModel):
         null=True,
         db_index=True,
     )
+    aspect_ratio = models.IntegerField(
+        choices=AspectRatio.choices,
+        blank=True,
+        null=True,
+        db_index=True,
+    )
+    font_name = models.CharField(max_length=50, blank=True, db_index=True)
 
     objects = ArtFileManager()
 
@@ -268,9 +276,11 @@ class ArtFile(BaseModel):
     @property
     def thumb_width(self) -> int:
         if self.is_fileid:
-            # 2*160px image + 2*5px padding + 20px gap
+            # Double width
+            # 2*160px + 2*5px padding + 20px gap
             return 350
 
+        # Single width thumbnail
         return 160
 
     @property
@@ -304,9 +314,21 @@ class ArtFile(BaseModel):
             data["Group"] = self.group
         if self.date:
             data["Date"] = self.date.strftime("%Y-%m-%d")
+        if self.comments:
+            data["Comments"] = self.comments
+        if self.pixel_width and self.pixel_height:
+            data["Size"] = f"{self.pixel_width}x{self.pixel_height} px"
+        if self.number_of_lines and self.character_width:
+            data["Size"] = f"{self.character_width}x{self.number_of_lines}"
         if self.datatype is not None:
-            data["Data Type"] = self.get_datatype_display()
-        if self.filetype:
-            data["File Type"] = self.get_filetype_display()
+            data["Type"] = f"{self.get_datatype_display()} / {self.get_filetype_display()}"
+        if self.ice_colors is not None:
+            data["ICE Color"] = "on" if self.ice_colors else "off"
+        if self.letter_spacing is not None:
+            data["Letter Spacing"] = self.get_letter_spacing_display()
+        if self.aspect_ratio is not None:
+            data["Aspect Ratio"] = self.get_aspect_ratio_display()
+        if self.font_name:
+            data["Font Name"] = self.font_name
 
         return data

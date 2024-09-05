@@ -1,11 +1,13 @@
 <form method="get" class="pack-filter-form" id="packFilterForm">
   <h2>
     <span>Filter by</span>
-    {% if is_filtered %}
-      <a href="{{ tag.public_url }}" class="sidebar-clear-link">[clear filters]</a>
-    {% endif %}
   </h2>
-  <div>Results: {{ artfiles.count }}</div>
+  <div>
+    Results: {{ artfiles.count }}
+    {% if is_filtered %}
+      <a href="{{ request.path }}" class="sidebar-clear-link">(view all)</a>
+    {% endif %}
+  </div>
   {% for field in form %}
     <fieldset>
       <legend>{{ field.label }}</legend>
