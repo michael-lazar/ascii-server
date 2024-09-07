@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var msnry = new Masonry(".artfile-grid", {
     columnWidth: 170,
     itemSelector: ".artfile-card",
-    transitionDuration: 0,
+    transitionDuration: 200,
     gutter: 20,
     // fitWidth doesn't seem to work with my large screen css for some reason,
     // it will resize when the window is being dragged larger, but won't scale
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
       msnry = new Masonry(".artfile-grid", {
         columnWidth: 170,
         itemSelector: ".artfile-card",
-        transitionDuration: 0,
+        transitionDuration: 200,
         gutter: 20,
         fitWidth: !newIsAboveBreakpoint,
       });
