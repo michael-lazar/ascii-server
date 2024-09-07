@@ -3,12 +3,14 @@
 {% load static %}
 
 {% block content %}
-  <h1>Search</h1>
+  <h1>Textmode ANSI Art <span class="header-link">(from <a href="https://16colo.rs">https://16colo.rs</a>)</span>
+  </h1>
+  <h2>Search <span class="header-link"><a href="{% url 'textmode-search' %}">(advanced search)</a></span></h2>
   <form method="get" class="searchbar" action="{% url 'textmode-search' %}">
     {{ form }}
     <input type="submit" value="Go">
   </form>
-  <h1>By Pack <a class="header-link" href="{% url 'textmode-pack-list' %}">(view all)</a></h1>
+  <h2>By Pack <a class="header-link" href="{% url 'textmode-pack-list' %}">(view all)</a></h2>
   {% include "textmode/fragments/pack_grid.html" %}
   <h1>By Artist <a class="header-link" href="{% url 'textmode-tag-category-list' 'artist' %}">(view all)</a></h1>
   <ul class="tag-list">
@@ -16,13 +18,13 @@
       <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
     {% endfor %}
   </ul>
-  <h1>By Group <a class="header-link" href="{% url 'textmode-tag-category-list' 'group' %}">(view all)</a></h1>
+  <h2>By Group <a class="header-link" href="{% url 'textmode-tag-category-list' 'group' %}">(view all)</a></h2>
   <ul class="tag-list">
     {% for tag in group_tags %}
       <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
     {% endfor %}
   </ul>
-  <h1>By Content <a class="header-link" href="{% url 'textmode-tag-category-list' 'content' %}">(view all)</a></h1>
+  <h2>By Content <a class="header-link" href="{% url 'textmode-tag-category-list' 'content' %}">(view all)</a></h2>
   <ul class="tag-list">
     {% for tag in content_tags %}
       <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>

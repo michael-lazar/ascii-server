@@ -21,26 +21,12 @@
     {{ form }}
     <input type="submit" value="Go">
   </form>
-  <h2>Results</h2>
-  {% if q and not total %}
-    <div class="search-total">{{ total }} results found.</div>
-  {% endif %}
-  {% if tags %}
-    <h3>Tags</h3>
-    <ul class="tag-search-results">
-      {% for tag in tags %}
-        <li><a href="{{ tag.public_url }}">{{ tag.category }} / {{ tag.name }} ({{ tag.artfile_count }})</a></li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-  {% if packs %}
-    <h3>Packs</h3>
-    {% include "textmode/fragments/pack_grid.html" %}
-  {% endif %}
-  {% if artfiles %}
-    <h3>Files</h3>
-    <div class="artfile-search-results">
+  <h2>Results{% if show_total %} ({{ total }}){% endif %}</h2>
+  <div class="artfile-search-results">
+    {% if form.data.q and not total %}
+      <div class="search-total">no results found.</div>
+    {% else %}
       {% include 'textmode/fragments/artfile_grid.html' with show_pack_name=1 %}
-    </div>
-  {% endif %}
+    {% endif %}
+  </div>
 {% endblock %}

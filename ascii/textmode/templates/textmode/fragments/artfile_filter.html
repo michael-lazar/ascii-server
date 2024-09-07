@@ -3,7 +3,7 @@
     <span>Filter by</span>
   </h2>
   <div>
-    Results: {{ artfiles.count }}
+    Results: {{ total }}
     {% if is_filtered %}
       <a href="{{ request.path }}" class="sidebar-clear-link">(view all)</a>
     {% endif %}

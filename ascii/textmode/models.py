@@ -32,12 +32,6 @@ class ArtFileTagQuerySet(models.QuerySet):
     def content(self) -> ArtFileTagQuerySet:
         return self.filter(category=TagCategory.CONTENT)
 
-    def search(self, text: str) -> ArtFileTagQuerySet:
-        if len(text) < 2:
-            return self.none()
-
-        return self.visible().filter(name__icontains=text).distinct()
-
 
 ArtFileTagManager = Manager.from_queryset(ArtFileTagQuerySet)  # noqa
 
@@ -83,12 +77,6 @@ class ArtPackQuerySet(models.QuerySet):
 
     def group_by_year(self):
         return itertools.groupby(self, key=lambda obj: obj.year)
-
-    def search(self, text: str) -> ArtPackQuerySet:
-        if len(text) < 2:
-            return self.none()
-
-        return self.filter(name__icontains=text)
 
 
 ArtPackManager = Manager.from_queryset(ArtPackQuerySet)  # noqa
@@ -150,8 +138,8 @@ class ArtFileQuerySet(models.QuerySet):
         )
 
     def search(self, text: str) -> ArtFileQuerySet:
-        if len(text) < 2:
-            return self.none()
+        if not text:
+            return self
 
         return self.filter(name__icontains=text)
 

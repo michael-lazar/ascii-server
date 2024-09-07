@@ -1,12 +1,24 @@
 from typing import Any
 
-from django.http import Http404
+from django.core.paginator import Paginator
+from django.http import Http404, HttpRequest
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
 from ascii.textmode.choices import TagCategory
 from ascii.textmode.forms import PackFilterForm, SearchBarForm, TagFilterForm
 from ascii.textmode.models import ArtFile, ArtFileTag, ArtPack
+
+PER_PAGE = 10
+
+
+def get_page_number(request: HttpRequest) -> int:
+    try:
+        page = int(request.GET.get("page"))  # noqa
+    except (TypeError, ValueError):
+        page = 1
+
+    return page
 
 
 class TextmodeIndexView(TemplateView):
@@ -63,7 +75,18 @@ class TextmodePackView(TemplateView):
 
         is_filtered = any(form.cleaned_data.values())
 
-        return {"pack": pack, "artfiles": artfiles, "form": form, "is_filtered": is_filtered}
+        p = Paginator(artfiles, PER_PAGE)
+        page = p.page(get_page_number(self.request))
+
+        total = artfiles.count()
+
+        return {
+            "pack": pack,
+            "page": page,
+            "total": total,
+            "form": form,
+            "is_filtered": is_filtered,
+        }
 
 
 class TextmodePackListView(TemplateView):
@@ -132,9 +155,15 @@ class TextmodeTagView(TemplateView):
 
         is_filtered = any(form.cleaned_data.values())
 
+        p = Paginator(artfiles, PER_PAGE)
+        page = p.page(get_page_number(self.request))
+
+        total = artfiles.count()
+
         return {
             "tag": tag,
-            "artfiles": artfiles,
+            "page": page,
+            "total": total,
             "form": form,
             "is_filtered": is_filtered,
         }
@@ -191,23 +220,25 @@ class TextModeSearchView(TemplateView):
     def get_context_data(self, **kwargs):
 
         form = SearchBarForm(data=self.request.GET)
-        context = {"form": form}
+        artfiles = ArtFile.objects.select_related("pack").all()
 
-        if form.is_valid():
-            if q := form.cleaned_data["q"]:
-                packs = ArtPack.objects.prefetch_fileid().search(q)
-                artfiles = ArtFile.objects.select_related("pack").search(q)
-                tags = ArtFileTag.objects.annotate_artfile_count().search(q)
-                total = len(packs) + len(artfiles) + len(tags)
+        if "q" in self.request.GET:
+            show_total = True
+            if form.is_valid():
+                if q := form.cleaned_data["q"]:
+                    artfiles = artfiles.search(q)
+        else:
+            show_total = False
+            artfiles = artfiles.none()
 
-                context.update(
-                    {
-                        "q": q,
-                        "packs": packs,
-                        "artfiles": artfiles,
-                        "tags": tags,
-                        "total": total,
-                    }
-                )
+        p = Paginator(artfiles, PER_PAGE)
+        page = p.page(get_page_number(self.request))
 
-        return context
+        total = artfiles.count()
+
+        return {
+            "form": form,
+            "page": page,
+            "total": total,
+            "show_total": show_total,
+        }
