@@ -38,6 +38,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let resizeTimeout;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(handleResize, 50);
+    resizeTimeout = setTimeout(handleResize, 1);
   });
 });

@@ -405,7 +405,7 @@ fieldset {
     }
 
     .artfile-body {
-        flex-direction: column-reverse;
+        flex-direction: column;
         align-items: normal;
     }
 

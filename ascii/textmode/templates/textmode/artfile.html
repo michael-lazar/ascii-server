@@ -21,40 +21,6 @@
 
 {% block content %}
   <div class="artfile-body">
-    <div class="sidebar">
-      <h2>File Information</h2>
-      <dl>
-        <dt>Raw File</dt>
-        <dd><a href="{{ artfile.raw_file.url }}">{{ artfile.name }}</a></dd>
-      </dl>
-      <h3>Preview</h3>
-      {% if artfile.image_tn %}
-        <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}">
-      {% else %}
-        -
-      {% endif %}
-      <h3>Sauce</h3>
-      {% if sauce %}
-        <dl>
-          {% for name, val in sauce.items %}
-            <dt>{{ name }}</dt>
-            <dd>{{ val }}</dd>
-          {% endfor %}
-        </dl>
-      {% else %}
-        <dl>
-          <dd>-</dd>
-        </dl>
-      {% endif %}
-      <h3>Tags</h3>
-      <ul class="sidebar-list">
-        {% for tag in tags %}
-          <li><a href="{{ tag.public_url }}">{{ tag.category }} / {{ tag.name }} ({{ tag.artfile_count }})</a></li>
-        {% empty %}
-          <li>-</li>
-        {% endfor %}
-      </ul>
-    </div>
     <div class="artfile-content-wrapper">
       <h1>{{ pack.year }} / {{ pack.name }} / {{ artfile.name }}</h1>
       <div class="artfile-content">
@@ -105,6 +71,40 @@
         </span>
         </div>
       </div>
+    </div>
+    <div class="sidebar">
+      <h2>File Information</h2>
+      <dl>
+        <dt>Raw File</dt>
+        <dd><a href="{{ artfile.raw_file.url }}">{{ artfile.name }}</a></dd>
+      </dl>
+      <h3>Preview</h3>
+      {% if artfile.image_tn %}
+        <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}">
+      {% else %}
+        -
+      {% endif %}
+      <h3>Sauce</h3>
+      {% if sauce %}
+        <dl>
+          {% for name, val in sauce.items %}
+            <dt>{{ name }}</dt>
+            <dd>{{ val }}</dd>
+          {% endfor %}
+        </dl>
+      {% else %}
+        <dl>
+          <dd>-</dd>
+        </dl>
+      {% endif %}
+      <h3>Tags</h3>
+      <ul class="sidebar-list">
+        {% for tag in tags %}
+          <li><a href="{{ tag.public_url }}">{{ tag.category }} / {{ tag.name }} ({{ tag.artfile_count }})</a></li>
+        {% empty %}
+          <li>-</li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 {% endblock %}
