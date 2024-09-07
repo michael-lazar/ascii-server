@@ -8,10 +8,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("name", type=str, help="The name of the pack")
-        parser.add_argument("year", type=int, help="The year the pack was published")
 
     def handle(self, *args, **options):
         self.stdout.write(f"Fetching pack {options['name']}")
-        importer = SixteenColorsPackImporter(options["name"], options["year"])
+        importer = SixteenColorsPackImporter(options["name"])
         pack = importer.process()
         self.stdout.write(f"Import finished: {pack}")

@@ -1,9 +1,4 @@
-<div class="artfile-grid" data-masonry='{
-  "columnWidth": 170,
-  "itemSelector": ".artfile-card",
-  "transitionDuration": 0,
-  "gutter": 20
-  }'>
+<div class="artfile-grid">
   {% for artfile in artfiles %}
     <a href="{{ artfile.public_url }}">
       <div class="artfile-card {% if artfile.is_fileid %}artfile-card-wide{% endif %}">

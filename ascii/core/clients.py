@@ -42,7 +42,7 @@ class BaseSession(requests.Session):
             wait_time = self.request_delay - elapsed_time
             if wait_time > 0:
                 time.sleep(wait_time)
-        self.last_request_timestamp = now
+            self.last_request_timestamp = time.time()
 
     def request(self, *args, **kwargs) -> requests.Response:
         if kwargs.get("timeout") is None:

@@ -4,6 +4,12 @@
 
 {% block title %}textmode search{% if q %}: {{ q }}{% endif %}{% endblock %}
 
+{% block extrahead %}{{ block.super }}
+  <script>
+    {% include "textmode/fragments/artfile_grid.js" %}
+  </script>
+{% endblock %}
+
 {% block breadcrumbs %}
   <span>&gt;</span>
   <a href="{% url 'textmode-search' %}">search</a>

@@ -19,9 +19,8 @@ class SixteenColorsPackImporter:
     fileid: str
     pack: ArtPack
 
-    def __init__(self, name: str, year: int):
+    def __init__(self, name: str):
         self.name = name
-        self.year = year
         self.client = SixteenColorsClient()
 
     def process(self) -> ArtPack:
@@ -29,17 +28,14 @@ class SixteenColorsPackImporter:
 
         ArtPack.objects.filter(name=self.name).delete()
 
+        year = data["year"]
+
         zip_name = f"{self.name}.zip"
-        zip_data = self.client.get_file(f"/archive/{self.year}/{zip_name}")
+        zip_data = self.client.get_file(f"/archive/{year}/{zip_name}")
         zip_file = ContentFile(zip_data, name=zip_name)
 
-        self.pack = ArtPack.objects.create(name=self.name, year=self.year, zip_file=zip_file)
-
-        # https://github.com/16colo-rs/16c/issues/89
-        if "FILE_ID.ANS" in data["files"]:
-            self.fileid = "FILE_ID.ANS"
-        else:
-            self.fileid = data["fileid"]
+        self.pack = ArtPack.objects.create(name=self.name, year=year, zip_file=zip_file)
+        self.fileid = data["fileid"]
 
         for artfile_name, artfile_data in data["files"].items():
             try:

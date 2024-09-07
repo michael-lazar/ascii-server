@@ -222,6 +222,7 @@ input[type="radio"] {
     box-shadow: 2px 0 2px rgba(0, 0, 0, 0.2);
     font-size: small;
     width: 200px;
+    min-width: 200px;
 }
 
 .sidebar h2 {
@@ -338,7 +339,7 @@ fieldset {
 }
 
 .artfile-content-wrapper {
-    margin: 10px;
+    margin: 20px;
     flex: 1;
 }
 
@@ -370,7 +371,6 @@ fieldset {
     max-width: 100%;
     max-height: 100%;
 }
-
 
 .artfile-quick-links {
     display: flex;
@@ -407,5 +407,9 @@ fieldset {
     .artfile-body {
         flex-direction: column-reverse;
         align-items: normal;
+    }
+
+    .artfile-grid {
+        margin: 0 auto;
     }
 }

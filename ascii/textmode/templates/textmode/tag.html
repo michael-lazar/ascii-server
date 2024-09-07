@@ -2,6 +2,7 @@
 
 {% load static %}
 
+
 {% block title %}tags/{{ tag.category }}/{{ tag.name }}{% endblock %}
 
 {% block breadcrumbs %}
@@ -21,6 +22,8 @@
 
 {% block extrahead %}{{ block.super }}
   <script>
+    {% include "textmode/fragments/artfile_grid.js" %}
+
     document.addEventListener("DOMContentLoaded", function() {
       var form = document.getElementById("packFilterForm");
       form.addEventListener("change", function() {
