@@ -20,13 +20,7 @@
 {% block extrahead %}{{ block.super }}
   <script>
     {% include "textmode/fragments/artfile_grid.js" %}
-
-    document.addEventListener("DOMContentLoaded", function() {
-      var form = document.getElementById("packFilterForm");
-      form.addEventListener("change", function() {
-        form.submit();
-      });
-    });
+    {% include "textmode/fragments/artfile_filter.js" %}
   </script>
 {% endblock %}
 

@@ -34,7 +34,7 @@ class PackChoiceField(forms.ModelChoiceField):
 class FileExtensionChoiceField(forms.ChoiceField):
 
     def __init__(self, artfiles: ArtFileQuerySet, **kwargs):
-        choices = [("", "all")]
+        choices = []
         for ext, count in artfiles.count_file_extensions():
             choices.append((ext, f"{ext} ({count})"))
 
@@ -52,7 +52,7 @@ class CollabChoiceField(forms.ChoiceField):
             elif artfile.artist_count > 1:
                 counter["joint"] += 1
 
-        choices = [("", "all")]
+        choices = []
         if count := counter["solo"]:
             choices.append(("solo", f"solo ({count})"))
         if count := counter["joint"]:
@@ -72,8 +72,6 @@ class PackFilterForm(forms.Form):
             category=TagCategory.ARTIST,
             artfiles=artfiles,
             required=False,
-            empty_label="all",
-            blank=True,
             to_field_name="name",
             label="Artist",
             widget=forms.RadioSelect(
@@ -86,8 +84,6 @@ class PackFilterForm(forms.Form):
             category=TagCategory.GROUP,
             artfiles=artfiles,
             required=False,
-            empty_label="all",
-            blank=True,
             to_field_name="name",
             label="Group",
             widget=forms.RadioSelect(
@@ -127,8 +123,6 @@ class TagFilterForm(forms.Form):
             artfiles=artfiles,
             required=False,
             to_field_name="name",
-            empty_label="all",
-            blank=True,
             label="Pack",
             widget=forms.RadioSelect(
                 attrs={
@@ -141,8 +135,6 @@ class TagFilterForm(forms.Form):
             artfiles=artfiles,
             required=False,
             to_field_name="name",
-            empty_label="all",
-            blank=True,
             label="Artist",
             widget=forms.RadioSelect(
                 attrs={
@@ -155,8 +147,6 @@ class TagFilterForm(forms.Form):
             artfiles=artfiles,
             required=False,
             to_field_name="name",
-            empty_label="all",
-            blank=True,
             label="Group",
             widget=forms.RadioSelect(
                 attrs={

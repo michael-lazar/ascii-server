@@ -307,8 +307,17 @@ input[type="radio"] {
     margin-left: 4px;
 }
 
-.sidebar-clear-link:visited {
+.sidebar-legend-clear {
+    background: none;
+    border: none;
+    padding: 0 2px;
+    font-weight: normal;
     color: darkblue;
+    cursor: pointer;
+}
+
+.sidebar-legend-clear.disabled {
+    display: none;
 }
 
 .pack-filter-form {
@@ -318,6 +327,10 @@ input[type="radio"] {
 
 .pack-filter-form fieldset {
     margin: 10px 0;
+}
+
+.filter-results {
+    margin: 5px;
 }
 
 legend {
