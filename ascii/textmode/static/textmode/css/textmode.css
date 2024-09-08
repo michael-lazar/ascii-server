@@ -318,12 +318,12 @@ input[type="radio"] {
     cursor: pointer;
 }
 
-.sidebar-legend-clear.disabled {
-    display: none;
-}
-
 .sidebar-list {
     font-style: italic;
+}
+
+.sidebar-empty-choice {
+    margin: 10px;
 }
 
 .pack-filter-form {

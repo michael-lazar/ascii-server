@@ -17,9 +17,16 @@
   {% for field in form %}
     <fieldset>
       <legend>{{ field.label }}
-        <a class="sidebar-legend-clear {% if not field.value %}disabled{% endif %}">[clear]</a>
+        {% if field.value %}
+          <button class="sidebar-legend-clear">[clear]</button>{% endif %}
       </legend>
-      {{ field }}
+      {% if field.field.choices %}
+        {{ field }}
+      {% else %}
+        <span class="sidebar-empty-choice">
+          -
+        </span>
+      {% endif %}
     </fieldset>
   {% endfor %}
 </form>
