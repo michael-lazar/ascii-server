@@ -3,6 +3,12 @@
     <span>Filter by</span>
   </h2>
   <div class="filter-results">
+    {% for field in form %}
+      {% if field.value %}
+        <i></i><b>{{ field.label }}:</b> <i>{{ field.value }}</i><br />
+      {% endif %}
+    {% endfor %}
+    <br />
     Results: {{ total }}
     {% if is_filtered %}
       <a href="{{ request.path }}" class="sidebar-clear-link">(view all)</a>

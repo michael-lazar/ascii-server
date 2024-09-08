@@ -11,7 +11,7 @@ class ArtFileTagChoiceField(forms.ModelChoiceField):
 
     def __init__(self, category: TagCategory, artfiles: ArtFileQuerySet, **kwargs):
         queryset = ArtFileTag.objects.filter(category=category, artfiles__in=artfiles)
-        queryset = queryset.order_by("name").annotate(artfile_count=Count("name"))
+        queryset = queryset.annotate(artfile_count=Count("name")).order_by("-artfile_count")
         initial = queryset.values_list("id", flat=True)
         super().__init__(queryset=queryset, initial=initial, **kwargs)
 
@@ -23,12 +23,12 @@ class PackChoiceField(forms.ModelChoiceField):
 
     def __init__(self, artfiles: ArtFileQuerySet, **kwargs):
         queryset = ArtPack.objects.filter(artfiles__in=artfiles)
-        queryset = queryset.order_by("year", "name").annotate(artfile_count=Count("name"))
+        queryset = queryset.annotate(artfile_count=Count("name")).order_by("-artfile_count")
         initial = queryset.values_list("id", flat=True)
         super().__init__(queryset=queryset, initial=initial, **kwargs)
 
     def label_from_instance(self, obj: ArtPack) -> str:
-        return f"{obj.year} / {obj.name} ({obj.artfile_count})"
+        return f"{obj.year}/{obj.name} ({obj.artfile_count})"
 
 
 class FileExtensionChoiceField(forms.ChoiceField):
@@ -148,6 +148,16 @@ class TagFilterForm(forms.Form):
             required=False,
             to_field_name="name",
             label="Group",
+            widget=forms.RadioSelect(
+                attrs={
+                    "class": "sidebar-choice-field",
+                }
+            ),
+        )
+        self.fields["collab"] = CollabChoiceField(
+            artfiles=artfiles,
+            required=False,
+            label="Collab",
             widget=forms.RadioSelect(
                 attrs={
                     "class": "sidebar-choice-field",

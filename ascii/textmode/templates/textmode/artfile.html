@@ -27,14 +27,16 @@
         {% include 'textmode/fragments/artfile_paginator.html' %}
         {% if artfile.image_x1 %}
           <div class="artfile-image-container">
-            <img src="{{ artfile.image_x1.url }}" alt="{{ artfile.name }}">
+            <a href="{{ artfile.image_x1.url }}">
+              <img src="{{ artfile.image_x1.url }}" alt="{{ artfile.name }}">
+            </a>
           </div>
           {% if artfile.title and artfile.author %}
-            <div>{{ artfile.title }} by {{ artfile.author }}</div>
+            <div class="artfile-image-title">{{ artfile.title }} by {{ artfile.author }}</div>
           {% endif %}
         {% else %}
           <div>
-            Preview not available. <a href="{{ artfile.raw_file.url }}">(open file)</a>
+            Preview not available <a href="{{ artfile.raw_file.url }}">(download file) instead.</a>
           </div>
         {% endif %}
         {% include 'textmode/fragments/artfile_paginator.html' %}
@@ -68,7 +70,7 @@
       <h3>Tags</h3>
       <ul class="sidebar-list">
         {% for tag in tags %}
-          <li><a href="{{ tag.public_url }}">{{ tag.category }} / {{ tag.name }} ({{ tag.artfile_count }})</a></li>
+          <li><a href="{{ tag.public_url }}">{{ tag.category }}/{{ tag.name }} ({{ tag.artfile_count }})</a></li>
         {% empty %}
           <li>-</li>
         {% endfor %}

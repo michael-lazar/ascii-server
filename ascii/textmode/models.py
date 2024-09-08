@@ -124,7 +124,7 @@ class ArtFileQuerySet(models.QuerySet):
             self.values("file_extension")
             .exclude(file_extension="")
             .annotate(count=Count("id", distinct=True))
-            .order_by("file_extension")
+            .order_by("-count")
             .values_list("file_extension", "count")
         )
         return list(qs)

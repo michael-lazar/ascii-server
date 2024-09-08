@@ -140,7 +140,12 @@ class TextmodeTagView(TemplateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         tag = get_object_or_404(ArtFileTag, category=kwargs["category"], name=kwargs["name"])
-        artfiles = tag.artfiles.select_related("pack").order_by("-is_fileid", "name")
+
+        artfiles = (
+            tag.artfiles.select_related("pack")
+            .order_by("-is_fileid", "name")
+            .annotate_artist_count()
+        )
 
         form = TagFilterForm(artfiles, data=self.request.GET)
         if form.is_valid():
@@ -150,6 +155,11 @@ class TextmodeTagView(TemplateView):
                 artfiles = artfiles.filter(tags=group)
             if extension := form.cleaned_data["extension"]:
                 artfiles = artfiles.filter(file_extension=extension)
+            if collab := form.cleaned_data["collab"]:
+                if collab == "solo":
+                    artfiles = artfiles.filter(artist_count__lte=1)
+                elif collab == "joint":
+                    artfiles = artfiles.filter(artist_count__gt=1)
             if pack := form.cleaned_data["pack"]:
                 artfiles = artfiles.filter(pack=pack)
 
