@@ -24,23 +24,7 @@
     <div class="artfile-content-wrapper">
       <h1>{{ pack.year }} / {{ pack.name }} / {{ artfile.name }}</h1>
       <div class="artfile-content">
-        <div class="artfile-quick-links">
-        <span>
-          {% if prev %}
-            <a href="{{ prev.public_url }}">&lt;&lt; Previous</a>
-          {% else %}
-            <span style="visibility: hidden">&lt;&lt; Previous</span>
-          {% endif %}
-        </span>
-          <a href="{{ pack.public_url }}">Index</a>
-          <span>
-          {% if next %}
-            <a href="{{ next.public_url }}">Next &gt;&gt;</a>
-          {% else %}
-            <span style="visibility: hidden">Next &gt;&gt;</span>
-          {% endif %}
-        </span>
-        </div>
+        {% include 'textmode/fragments/artfile_paginator.html' %}
         {% if artfile.image_x1 %}
           <div class="artfile-image-container">
             <img src="{{ artfile.image_x1.url }}" alt="{{ artfile.name }}">
@@ -53,23 +37,7 @@
             Preview not available. <a href="{{ artfile.raw_file.url }}">(open file)</a>
           </div>
         {% endif %}
-        <div class="artfile-quick-links">
-        <span>
-          {% if prev %}
-            <a href="{{ prev.public_url }}">&lt;&lt; Previous</a>
-          {% else %}
-            <span style="visibility: hidden">&lt;&lt; Previous</span>
-          {% endif %}
-        </span>
-          <a href="{{ pack.public_url }}">Index</a>
-          <span>
-          {% if next %}
-            <a href="{{ next.public_url }}">Next &gt;&gt;</a>
-          {% else %}
-            <span style="visibility: hidden">Next &gt;&gt;</span>
-          {% endif %}
-        </span>
-        </div>
+        {% include 'textmode/fragments/artfile_paginator.html' %}
       </div>
     </div>
     <div class="sidebar">

@@ -1,8 +1,8 @@
 {% extends "textmode/base.html" %}
 
-{% load static %}
+{% load static %}{% load humanize %}
 
-{% block title %}textmode search{% if q %}: {{ q }}{% endif %}{% endblock %}
+{% block title %}textmode search{% if q %}: {{ q|intcomma }}{% endif %}{% endblock %}
 
 {% block extrahead %}{{ block.super }}
   <script>
@@ -21,12 +21,8 @@
     {{ form }}
     <input type="submit" value="Go">
   </form>
-  <h2>Results{% if show_total %} ({{ total }}){% endif %}</h2>
-  <div class="artfile-search-results">
-    {% if form.data.q and not total %}
-      <div class="search-total">no results found.</div>
-    {% else %}
-      {% include 'textmode/fragments/artfile_grid.html' with show_pack_name=1 %}
-    {% endif %}
-  </div>
+  {% if show_results %}
+    <h2>Results ({{ total }})</h2>
+    {% include 'textmode/fragments/artfile_grid.html' with show_pack_name=1 %}
+  {% endif %}
 {% endblock %}

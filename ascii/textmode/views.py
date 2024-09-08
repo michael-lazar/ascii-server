@@ -9,7 +9,7 @@ from ascii.textmode.choices import TagCategory
 from ascii.textmode.forms import PackFilterForm, SearchBarForm, TagFilterForm
 from ascii.textmode.models import ArtFile, ArtFileTag, ArtPack
 
-PER_PAGE = 10
+PAGE_SIZE = 100
 
 
 def get_page_number(request: HttpRequest) -> int:
@@ -75,7 +75,7 @@ class TextmodePackView(TemplateView):
 
         is_filtered = any(form.cleaned_data.values())
 
-        p = Paginator(artfiles, PER_PAGE)
+        p = Paginator(artfiles, PAGE_SIZE)
         page = p.page(get_page_number(self.request))
 
         total = artfiles.count()
@@ -155,7 +155,7 @@ class TextmodeTagView(TemplateView):
 
         is_filtered = any(form.cleaned_data.values())
 
-        p = Paginator(artfiles, PER_PAGE)
+        p = Paginator(artfiles, PAGE_SIZE)
         page = p.page(get_page_number(self.request))
 
         total = artfiles.count()
@@ -223,15 +223,15 @@ class TextModeSearchView(TemplateView):
         artfiles = ArtFile.objects.select_related("pack").all()
 
         if "q" in self.request.GET:
-            show_total = True
+            show_results = True
             if form.is_valid():
                 if q := form.cleaned_data["q"]:
                     artfiles = artfiles.search(q)
         else:
-            show_total = False
+            show_results = False
             artfiles = artfiles.none()
 
-        p = Paginator(artfiles, PER_PAGE)
+        p = Paginator(artfiles, PAGE_SIZE)
         page = p.page(get_page_number(self.request))
 
         total = artfiles.count()
@@ -240,5 +240,5 @@ class TextModeSearchView(TemplateView):
             "form": form,
             "page": page,
             "total": total,
-            "show_total": show_total,
+            "show_results": show_results,
         }
