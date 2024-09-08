@@ -330,6 +330,7 @@ fieldset {
 
 .artfile-body {
     display: flex;
+    flex-direction: row-reverse;
     flex: 1;
     margin: -10px;
     word-break: break-word;
