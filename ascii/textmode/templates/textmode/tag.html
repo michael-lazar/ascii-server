@@ -23,18 +23,14 @@
 {% block extrahead %}{{ block.super }}
   <script>
     {% include "textmode/fragments/artfile_grid.js" %}
-    {% include "textmode/fragments/artfile_filter.js" %}
   </script>
 {% endblock %}
 
 {% block content %}
   <div class="artfile-body">
     <div class="artfile-content-wrapper">
-      <h1>{{ tag.category }} / {{ tag.name }}</h1>
+      <h1>Tags / {{ tag.category }} / {{ tag.name }}</h1>
       {% include 'textmode/fragments/artfile_grid.html' with show_pack_name=1 %}
-    </div>
-    <div class="sidebar">
-      {% include 'textmode/fragments/artfile_filter.html' %}
     </div>
   </div>
 {% endblock %}

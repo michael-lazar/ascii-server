@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
 from ascii.textmode.choices import TagCategory
-from ascii.textmode.forms import PackFilterForm, SearchBarForm, TagFilterForm
+from ascii.textmode.forms import AdvancedSearchForm, PackFilterForm, SearchBarForm
 from ascii.textmode.models import ArtFile, ArtFileTag, ArtPack
 
 PAGE_SIZE = 100
@@ -141,29 +141,7 @@ class TextmodeTagView(TemplateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         tag = get_object_or_404(ArtFileTag, category=kwargs["category"], name=kwargs["name"])
 
-        artfiles = (
-            tag.artfiles.select_related("pack")
-            .order_by("-is_fileid", "name")
-            .annotate_artist_count()
-        )
-
-        form = TagFilterForm(artfiles, data=self.request.GET)
-        if form.is_valid():
-            if artist := form.cleaned_data["artist"]:
-                artfiles = artfiles.filter(tags=artist)
-            if group := form.cleaned_data["group"]:
-                artfiles = artfiles.filter(tags=group)
-            if extension := form.cleaned_data["extension"]:
-                artfiles = artfiles.filter(file_extension=extension)
-            if collab := form.cleaned_data["collab"]:
-                if collab == "solo":
-                    artfiles = artfiles.filter(artist_count__lte=1)
-                elif collab == "joint":
-                    artfiles = artfiles.filter(artist_count__gt=1)
-            if pack := form.cleaned_data["pack"]:
-                artfiles = artfiles.filter(pack=pack)
-
-        is_filtered = any(form.cleaned_data.values())
+        artfiles = tag.artfiles.select_related("pack").order_by("-is_fileid", "name")
 
         p = Paginator(artfiles, PAGE_SIZE)
         page = p.page(get_page_number(self.request))
@@ -174,8 +152,6 @@ class TextmodeTagView(TemplateView):
             "tag": tag,
             "page": page,
             "total": total,
-            "form": form,
-            "is_filtered": is_filtered,
         }
 
 
@@ -228,9 +204,8 @@ class TextModeSearchView(TemplateView):
     template_name = "textmode/search.html"
 
     def get_context_data(self, **kwargs):
-
-        form = SearchBarForm(data=self.request.GET)
         artfiles = ArtFile.objects.select_related("pack").all()
+        form = AdvancedSearchForm(artfiles, data=self.request.GET)
 
         if "q" in self.request.GET:
             show_results = True

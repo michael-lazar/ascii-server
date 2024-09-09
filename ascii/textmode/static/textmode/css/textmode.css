@@ -436,6 +436,36 @@ fieldset {
     margin: 20px;
 }
 
+.advanced-search {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 20px;
+}
+
+.advanced-search-searchbar {
+    display: flex;
+    gap: 5px;
+    padding: 5px;
+}
+
+.advanced-search fieldset div {
+    display: flex;
+    gap: 10px;
+}
+
+.advanced-search fieldset select {
+    width: 100%;
+}
+
+.advanced-search-fieldsets {
+    display: flex;
+    font-size: small;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+
 @media (max-width: 768px) {
     .pack-grid {
         padding: 0;

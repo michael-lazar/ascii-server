@@ -17,9 +17,28 @@
 
 {% block content %}
   <h1>Search</h1>
-  <form method="get" class="searchbar">
-    {{ form }}
-    <input type="submit" value="Go">
+  <form method="get" class="advanced-search">
+    <div class="advanced-search-searchbar">
+      {{ form.q }}
+      <input type="submit" value="Go!">
+    </div>
+    <div class="advanced-search-fieldsets">
+      {% for field in form.fieldsets %}
+        <fieldset>
+          <legend>{{ field.label }}
+            {% if field.value %}
+              <button class="sidebar-legend-clear">[clear]</button>{% endif %}
+          </legend>
+          {% if field.field.choices %}
+            {{ field }}
+          {% else %}
+            <span class="sidebar-empty-choice">
+          -
+        </span>
+          {% endif %}
+        </fieldset>
+      {% endfor %}
+    </div>
   </form>
   {% if show_results %}
     <h2>Results ({{ total }})</h2>
