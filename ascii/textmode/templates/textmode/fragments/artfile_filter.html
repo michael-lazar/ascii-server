@@ -1,32 +1,43 @@
 <form method="get" class="pack-filter-form" id="packFilterForm">
-  <h2>
-    <span>Filter by</span>
-  </h2>
-  <div class="filter-results">
-    {% for field in form %}
-      {% if field.value %}
-        <i></i><b>{{ field.label }}:</b> <i>{{ field.value }}</i><br />
-      {% endif %}
-    {% endfor %}
-    <br />
-    Results: {{ total }}
+  <h2><span>Filter by</span></h2>
+  <div class="filter-fieldsets">
     {% if is_filtered %}
-      <a href="{{ request.path }}" class="sidebar-clear-link">(view all)</a>
+      <fieldset class="filter-results">
+        <legend>
+          Filters
+          <a href="{{ request.path }}" class="sidebar-clear-link">[clear all]</a>
+        </legend>
+        <div class="filter-results-table">
+          {% if form.artist.value %}
+            <span>{{ form.artist.label }}:</span>
+            <span><a href="{{ form.cleaned_data.artist.public_url }}">{{ form.artist.value }}</a></span>
+          {% endif %}
+          {% if form.group.value %}
+            <span>{{ form.group.label }}:</span>
+            <span><a href="{{ form.cleaned_data.group.public_url }}">{{ form.group.value }}</a></span>
+          {% endif %}
+          {% if form.collab.value %}
+            <span>{{ form.collab.label }}:</span>
+            <span>{{ form.collab.value }}</span>
+          {% endif %}
+          {% if form.extension.value %}
+            <span>{{ form.extension.label }}:</span>
+            <span>{{ form.extension.value }}</span>
+          {% endif %}
+        </div>
+      </fieldset>
     {% endif %}
-  </div>
-  {% for field in form %}
-    <fieldset>
-      <legend>{{ field.label }}
-        {% if field.value %}
-          <button class="sidebar-legend-clear">[clear]</button>{% endif %}
-      </legend>
-      {% if field.field.choices %}
-        {{ field }}
-      {% else %}
-        <span class="sidebar-empty-choice">
+    {% for field in form %}
+      <fieldset>
+        <legend>{{ field.label }}</legend>
+        {% if field.field.choices %}
+          {{ field }}
+        {% else %}
+          <span class="sidebar-empty-choice">
           -
         </span>
-      {% endif %}
-    </fieldset>
-  {% endfor %}
+        {% endif %}
+      </fieldset>
+    {% endfor %}
+  </div>
 </form>

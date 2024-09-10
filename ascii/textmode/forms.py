@@ -116,7 +116,7 @@ class PackFilterForm(forms.Form):
         self.fields["extension"] = FileExtensionChoiceField(
             artfiles=artfiles,
             required=False,
-            label="File Extension",
+            label="Extension",
             widget=forms.RadioSelect(
                 attrs={
                     "class": "sidebar-choice-field",
@@ -169,7 +169,7 @@ class AdvancedSearchForm(forms.Form):
         )
         self.fields["extension"] = forms.ChoiceField(
             choices=(("", ""), *((val, val) for val in extensions)),
-            label="File Extension",
+            label="Extension",
             required=False,
         )
         self.fields["datatype"] = forms.ChoiceField(

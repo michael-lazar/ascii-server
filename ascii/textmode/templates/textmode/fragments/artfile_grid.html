@@ -1,6 +1,5 @@
 <div class="artfile-grid-wrapper">
   {% if page.object_list %}
-    {% include "textmode/fragments/artfile_grid_paginator.html" %}
     <div class="artfile-grid">
       {% for artfile in page.object_list %}
         <a href="{{ artfile.public_url }}">

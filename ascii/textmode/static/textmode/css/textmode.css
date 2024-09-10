@@ -307,6 +307,7 @@ input[type="radio"] {
     font-size: small;
     text-decoration: none;
     margin-left: 4px;
+    color: darkblue;
 }
 
 .sidebar-legend-clear {
@@ -331,12 +332,28 @@ input[type="radio"] {
     flex-direction: column;
 }
 
-.pack-filter-form fieldset {
-    margin: 10px 0;
+.filter-results {
+    padding: 10px;
 }
 
-.filter-results {
-    margin: 5px;
+.filter-results-table {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px 1ch;
+}
+
+.filter-results-table > *:nth-child(odd) {
+    font-weight: bold;
+}
+
+.filter-results-table > *:nth-child(even) {
+    font-style: italic;
+}
+
+.filter-fieldsets {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 legend {
