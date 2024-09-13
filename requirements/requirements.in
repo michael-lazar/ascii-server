@@ -1,6 +1,7 @@
 Django>=4.2,<5.0
 ansi2html
 django-admin-interface
+django-autocomplete-light
 django-browser-reload
 django-cleanup
 django-environ

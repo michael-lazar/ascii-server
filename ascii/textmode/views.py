@@ -1,5 +1,6 @@
 from typing import Any
 
+from dal import autocomplete
 from django.core.paginator import Paginator
 from django.http import Http404, HttpRequest
 from django.shortcuts import get_object_or_404
@@ -207,14 +208,11 @@ class TextModeSearchView(TemplateView):
         artfiles = ArtFile.objects.select_related("pack").all()
         form = AdvancedSearchForm(artfiles, data=self.request.GET)
 
-        if "q" in self.request.GET:
-            show_results = True
-            if form.is_valid():
-                if q := form.cleaned_data["q"]:
-                    artfiles = artfiles.search(q)
-        else:
-            show_results = False
-            artfiles = artfiles.none()
+        if form.is_valid():
+            if q := form.cleaned_data["q"]:
+                artfiles = artfiles.search(q)
+            if extension := form.cleaned_data["extension"]:
+                artfiles = artfiles.filter(extension__in=extension)
 
         p = Paginator(artfiles, PAGE_SIZE)
         page = p.page(get_page_number(self.request))
@@ -225,5 +223,27 @@ class TextModeSearchView(TemplateView):
             "form": form,
             "page": page,
             "total": total,
-            "show_results": show_results,
         }
+
+
+class TextModeArtistAutocomplete(autocomplete.Select2QuerySetView):
+    queryset = ArtFileTag.objects.artists()
+    paginate_by = 100
+
+
+class TextModeGroupAutocomplete(autocomplete.Select2QuerySetView):
+    queryset = ArtFileTag.objects.groups()
+    paginate_by = 100
+
+
+class TextModeContentAutocomplete(autocomplete.Select2QuerySetView):
+    queryset = ArtFileTag.objects.content()
+    paginate_by = 100
+
+
+class TextModePackAutocomplete(autocomplete.Select2QuerySetView):
+    queryset = ArtPack.objects.all()
+    paginate_by = 100
+
+    def get_result_label(self, obj: ArtPack):
+        return obj.name

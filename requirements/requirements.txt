@@ -233,11 +233,15 @@ django==4.2.11 \
     --hash=sha256:ddc24a0a8280a0430baa37aff11f28574720af05888c62b7cfe71d219f4599d3
     # via
     #   -r requirements/requirements.in
+    #   django-autocomplete-light
     #   django-browser-reload
     #   django-extensions
 django-admin-interface==0.28.6 \
     --hash=sha256:444dea3caa1c878c2c0210662b0584b8ad9c7235955f0bbd04680733a3526b0f \
     --hash=sha256:c5dc5ef6865c9683b6ecd630fe588ef369350ee27afb89b24d56e6cdda914355
+    # via -r requirements/requirements.in
+django-autocomplete-light==3.11.0 \
+    --hash=sha256:212576a17e3308ef7ca77e280b86684167916d2091d4b73640f38845d9516328
     # via -r requirements/requirements.in
 django-browser-reload==1.15.0 \
     --hash=sha256:55b72335568b988e3a2beddb1703db6951516355925d3fc9c587f0bbd9e8efaa \

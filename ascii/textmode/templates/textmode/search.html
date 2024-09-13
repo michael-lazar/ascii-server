@@ -5,6 +5,7 @@
 {% block title %}textmode search{% if q %}: {{ q|intcomma }}{% endif %}{% endblock %}
 
 {% block extrahead %}{{ block.super }}
+  {{ form.media }}
   <script>
     {% include "textmode/fragments/artfile_grid.js" %}
   </script>
@@ -17,31 +18,51 @@
 
 {% block content %}
   <h1>Search</h1>
-  <form method="get" class="advanced-search">
-    <div class="advanced-search-searchbar">
-      {{ form.q }}
-      <input type="submit" value="Go!">
-    </div>
-    <div class="advanced-search-fieldsets">
-      {% for field in form.fieldsets %}
+  <details class="advanced-search-wrapper" open>
+    <summary>View Filters</summary>
+    <form method="get" class="advanced-search">
+      <div class="advanced-search-options">
         <fieldset>
-          <legend>{{ field.label }}
-            {% if field.value %}
-              <button class="sidebar-legend-clear">[clear]</button>{% endif %}
-          </legend>
-          {% if field.field.choices %}
-            {{ field }}
-          {% else %}
-            <span class="sidebar-empty-choice">
-          -
-        </span>
-          {% endif %}
+          <legend>Tags</legend>
+          <div class="advanced-search-section">
+            <label>{{ form.artist.label }}:</label>
+            <span>{{ form.artist }}</span>
+            <label>{{ form.group.label }}:</label>
+            <span>{{ form.group }}</span>
+            <label>{{ form.content.label }}:</label>
+            <span>{{ form.content }}</span>
+          </div>
         </fieldset>
-      {% endfor %}
-    </div>
-  </form>
-  {% if show_results %}
-    <h2>Results ({{ total }})</h2>
-    {% include 'textmode/fragments/artfile_grid.html' with show_pack_name=1 %}
-  {% endif %}
+        <fieldset>
+          <legend>File Information</legend>
+          <div class="advanced-search-section">
+            <label>{{ form.pack.label }}:</label>
+            <span>{{ form.pack }}</span>
+            <label>{{ form.year.label }}:</label>
+            <span>{{ form.year }}</span>
+            <label>{{ form.extension.label }}:</label>
+            <span>{{ form.extension }}</span>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>ANSi</legend>
+          <div class="advanced-search-section">
+            <label>{{ form.ice_colors.label }}:</label>
+            <span>{{ form.ice_colors }}</span>
+            <label>{{ form.letter_spacing.label }}:</label>
+            <span>{{ form.letter_spacing }}</span>
+            <label>{{ form.aspect_ratio.label }}:</label>
+            <span>{{ form.aspect_ratio }}</span>
+            <label>{{ form.font_name.label }}:</label>
+            <span>{{ form.font_name }}</span>
+          </div>
+        </fieldset>
+      </div>
+      <div class="advanced-search-submit">
+        <input type="submit" value="Go!">
+      </div>
+    </form>
+  </details>
+  <h2>Results ({{ total }})</h2>
+  {% include 'textmode/fragments/artfile_grid.html' with show_pack_name=1 %}
 {% endblock %}

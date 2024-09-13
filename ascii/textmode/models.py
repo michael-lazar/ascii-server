@@ -137,6 +137,25 @@ class ArtFileQuerySet(models.QuerySet):
             artist_count=Count("tags", filter=Q(tags__category=TagCategory.ARTIST))
         )
 
+    def font_names(self) -> list[str]:
+        return (
+            self.order_by("font_name")
+            .values_list("font_name", flat=True)
+            .exclude(font_name="")
+            .distinct()
+        )
+
+    def file_extensions(self) -> list[str]:
+        return (
+            self.order_by("file_extension")
+            .values_list("file_extension", flat=True)
+            .exclude(file_extension="")
+            .distinct()
+        )
+
+    def years(self) -> list[int]:
+        return self.order_by("pack__year").values_list("pack__year", flat=True).distinct()
+
     def search(self, text: str) -> ArtFileQuerySet:
         if not text:
             return self
@@ -273,7 +292,8 @@ class ArtFile(BaseModel):
 
     @property
     def thumb_height(self) -> int:
-        return int(self.thumb_width * (self.image_tn.height / self.image_tn.width))
+        height = int(self.thumb_width * (self.image_tn.height / self.image_tn.width))
+        return min(height, 800)
 
     def get_next(self) -> ArtFile | None:
         qs = self.pack.artfiles.filter(name__gt=self.name)

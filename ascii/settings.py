@@ -27,6 +27,8 @@ ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     "admin_interface",  # These must come before django.contrib.admin
     "colorfield",
+    "dal",
+    "dal_select2",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

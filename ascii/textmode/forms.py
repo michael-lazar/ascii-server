@@ -1,9 +1,10 @@
 from collections import Counter
 
+from dal import autocomplete
 from django import forms
 from django.db.models import Count
 
-from ascii.textmode.choices import AspectRatio, DataType, FileType, LetterSpacing, TagCategory
+from ascii.textmode.choices import AspectRatio, LetterSpacing, TagCategory
 from ascii.textmode.models import ArtFileQuerySet, ArtFileTag, ArtPack
 
 
@@ -17,17 +18,6 @@ class ArtFileTagChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj: ArtFileTag) -> str:
         return f"{obj.name} ({obj.artfile_count})"
-
-
-class ArtFileTagSimpleChoiceField(forms.ModelChoiceField):
-
-    def __init__(self, category: TagCategory, **kwargs):
-        queryset = ArtFileTag.objects.filter(category=category)
-        initial = queryset.values_list("id", flat=True)
-        super().__init__(queryset=queryset, initial=initial, **kwargs)
-
-    def label_from_instance(self, obj: ArtFileTag) -> str:
-        return obj.name
 
 
 class PackChoiceField(forms.ModelChoiceField):
@@ -145,7 +135,7 @@ class AdvancedSearchForm(forms.Form):
 
         self.fields["q"] = forms.CharField(
             required=False,
-            label="Keyword",
+            label="Filename",
             widget=forms.TextInput(
                 attrs={
                     "placeholder": "search...",
@@ -154,83 +144,97 @@ class AdvancedSearchForm(forms.Form):
                 },
             ),
         )
-        self.fields["is_fileid"] = forms.ChoiceField(
-            choices=[(False, "no"), (True, "yes")],
-            label="File ID",
-            widget=forms.RadioSelect,
-            required=False,
-        )
-
-        extensions = (
-            artfiles.order_by("file_extension")
-            .values_list("file_extension", flat=True)
-            .exclude(file_extension="")
-            .distinct()
-        )
         self.fields["extension"] = forms.ChoiceField(
-            choices=(("", ""), *((val, val) for val in extensions)),
+            choices=[("", "")] + [(val, val) for val in artfiles.file_extensions()],
             label="Extension",
             required=False,
-        )
-        self.fields["datatype"] = forms.ChoiceField(
-            choices=(("", ""), *DataType.choices),
-            label="Data Type",
-            required=False,
-        )
-        self.fields["filetype"] = forms.ChoiceField(
-            choices=(("", ""), *FileType.choices),
-            label="File Type",
-            required=False,
+            widget=autocomplete.ModelSelect2Multiple,
         )
         self.fields["ice_colors"] = forms.ChoiceField(
-            choices=[(False, "no"), (True, "yes")],
+            choices=[("", ""), (False, "no"), (True, "yes")],
             label="ICE Colors",
-            widget=forms.RadioSelect,
+            widget=autocomplete.ModelSelect2Multiple,
             required=False,
         )
         self.fields["letter_spacing"] = forms.ChoiceField(
-            choices=LetterSpacing.choices,
+            choices=[("", "")] + LetterSpacing.choices,
             label="Letter Spacing",
-            widget=forms.RadioSelect,
+            widget=autocomplete.ModelSelect2Multiple,
             required=False,
         )
         self.fields["aspect_ratio"] = forms.ChoiceField(
-            choices=AspectRatio.choices,
+            choices=[("", "")] + AspectRatio.choices,
             label="Aspect Ratio",
-            widget=forms.RadioSelect,
+            widget=autocomplete.ModelSelect2Multiple,
             required=False,
-        )
-
-        font_names = (
-            artfiles.order_by("font_name")
-            .values_list("font_name", flat=True)
-            .exclude(font_name="")
-            .distinct()
         )
         self.fields["font_name"] = forms.ChoiceField(
-            choices=(("", ""), *((val, val) for val in font_names)),
+            choices=[("", "")] + [(val, val) for val in artfiles.font_names()],
             label="Font Name",
             required=False,
+            widget=autocomplete.ModelSelect2Multiple,
         )
-
-        years = artfiles.order_by("pack__year").values_list("pack__year", flat=True).distinct()
         self.fields["year"] = forms.ChoiceField(
-            choices=(("", ""), *((val, val) for val in years)),
+            choices=[("", "")] + [(val, val) for val in artfiles.years()],  # noqa
             label="Year",
             required=False,
+            widget=autocomplete.ModelSelect2Multiple,
         )
-
-        self.fields["artist"] = ArtFileTagSimpleChoiceField(
-            category=TagCategory.ARTIST,
+        self.fields["artist"] = forms.ModelChoiceField(
+            queryset=ArtFileTag.objects.artists(),
             required=False,
             to_field_name="name",
             label="Artist",
+            widget=autocomplete.ModelSelect2Multiple(
+                url="textmode-artist-autocomplete",
+            ),
         )
-        self.fields["group"] = ArtFileTagSimpleChoiceField(
-            category=TagCategory.GROUP,
+        self.fields["group"] = forms.ModelChoiceField(
+            queryset=ArtFileTag.objects.groups(),
             required=False,
             to_field_name="name",
             label="Group",
+            widget=autocomplete.ModelSelect2Multiple(
+                url="textmode-group-autocomplete",
+            ),
+        )
+        self.fields["content"] = forms.ModelChoiceField(
+            queryset=ArtFileTag.objects.content(),
+            required=False,
+            to_field_name="name",
+            label="Content",
+            widget=autocomplete.ModelSelect2Multiple(
+                url="textmode-content-autocomplete",
+            ),
+        )
+        self.fields["pack"] = forms.ModelChoiceField(
+            queryset=ArtPack.objects.all(),
+            required=False,
+            to_field_name="name",
+            label="Pack",
+            widget=autocomplete.ModelSelect2Multiple(
+                url="textmode-pack-autocomplete",
+            ),
+        )
+        self.fields["min_num_lines"] = forms.IntegerField(
+            min_value=0,
+            required=False,
+            label="Min",
+        )
+        self.fields["max_num_lines"] = forms.IntegerField(
+            min_value=0,
+            required=False,
+            label="Max",
+        )
+        self.fields["min_character_width"] = forms.IntegerField(
+            min_value=0,
+            required=False,
+            label="Min",
+        )
+        self.fields["max_character_width"] = forms.IntegerField(
+            min_value=0,
+            required=False,
+            label="Max",
         )
 
     @property
