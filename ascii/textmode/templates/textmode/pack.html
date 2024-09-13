@@ -30,7 +30,7 @@
       <h1>Packs / {{ pack.year }} / {{ pack.name }}
         <a class="header-link" href="{{ pack.zip_file.url }}">(.zip)</a>
       </h1>
-      {% include 'textmode/fragments/artfile_grid.html' %}
+      {% include 'textmode/fragments/artfile_grid.html' with show_fileid=1 %}
     </div>
     <div class="sidebar">
       {% include 'textmode/fragments/artfile_filter.html' %}

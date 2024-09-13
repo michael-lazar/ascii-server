@@ -282,18 +282,20 @@ class ArtFile(BaseModel):
 
     @property
     def thumb_width(self) -> int:
-        if self.is_fileid:
-            # Double width
-            # 2*160px + 2*5px padding + 20px gap
-            return 350
-
-        # Single width thumbnail
         return 160
 
     @property
     def thumb_height(self) -> int:
-        height = int(self.thumb_width * (self.image_tn.height / self.image_tn.width))
-        return min(height, 800)
+        return min(int(self.thumb_width * (self.image_tn.height / self.image_tn.width)), 800)
+
+    @property
+    def thumb_width_2x(self) -> int:
+        # 2*160px + 2*5px padding + 20px gap
+        return 2 * self.thumb_width + 30
+
+    @property
+    def thumb_height_2x(self) -> int:
+        return min(int(self.thumb_width_2x * (self.image_tn.height / self.image_tn.width)), 800)
 
     def get_next(self) -> ArtFile | None:
         qs = self.pack.artfiles.filter(name__gt=self.name)
