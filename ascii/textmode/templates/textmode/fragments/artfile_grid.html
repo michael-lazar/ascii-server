@@ -1,35 +1,31 @@
 <div class="artfile-grid-wrapper">
-  {% if page.object_list %}
-    <div class="artfile-grid">
-      {% for artfile in page.object_list %}
-        <a href="{{ artfile.public_url }}">
-          {% if show_fileid and artfile.is_fileid %}
-            <div class="artfile-card artfile-card-wide">
-            {% if artfile.image_tn %}
-              <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}" width="{{ artfile.thumb_width2x }}"
-                   height="{{ artfile.thumb_height2x }}">
-            {% endif %}
-          {% else %}
-            <div class="artfile-card">
-            {% if artfile.image_tn %}
-              <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}" width="{{ artfile.thumb_width }}"
-                   height="{{ artfile.thumb_height }}">
-            {% endif %}
+  <div class="artfile-grid">
+    {% for artfile in page.object_list %}
+      <a href="{{ artfile.public_url }}">
+        {% if show_fileid and artfile.is_fileid %}
+          <div class="artfile-card artfile-card-wide">
+          {% if artfile.image_tn %}
+            <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}" width="{{ artfile.thumb_width2x }}"
+                 height="{{ artfile.thumb_height2x }}">
           {% endif %}
-          {% if show_pack_name %}
-            <div class="artfile-card-pack">
-              {{ artfile.pack.year }} / {{ artfile.pack.name }}
-            </div>
+        {% else %}
+          <div class="artfile-card">
+          {% if artfile.image_tn %}
+            <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}" width="{{ artfile.thumb_width }}"
+                 height="{{ artfile.thumb_height }}">
           {% endif %}
-          <div class="artfile-card-title">
-            {{ artfile.name }}
+        {% endif %}
+        {% if show_pack_name %}
+          <div class="artfile-card-pack">
+            {{ artfile.pack.year }} / {{ artfile.pack.name }}
           </div>
-          </div>
-        </a>
-      {% endfor %}
-    </div>
-    {% include "textmode/fragments/artfile_grid_paginator.html" %}
-  {% else %}
-    <i>no results found.</i>
-  {% endif %}
+        {% endif %}
+        <div class="artfile-card-title">
+          {{ artfile.name }}
+        </div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+  {% include "textmode/fragments/artfile_grid_paginator.html" %}
 </div>

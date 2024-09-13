@@ -451,7 +451,7 @@ fieldset {
 }
 
 .artfile-grid-wrapper {
-    margin: 20px;
+    margin: 0 20px;
 }
 
 .advanced-search {
@@ -460,6 +460,11 @@ fieldset {
     padding: 10px;
     gap: 10px;
     font-size: small;
+}
+
+.advanced-search-results-total {
+    font-style: italic;
+    margin: 10px;
 }
 
 .advanced-search-wrapper {
@@ -475,9 +480,13 @@ fieldset {
 }
 
 .advanced-search-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    column-count: 2;
+    column-gap: 10px;
+}
+
+.advanced-search-options fieldset {
+    break-inside: avoid;
+    margin-bottom: 10px;
 }
 
 .advanced-search-section {
@@ -485,6 +494,20 @@ fieldset {
     grid-template-columns: minmax(80px, auto) 1fr;
     align-items: center;
     gap: 5px;
+}
+
+.advanced-search-input-group {
+    display: flex;
+    gap: 5px;
+}
+
+.advanced-search-input {
+    width: 100%;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    padding: 5px;
+    min-height: 32px;
+    box-sizing: border-box;
 }
 
 .advanced-search-section .select2-container {
@@ -505,13 +528,13 @@ fieldset {
 
 @media (max-width: 768px) {
     .advanced-search-wrapper {
-        margin: initial;
         width: initial;
         margin: 10px;
     }
 
     .advanced-search-options {
-        grid-template-columns: 1fr;
+        column-count: 1;
+        column-gap: 10px;
     }
 
     .pack-grid {

@@ -138,49 +138,43 @@ class AdvancedSearchForm(forms.Form):
             label="Filename",
             widget=forms.TextInput(
                 attrs={
-                    "placeholder": "search...",
                     "autocomplete": "off",
                     "type": "search",
+                    "class": "advanced-search-input",
                 },
             ),
         )
-        self.fields["extension"] = forms.ChoiceField(
-            choices=[("", "")] + [(val, val) for val in artfiles.file_extensions()],
+        self.fields["extension"] = forms.MultipleChoiceField(
+            choices=[(val, val) for val in artfiles.file_extensions()],
             label="Extension",
             required=False,
             widget=autocomplete.ModelSelect2Multiple,
         )
-        self.fields["ice_colors"] = forms.ChoiceField(
-            choices=[("", ""), (False, "no"), (True, "yes")],
+        self.fields["ice_colors"] = forms.MultipleChoiceField(
+            choices=[(False, "no"), (True, "yes")],
             label="ICE Colors",
             widget=autocomplete.ModelSelect2Multiple,
             required=False,
         )
-        self.fields["letter_spacing"] = forms.ChoiceField(
-            choices=[("", "")] + LetterSpacing.choices,
+        self.fields["letter_spacing"] = forms.MultipleChoiceField(
+            choices=LetterSpacing.choices,
             label="Letter Spacing",
             widget=autocomplete.ModelSelect2Multiple,
             required=False,
         )
-        self.fields["aspect_ratio"] = forms.ChoiceField(
-            choices=[("", "")] + AspectRatio.choices,
+        self.fields["aspect_ratio"] = forms.MultipleChoiceField(
+            choices=AspectRatio.choices,
             label="Aspect Ratio",
             widget=autocomplete.ModelSelect2Multiple,
             required=False,
         )
-        self.fields["font_name"] = forms.ChoiceField(
-            choices=[("", "")] + [(val, val) for val in artfiles.font_names()],
+        self.fields["font_name"] = forms.MultipleChoiceField(
+            choices=[(val, val) for val in artfiles.font_names()],
             label="Font Name",
             required=False,
             widget=autocomplete.ModelSelect2Multiple,
         )
-        self.fields["year"] = forms.ChoiceField(
-            choices=[("", "")] + [(val, val) for val in artfiles.years()],  # noqa
-            label="Year",
-            required=False,
-            widget=autocomplete.ModelSelect2Multiple,
-        )
-        self.fields["artist"] = forms.ModelChoiceField(
+        self.fields["artist"] = forms.ModelMultipleChoiceField(
             queryset=ArtFileTag.objects.artists(),
             required=False,
             to_field_name="name",
@@ -189,7 +183,7 @@ class AdvancedSearchForm(forms.Form):
                 url="textmode-artist-autocomplete",
             ),
         )
-        self.fields["group"] = forms.ModelChoiceField(
+        self.fields["group"] = forms.ModelMultipleChoiceField(
             queryset=ArtFileTag.objects.groups(),
             required=False,
             to_field_name="name",
@@ -198,7 +192,7 @@ class AdvancedSearchForm(forms.Form):
                 url="textmode-group-autocomplete",
             ),
         )
-        self.fields["content"] = forms.ModelChoiceField(
+        self.fields["content"] = forms.ModelMultipleChoiceField(
             queryset=ArtFileTag.objects.content(),
             required=False,
             to_field_name="name",
@@ -207,7 +201,7 @@ class AdvancedSearchForm(forms.Form):
                 url="textmode-content-autocomplete",
             ),
         )
-        self.fields["pack"] = forms.ModelChoiceField(
+        self.fields["pack"] = forms.ModelMultipleChoiceField(
             queryset=ArtPack.objects.all(),
             required=False,
             to_field_name="name",
@@ -220,21 +214,67 @@ class AdvancedSearchForm(forms.Form):
             min_value=0,
             required=False,
             label="Min",
+            widget=forms.NumberInput(
+                attrs={
+                    "placeholder": "Min",
+                    "class": "advanced-search-input",
+                }
+            ),
         )
         self.fields["max_num_lines"] = forms.IntegerField(
             min_value=0,
             required=False,
             label="Max",
+            widget=forms.NumberInput(
+                attrs={
+                    "placeholder": "Max",
+                    "class": "advanced-search-input",
+                }
+            ),
         )
-        self.fields["min_character_width"] = forms.IntegerField(
+        self.fields["min_char_width"] = forms.IntegerField(
             min_value=0,
             required=False,
             label="Min",
+            widget=forms.NumberInput(
+                attrs={
+                    "placeholder": "Min",
+                    "class": "advanced-search-input",
+                }
+            ),
         )
-        self.fields["max_character_width"] = forms.IntegerField(
+        self.fields["max_char_width"] = forms.IntegerField(
             min_value=0,
             required=False,
             label="Max",
+            widget=forms.NumberInput(
+                attrs={
+                    "placeholder": "Max",
+                    "class": "advanced-search-input",
+                }
+            ),
+        )
+        self.fields["min_year"] = forms.IntegerField(
+            min_value=1990,
+            required=False,
+            label="Min",
+            widget=forms.NumberInput(
+                attrs={
+                    "placeholder": "Min",
+                    "class": "advanced-search-input",
+                }
+            ),
+        )
+        self.fields["max_year"] = forms.IntegerField(
+            min_value=2030,
+            required=False,
+            label="Max",
+            widget=forms.NumberInput(
+                attrs={
+                    "placeholder": "Max",
+                    "class": "advanced-search-input",
+                }
+            ),
         )
 
     @property

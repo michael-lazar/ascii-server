@@ -212,17 +212,48 @@ class TextModeSearchView(TemplateView):
             if q := form.cleaned_data["q"]:
                 artfiles = artfiles.search(q)
             if extension := form.cleaned_data["extension"]:
-                artfiles = artfiles.filter(extension__in=extension)
+                artfiles = artfiles.filter(file_extension__in=extension)
+            if ice_colors := form.cleaned_data["ice_colors"]:
+                artfiles = artfiles.filter(ice_colors__in=ice_colors)
+            if letter_spacing := form.cleaned_data["letter_spacing"]:
+                artfiles = artfiles.filter(letter_spacing__in=letter_spacing)
+            if aspect_ratio := form.cleaned_data["aspect_ratio"]:
+                artfiles = artfiles.filter(aspect_ratio__in=aspect_ratio)
+            if font_name := form.cleaned_data["font_name"]:
+                artfiles = artfiles.filter(font_name__in=font_name)
+            if artist := form.cleaned_data["artist"]:
+                artfiles = artfiles.filter(tags__in=artist)
+            if group := form.cleaned_data["group"]:
+                artfiles = artfiles.filter(tags__in=group)
+            if content := form.cleaned_data["content"]:
+                artfiles = artfiles.filter(tags__in=content)
+            if pack := form.cleaned_data["pack"]:
+                artfiles = artfiles.filter(pack__in=pack)
+            if min_num_lines := form.cleaned_data["min_num_lines"]:
+                artfiles = artfiles.filter(number_of_lines__gte=min_num_lines)
+            if max_num_lines := form.cleaned_data["max_num_lines"]:
+                artfiles = artfiles.filter(number_of_lines__lte=max_num_lines)
+            if min_char_width := form.cleaned_data["min_char_width"]:
+                artfiles = artfiles.filter(character_width__gte=min_char_width)
+            if max_char_width := form.cleaned_data["max_char_width"]:
+                artfiles = artfiles.filter(character_width__lte=max_char_width)
+            if min_year := form.cleaned_data["min_year"]:
+                artfiles = artfiles.filter(pack__year__gte=min_year)
+            if max_year := form.cleaned_data["max_year"]:
+                artfiles = artfiles.filter(pack__year__lte=max_year)
 
         p = Paginator(artfiles, PAGE_SIZE)
         page = p.page(get_page_number(self.request))
 
         total = artfiles.count()
 
+        is_filtered = any(form.cleaned_data.values())
+
         return {
             "form": form,
             "page": page,
             "total": total,
+            "is_filtered": is_filtered,
         }
 
 
@@ -230,15 +261,24 @@ class TextModeArtistAutocomplete(autocomplete.Select2QuerySetView):
     queryset = ArtFileTag.objects.artists()
     paginate_by = 100
 
+    def get_result_value(self, result):
+        return result.name
+
 
 class TextModeGroupAutocomplete(autocomplete.Select2QuerySetView):
     queryset = ArtFileTag.objects.groups()
     paginate_by = 100
 
+    def get_result_value(self, result):
+        return result.name
+
 
 class TextModeContentAutocomplete(autocomplete.Select2QuerySetView):
     queryset = ArtFileTag.objects.content()
     paginate_by = 100
+
+    def get_result_value(self, result):
+        return result.name
 
 
 class TextModePackAutocomplete(autocomplete.Select2QuerySetView):
@@ -246,4 +286,7 @@ class TextModePackAutocomplete(autocomplete.Select2QuerySetView):
     paginate_by = 100
 
     def get_result_label(self, obj: ArtPack):
-        return obj.name
+        return f"pack: {obj.name}"
+
+    def get_result_value(self, result):
+        return result.name

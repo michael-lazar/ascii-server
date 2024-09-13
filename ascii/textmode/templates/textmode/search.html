@@ -18,10 +18,25 @@
 
 {% block content %}
   <h1>Search</h1>
-  <details class="advanced-search-wrapper" open>
-    <summary>Filters</summary>
+  <div class="advanced-search-wrapper">
     <form method="get" class="advanced-search">
       <div class="advanced-search-options">
+        <fieldset>
+          <legend>File Information</legend>
+          <div class="advanced-search-section">
+            <label>Year:</label>
+            <span class="advanced-search-input-group">
+              {{ form.min_year }}
+              {{ form.max_year }}
+            </span>
+            <label>{{ form.pack.label }}:</label>
+            <span>{{ form.pack }}</span>
+            <label>Name:</label>
+            <span>{{ form.q }}</span>
+            <label>{{ form.extension.label }}:</label>
+            <span>{{ form.extension }}</span>
+          </div>
+        </fieldset>
         <fieldset>
           <legend>Tags</legend>
           <div class="advanced-search-section">
@@ -34,18 +49,7 @@
           </div>
         </fieldset>
         <fieldset>
-          <legend>File Information</legend>
-          <div class="advanced-search-section">
-            <label>{{ form.pack.label }}:</label>
-            <span>{{ form.pack }}</span>
-            <label>{{ form.year.label }}:</label>
-            <span>{{ form.year }}</span>
-            <label>{{ form.extension.label }}:</label>
-            <span>{{ form.extension }}</span>
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend>ANSi</legend>
+          <legend>Sauce</legend>
           <div class="advanced-search-section">
             <label>{{ form.ice_colors.label }}:</label>
             <span>{{ form.ice_colors }}</span>
@@ -55,14 +59,28 @@
             <span>{{ form.aspect_ratio }}</span>
             <label>{{ form.font_name.label }}:</label>
             <span>{{ form.font_name }}</span>
+            <label>Line Count:</label>
+            <span class="advanced-search-input-group">
+              {{ form.min_num_lines }}
+              {{ form.max_num_lines }}
+            </span>
+            <label>Column Count:</label>
+            <span class="advanced-search-input-group">
+              {{ form.min_char_width }}
+              {{ form.max_char_width }}
+            </span>
           </div>
         </fieldset>
       </div>
       <div class="advanced-search-submit">
-        <input type="submit" value="Search">
+        <input type="submit" value="Apply Filters">
       </div>
     </form>
-  </details>
-  <h2>Results ({{ total }})</h2>
+  </div>
+  <h2>Results</h2>
+  <span class="advanced-search-results-total">
+    Results: {{ total }}
+    {% if is_filtered %}<a href="{% url 'textmode-search' %}">(clear filters)</a>{% endif %}
+  </span>
   {% include 'textmode/fragments/artfile_grid.html' with show_pack_name=1 %}
 {% endblock %}
