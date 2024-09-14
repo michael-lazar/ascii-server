@@ -10,7 +10,7 @@ from ascii.textmode.choices import TagCategory
 from ascii.textmode.forms import AdvancedSearchForm, PackFilterForm, SearchBarForm
 from ascii.textmode.models import ArtFile, ArtFileTag, ArtPack
 
-PAGE_SIZE = 100
+PAGE_SIZE = 200
 
 
 def get_page_number(request: HttpRequest) -> int:
@@ -49,7 +49,12 @@ class TextmodeIndexView(TemplateView):
 
 
 class TextmodePackView(TemplateView):
-    template_name = "textmode/pack.html"
+
+    def get_template_names(self) -> list[str]:
+        if self.request.headers.get("Hx-Request"):
+            return ["textmode/fragments/artfile_grid_partial.html"]
+        else:
+            return ["textmode/pack.html"]
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         pack = get_object_or_404(ArtPack, name=kwargs["pack"])
@@ -79,12 +84,9 @@ class TextmodePackView(TemplateView):
         p = Paginator(artfiles, PAGE_SIZE)
         page = p.page(get_page_number(self.request))
 
-        total = artfiles.count()
-
         return {
             "pack": pack,
             "page": page,
-            "total": total,
             "form": form,
             "is_filtered": is_filtered,
         }
@@ -137,7 +139,12 @@ class TextmodeArtfileView(TemplateView):
 
 
 class TextmodeTagView(TemplateView):
-    template_name = "textmode/tag.html"
+
+    def get_template_names(self) -> list[str]:
+        if self.request.headers.get("Hx-Request"):
+            return ["textmode/fragments/artfile_grid_partial.html"]
+        else:
+            return ["textmode/tag.html"]
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         tag = get_object_or_404(ArtFileTag, category=kwargs["category"], name=kwargs["name"])
@@ -147,12 +154,9 @@ class TextmodeTagView(TemplateView):
         p = Paginator(artfiles, PAGE_SIZE)
         page = p.page(get_page_number(self.request))
 
-        total = artfiles.count()
-
         return {
             "tag": tag,
             "page": page,
-            "total": total,
         }
 
 
@@ -202,7 +206,12 @@ class TextmodeTagCategoryListView(TemplateView):
 
 
 class TextModeSearchView(TemplateView):
-    template_name = "textmode/search.html"
+
+    def get_template_names(self) -> list[str]:
+        if self.request.headers.get("Hx-Request"):
+            return ["textmode/fragments/artfile_grid_partial.html"]
+        else:
+            return ["textmode/search.html"]
 
     def get_context_data(self, **kwargs):
         artfiles = ArtFile.objects.select_related("pack").all()
@@ -245,14 +254,11 @@ class TextModeSearchView(TemplateView):
         p = Paginator(artfiles, PAGE_SIZE)
         page = p.page(get_page_number(self.request))
 
-        total = artfiles.count()
-
         is_filtered = any(form.cleaned_data.values())
 
         return {
             "form": form,
             "page": page,
-            "total": total,
             "is_filtered": is_filtered,
         }
 

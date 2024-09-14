@@ -24,7 +24,7 @@
     <div class="artfile-content-wrapper">
       <h1>{{ pack.year }} / {{ pack.name }} / {{ artfile.name }}</h1>
       <div class="artfile-content">
-        {% include 'textmode/fragments/artfile_paginator.html' %}
+        {% include 'textmode/fragments/pack_paginator.html' %}
         {% if artfile.image_x1 %}
           <div class="artfile-image-container">
             <a href="{{ artfile.image_x1.url }}">
@@ -39,7 +39,7 @@
             Preview not available <a href="{{ artfile.raw_file.url }}">(download file) instead.</a>
           </div>
         {% endif %}
-        {% include 'textmode/fragments/artfile_paginator.html' %}
+        {% include 'textmode/fragments/pack_paginator.html' %}
       </div>
     </div>
     <div class="sidebar">

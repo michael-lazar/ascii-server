@@ -79,7 +79,7 @@
   </div>
   <h2>Results</h2>
   <span class="advanced-search-results-total">
-    Results: {{ total }}
+    Results: {{ page.paginator.count }}
     {% if is_filtered %}<a href="{% url 'textmode-search' %}">(clear filters)</a>{% endif %}
   </span>
   {% include 'textmode/fragments/artfile_grid.html' with show_pack_name=1 %}

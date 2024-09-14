@@ -40,4 +40,9 @@ document.addEventListener("DOMContentLoaded", function () {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(handleResize, 1);
   });
+
+  document.body.addEventListener("htmx:oobAfterSwap", function (evt) {
+    var newElements = evt.detail.target.querySelectorAll(".htmx-added");
+    msnry.appended(newElements);
+  });
 });

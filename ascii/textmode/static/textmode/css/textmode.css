@@ -436,7 +436,14 @@ fieldset {
     width: 100%;
 }
 
-.step-links {
+.pagination-load-more {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.pagination-step-links {
     display: flex;
     justify-content: space-around;
     padding: 0 20px;
@@ -523,7 +530,6 @@ fieldset {
 
 .advanced-search-submit input {
     width: 100%;
-    font-size: large;
 }
 
 @media (max-width: 768px) {

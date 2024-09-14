@@ -1,0 +1,12 @@
+{% load core_tags %}
+
+<div class="pagination">
+  <span class="pagination-load-more">
+    Showing {{ page.end_index }} of {{ page.paginator.count }} results
+    {% if page.has_next %}
+      <button hx-get="{% build_page_url page.next_page_number %}" hx-target=".pagination" hx-swap="outerHTML">
+        Load More...
+      </button>
+    {% endif %}
+  </span>
+</div>
