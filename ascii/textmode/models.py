@@ -178,10 +178,6 @@ def upload_to_x1(instance: ArtFile, filename: str) -> str:
     return f"pack/{instance.pack.year}/{instance.pack.name}/x1/{filename}"
 
 
-def upload_to_x2(instance: ArtFile, filename: str) -> str:
-    return f"pack/{instance.pack.name}/x2/{filename}"
-
-
 class ArtFile(BaseModel):
     created_at = models.DateTimeField(default=timezone.now)
 
@@ -203,12 +199,6 @@ class ArtFile(BaseModel):
     image_x1 = models.ImageField(
         verbose_name="Image (x1)",
         upload_to=upload_to_x1,
-        null=True,
-        blank=True,
-    )
-    image_x2 = models.ImageField(
-        verbose_name="Image (x2)",
-        upload_to=upload_to_x2,
         null=True,
         blank=True,
     )

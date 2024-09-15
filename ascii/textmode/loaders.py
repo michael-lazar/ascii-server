@@ -93,13 +93,6 @@ class SixteenColorsPackImporter:
         else:
             image_x1_file = None
 
-        if "x2" in data["file"]:
-            image_x2_name = data["file"]["x2"]["file"]
-            image_x2_data = self.client.get_file(f"/pack/{self.name}/x2/{quote(image_x2_name)}")
-            image_x2_file = ContentFile(image_x2_data, name=image_x2_name)
-        else:
-            image_x2_file = None
-
         is_fileid = name == self.fileid
 
         artfile = ArtFile.objects.create(
@@ -108,7 +101,6 @@ class SixteenColorsPackImporter:
             raw_file=raw_file,
             image_tn=image_tn_file,
             image_x1=image_x1_file,
-            image_x2=image_x2_file,
             sauce_data=sauce.data,
             is_fileid=is_fileid,
             title=sauce.title,
