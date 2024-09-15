@@ -138,6 +138,7 @@ class AdvancedSearchForm(forms.Form):
             label="Filename",
             widget=forms.TextInput(
                 attrs={
+                    "placeholder": "Name",
                     "autocomplete": "off",
                     "type": "search",
                     "class": "advanced-search-input",
@@ -278,16 +279,16 @@ class AdvancedSearchForm(forms.Form):
         )
         self.fields["order"] = forms.ChoiceField(
             choices=(
-                ("-year", "year"),
-                ("year", "year (reverse)"),
-                ("-name", "name"),
-                ("name", "name (reverse)"),
-                ("-size", "size"),
-                ("size", "size (reverse)"),
-                ("-number_of_lines", "rows"),
-                ("number_of_lines", "rows (reverse)"),
-                ("-character_width", "columns"),
-                ("character_width", "columns (reverse)"),
+                ("pack__year", "year"),
+                ("-pack__year", "year (reverse)"),
+                ("name", "name"),
+                ("-name", "name (reverse)"),
+                ("size", "size"),
+                ("-size", "size (reverse)"),
+                ("number_of_lines", "rows"),
+                ("-number_of_lines", "rows (reverse)"),
+                ("character_width", "columns"),
+                ("-character_width", "columns (reverse)"),
             ),
             label="Sort Order",
             widget=autocomplete.Select2,
