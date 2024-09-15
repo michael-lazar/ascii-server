@@ -7,6 +7,16 @@
 {% block extrahead %}{{ block.super }}
   {{ form.media }}
   <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      document.querySelector("form.advanced-search").addEventListener("submit", function(e) {
+        var inputs = this.querySelectorAll("input, select, textarea");
+        inputs.forEach(function(input) {
+          if (input.value === "") {
+            input.disabled = true;
+          }
+        });
+      });
+    });
     {% include "textmode/fragments/artfile_grid.js" %}
   </script>
 {% endblock %}
