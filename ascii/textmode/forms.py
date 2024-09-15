@@ -148,31 +148,31 @@ class AdvancedSearchForm(forms.Form):
             choices=[(val, val) for val in artfiles.file_extensions()],
             label="Extension",
             required=False,
-            widget=autocomplete.ModelSelect2Multiple,
+            widget=autocomplete.Select2Multiple,
         )
         self.fields["ice_colors"] = forms.MultipleChoiceField(
             choices=[(False, "no"), (True, "yes")],
             label="ICE Colors",
-            widget=autocomplete.ModelSelect2Multiple,
+            widget=autocomplete.Select2Multiple,
             required=False,
         )
         self.fields["letter_spacing"] = forms.MultipleChoiceField(
             choices=LetterSpacing.choices,
             label="Letter Spacing",
-            widget=autocomplete.ModelSelect2Multiple,
+            widget=autocomplete.Select2Multiple,
             required=False,
         )
         self.fields["aspect_ratio"] = forms.MultipleChoiceField(
             choices=AspectRatio.choices,
             label="Aspect Ratio",
-            widget=autocomplete.ModelSelect2Multiple,
+            widget=autocomplete.Select2Multiple,
             required=False,
         )
         self.fields["font_name"] = forms.MultipleChoiceField(
             choices=[(val, val) for val in artfiles.font_names()],
             label="Font Name",
             required=False,
-            widget=autocomplete.ModelSelect2Multiple,
+            widget=autocomplete.Select2Multiple,
         )
         self.fields["artist"] = forms.ModelMultipleChoiceField(
             queryset=ArtFileTag.objects.artists(),
@@ -275,6 +275,23 @@ class AdvancedSearchForm(forms.Form):
                     "class": "advanced-search-input",
                 }
             ),
+        )
+        self.fields["order"] = forms.ChoiceField(
+            choices=(
+                ("-year", "year"),
+                ("year", "year (newest)"),
+                ("-name", "name"),
+                ("name", "name (z-a)"),
+                ("-size", "size"),
+                ("size", "size (largest)"),
+                ("-number_of_lines", "rows"),
+                ("number_of_lines", "rows (tallest)"),
+                ("-character_width", "columns"),
+                ("character_width", "columns (widest)"),
+            ),
+            label="Sort Order",
+            widget=autocomplete.Select2,
+            required=False,
         )
 
     @property
