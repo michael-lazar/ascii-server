@@ -35,6 +35,12 @@ h3 {
     margin: 10px;
 }
 
+.logo {
+    height: 1em;
+    margin-bottom: -3px;
+    box-shadow: -1px -1px 1px black;
+}
+
 .header-link {
     font-size: small;
     text-decoration: none;
@@ -57,7 +63,7 @@ input[type="radio"] {
     z-index: 10;
     color: white;
     display: flex;
-    gap: 20px;
+    gap: 10px;
     overflow: hidden;
     text-shadow: -1px -1px 2px black;
     max-width: 100%;
