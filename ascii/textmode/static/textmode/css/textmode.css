@@ -1,7 +1,6 @@
 html, body {
     padding: 0;
     margin: 0;
-    min-width: 500px;
 }
 
 html {
@@ -417,18 +416,26 @@ fieldset {
     font-style: italic;
 }
 
-.searchbar {
-    margin: 20px 40px;
-    display: flex;
-    gap: 5px;
-}
-
 .hidden {
     visibility: hidden;
 }
 
+.searchbar {
+    display: flex;
+    gap: 5px;
+    align-items: stretch;
+    margin: 20px 40px;
+}
+
 .searchbar input {
     font-size: medium;
+}
+
+.searchbar input[type='text'] {
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    padding: 4px;
+    box-sizing: border-box;
 }
 
 .pagination {
@@ -524,11 +531,18 @@ fieldset {
     box-sizing: border-box;
 }
 
-.advanced-search-section .select2-container {
-    width: 100% !important;
-    min-width: 15em;
+.select2-container {
     font-size: small;
+    min-width: 5em !important;
+    width: 100% !important;
+}
 
+.select2-search__field {
+    width: 100% !important;
+}
+
+.select2-selection__choice {
+    white-space: normal;
 }
 
 .advanced-search-section label {
@@ -540,9 +554,17 @@ fieldset {
 }
 
 @media (max-width: 768px) {
+    .content {
+        padding: 5px;
+    }
+
     .advanced-search-wrapper {
         width: initial;
-        margin: 10px;
+        margin: 0;
+    }
+
+    .advanced-search {
+        margin: 10px 0;
     }
 
     .advanced-search-options {

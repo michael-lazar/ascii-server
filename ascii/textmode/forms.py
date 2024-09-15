@@ -123,7 +123,6 @@ class SearchBarForm(forms.Form):
             attrs={
                 "placeholder": "search...",
                 "autocomplete": "off",
-                "type": "search",
             },
         ),
     )
@@ -140,7 +139,6 @@ class AdvancedSearchForm(forms.Form):
                 attrs={
                     "placeholder": "Name",
                     "autocomplete": "off",
-                    "type": "search",
                     "class": "advanced-search-input",
                 },
             ),
