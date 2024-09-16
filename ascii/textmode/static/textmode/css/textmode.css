@@ -42,11 +42,9 @@ h3 {
 
 .header-link {
     font-size: small;
-    text-decoration: none;
     text-transform: none;
     vertical-align: middle;
 }
-
 
 input[type="radio"] {
     margin-top: -1px;

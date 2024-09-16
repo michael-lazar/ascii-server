@@ -3,9 +3,11 @@
 {% load static %}
 
 {% block content %}
-  <h1>Textmode Art <span class="header-link">(mirrored from <a href="https://16colo.rs">16colo.rs</a>)</span>
+  <h1>Textmode Art
+    <span class="header-link">(mirrored from
+      <a href="https://16colo.rs" class="header-link">16colo.rs</a>)</span>
   </h1>
-  <h2>Search <span class="header-link"><a href="{% url 'textmode-search' %}">(view all)</a></span></h2>
+  <h2>Search <a class="header-link" href="{% url 'textmode-search' %}">(view all)</a></h2>
   <form method="get" class="searchbar" action="{% url 'textmode-search' %}">
     {{ form }}
     <input type="submit" value="Go">

@@ -156,7 +156,7 @@ class TextmodeTagView(TemplateView):
 
         tag = get_object_or_404(ArtFileTag, category=kwargs["category"], name=name)
 
-        artfiles = tag.artfiles.select_related("pack").order_by("-is_fileid", "name")
+        artfiles = tag.artfiles.select_related("pack").order_by("name")
 
         p = Paginator(artfiles, PAGE_SIZE)
         page = p.page(get_page_number(self.request))

@@ -45,4 +45,21 @@ document.addEventListener("DOMContentLoaded", function () {
     var newElements = evt.detail.target.querySelectorAll(".htmx-added");
     msnry.appended(newElements);
   });
+
+  document.addEventListener("htmx:afterRequest", function (evt) {
+    var button = $("#paginationLoadMore");
+
+    button.click(function () {
+      button.text("Loading...");
+      button.attr("disabled", "disabled");
+    });
+  });
+
+  $(document).ready(function () {
+    var button = $("#paginationLoadMore");
+    button.click(function () {
+      button.text("Loading...");
+      button.attr("disabled", "disabled");
+    });
+  });
 });

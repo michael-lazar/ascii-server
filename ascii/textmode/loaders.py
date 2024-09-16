@@ -32,7 +32,11 @@ class SixteenColorsPackImporter:
 
         def get_zip_file():
             zip_name = data["archive"]
-            zip_data = self.client.get_file(f"/archive/{self.year}/{zip_name}")
+            if zip_name == "cn!202101.zip":
+                # https://github.com/16colo-rs/16c/issues/94
+                zip_name = "cn202101.zip"
+
+            zip_data = self.client.get_file(f"/archive/{self.year}/{quote(zip_name)}")
             return ContentFile(zip_data, name=zip_name)
 
         self.pack, _ = ArtPack.objects.get_or_create(
