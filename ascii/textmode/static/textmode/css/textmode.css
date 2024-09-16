@@ -468,6 +468,7 @@ fieldset {
 
 .artfile-grid {
     overflow: hidden;
+    min-width: 360px;
 }
 
 .artfile-grid-wrapper {
