@@ -67,27 +67,31 @@ class Sauce:
         if filetype is None:
             return None
 
-        match self.datatype:
-            case DataType.NONE:
-                return FileType.NONE
-            case DataType.CHARACTER:
-                return CHARACTER_FILETYPES[filetype]
-            case DataType.BITMAP:
-                return BITMAP_FILETYPES[filetype]
-            case DataType.VECTOR:
-                return VECTOR_FILETYPES[filetype]
-            case DataType.AUDIO:
-                return AUDIO_FILETYPES[filetype]
-            case DataType.BINARYTEXT:
-                return FileType.BINARYTEXT
-            case DataType.XBIN:
-                return FileType.XBIN
-            case DataType.ARCHIVE:
-                return ARCHIVE_FILETYPES[filetype]
-            case DataType.EXECUTABLE:
-                return FileType.EXECUTABLE
-            case _:
-                return FileType.NONE
+        try:
+            match self.datatype:
+                case DataType.NONE:
+                    return FileType.NONE
+                case DataType.CHARACTER:
+                    return CHARACTER_FILETYPES[filetype]
+                case DataType.BITMAP:
+                    return BITMAP_FILETYPES[filetype]
+                case DataType.VECTOR:
+                    return VECTOR_FILETYPES[filetype]
+                case DataType.AUDIO:
+                    return AUDIO_FILETYPES[filetype]
+                case DataType.BINARYTEXT:
+                    return FileType.BINARYTEXT
+                case DataType.XBIN:
+                    return FileType.XBIN
+                case DataType.ARCHIVE:
+                    return ARCHIVE_FILETYPES[filetype]
+                case DataType.EXECUTABLE:
+                    return FileType.EXECUTABLE
+                case _:
+                    return FileType.NONE
+        except IndexError as e:
+            _logger.warning(f"Invalid filetype: {filetype}", exc_info=e)
+            return None
 
     @property
     def pixel_width(self) -> int | None:
