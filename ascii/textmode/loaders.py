@@ -10,6 +10,10 @@ from ascii.textmode.sauce import Sauce
 
 _logger = logging.getLogger(__name__)
 
+BLACKLIST = [
+    "2xl_crew-the_collection",  # 50 MB pack with a directory in it, generally weird
+]
+
 
 class SixteenColorsPackImporter:
     """
@@ -24,8 +28,17 @@ class SixteenColorsPackImporter:
         self.name = name
         self.client = SixteenColorsClient()
 
-    def process(self) -> ArtPack:
+    def process(self) -> ArtPack | None:
+
+        if self.name in BLACKLIST:
+            _logger.warning(f"Skipping blacklisted pack: {self.name}")
+            return None
+
         data = self.client.get_pack(self.name)
+
+        if "fileid" not in data:
+            _logger.warning(f"Skipping pack with missing fileid: {self.name}")
+            return None
 
         self.year = data["year"]
         self.fileid = data["fileid"]
