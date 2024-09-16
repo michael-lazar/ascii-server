@@ -31,7 +31,7 @@ class SixteenColorsPackImporter:
         self.fileid = data["fileid"]
 
         def get_zip_file():
-            zip_name = f"{self.name}.zip"
+            zip_name = data["archive"]
             zip_data = self.client.get_file(f"/archive/{self.year}/{zip_name}")
             return ContentFile(zip_data, name=zip_name)
 
