@@ -2,7 +2,7 @@
   {% for pack in packs %}
     <div class="pack-card">
       <a href="{% url 'textmode-pack' pack.name %}">
-        <img alt="{{ pack.name }}" src="{{ pack.fileid.0.image_tn.url }}">
+        <img loading="lazy" alt="{{ pack.name }}" src="{{ pack.fileid.0.image_tn.url }}">
         <div class="pack-title">
           {{ pack.name }}
         </div>

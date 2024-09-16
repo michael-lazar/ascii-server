@@ -589,16 +589,15 @@ fieldset {
     }
 
     .pack-grid {
-        padding: 0;
-        justify-content: center;
+        padding: 10px;
     }
 
     .pack-card a {
-        width: 120px;
+        width: 140px;
     }
 
     .pack-card img {
-        height: 120px;
+        height: 140px;
     }
 
     .sidebar {
@@ -617,5 +616,9 @@ fieldset {
 
     .artfile-grid-wrapper {
         margin: 0;
+    }
+
+    .searchbar {
+        margin: 10px;
     }
 }
