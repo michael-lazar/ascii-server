@@ -467,6 +467,8 @@ fieldset {
 .artfile-grid {
     overflow: hidden;
     min-width: 360px;
+    /* Hide until initialized by masonry.js */
+    visibility: hidden;
 }
 
 .artfile-grid-wrapper {

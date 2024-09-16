@@ -15,6 +15,14 @@ document.addEventListener("DOMContentLoaded", function () {
     fitWidth: !isAboveBreakpoint,
   });
 
+  function layoutComplete() {
+    var grid = document.querySelector(".artfile-grid");
+    grid.style.visibility = "visible";
+  }
+
+  msnry.on("layoutComplete", layoutComplete);
+  msnry.layout();
+
   function handleResize() {
     const newIsAboveBreakpoint = window.innerWidth > breakpoint;
 
