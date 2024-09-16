@@ -578,6 +578,14 @@ fieldset {
         justify-content: center;
     }
 
+    .pack-card a {
+        width: 120px;
+    }
+
+    .pack-card img {
+        height: 120px;
+    }
+
     .sidebar {
         width: auto;
         box-shadow: 2px 0 2px rgba(0, 0, 0, 0.2);
