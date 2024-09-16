@@ -15,7 +15,14 @@ class SixteenColorsClient:
     def get_pack(self, name: str) -> dict:
         resp = self.session.get(
             f"{self.BASE_API}/pack/{name}",
-            params={"archive": "true"},
+            params={
+                "archive": "true",
+                "content": "true",
+                "groups": "true",
+                "artists": "true",
+                "fileid": "true",
+                "sauce": "true",
+            },
         )
         return resp.json()["results"][0]
 

@@ -1,4 +1,4 @@
-Django>=4.2,<5.0
+Django>=4.2,<5.2
 ansi2html
 django-admin-interface
 django-autocomplete-light

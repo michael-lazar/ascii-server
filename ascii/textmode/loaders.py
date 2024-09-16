@@ -17,6 +17,7 @@ class SixteenColorsPackImporter:
     """
 
     fileid: str
+    year: int
     pack: ArtPack
 
     def __init__(self, name: str):
@@ -26,16 +27,21 @@ class SixteenColorsPackImporter:
     def process(self) -> ArtPack:
         data = self.client.get_pack(self.name)
 
-        ArtPack.objects.filter(name=self.name).delete()
-
-        year = data["year"]
-
-        zip_name = f"{self.name}.zip"
-        zip_data = self.client.get_file(f"/archive/{year}/{zip_name}")
-        zip_file = ContentFile(zip_data, name=zip_name)
-
-        self.pack = ArtPack.objects.create(name=self.name, year=year, zip_file=zip_file)
+        self.year = data["year"]
         self.fileid = data["fileid"]
+
+        def get_zip_file():
+            zip_name = f"{self.name}.zip"
+            zip_data = self.client.get_file(f"/archive/{self.year}/{zip_name}")
+            return ContentFile(zip_data, name=zip_name)
+
+        self.pack, _ = ArtPack.objects.get_or_create(
+            name=self.name,
+            defaults={
+                "year": self.year,
+                "zip_file": get_zip_file,
+            },
+        )
 
         for artfile_name, artfile_data in data["files"].items():
             try:
@@ -50,74 +56,72 @@ class SixteenColorsPackImporter:
 
     def process_file(self, name, data):
 
-        tags: list[ArtFileTag] = []
-
-        for tag_name in data.get("artists", []):
-            tag, _ = ArtFileTag.objects.get_or_create(
-                category=TagCategory.ARTIST,
-                name=tag_name,
-            )
-            tags.append(tag)
-
-        for tag_name in data.get("content", []):
-            tag, _ = ArtFileTag.objects.get_or_create(
-                category=TagCategory.CONTENT,
-                name=tag_name,
-            )
-            tags.append(tag)
-
-        for tag_name in data.get("groups", []):
-            tag, _ = ArtFileTag.objects.get_or_create(
-                category=TagCategory.GROUP,
-                name=tag_name,
-            )
-            tags.append(tag)
-
         sauce = Sauce(data.get("sauce", {}))
 
-        raw_name = data["file"]["raw"]
-        raw_data = self.client.get_file(f"/pack/{self.name}/raw/{quote(raw_name)}")
-        raw_file = ContentFile(raw_data, name=raw_name)
+        defaults = {
+            "sauce_data": sauce.data,
+            "is_fileid": name == self.fileid,
+            "title": sauce.title,
+            "author": sauce.author,
+            "group": sauce.group,
+            "date": sauce.date,
+            "comments": sauce.comments,
+            "datatype": sauce.datatype,
+            "filetype": sauce.filetype,
+            "pixel_width": sauce.pixel_width,
+            "pixel_height": sauce.pixel_height,
+            "character_width": sauce.character_width,
+            "number_of_lines": sauce.number_of_lines,
+            "ice_colors": sauce.ice_colors,
+            "letter_spacing": sauce.letter_spacing,
+            "font_name": sauce.font_name,
+            "aspect_ratio": sauce.aspect_ratio,
+        }
 
-        if "tn" in data["file"]:
+        def get_raw_file():
+            raw_name = data["file"]["raw"]
+            raw_data = self.client.get_file(f"/pack/{self.name}/raw/{quote(raw_name)}")
+            return ContentFile(raw_data, name=raw_name)
+
+        def get_image_tn():
+            if "tn" not in data["file"]:
+                return None
+
             image_tn_name = data["file"]["tn"]["file"]
             image_tn_data = self.client.get_file(f"/pack/{self.name}/tn/{quote(image_tn_name)}")
-            image_tn_file = ContentFile(image_tn_data, name=image_tn_name)
-        else:
-            image_tn_file = None
+            return ContentFile(image_tn_data, name=image_tn_name)
 
-        if "x1" in data["file"]:
+        def get_image_x1():
+            if "x1" not in data["file"]:
+                return None
+
             image_x1_name = data["file"]["x1"]["file"]
             image_x1_data = self.client.get_file(f"/pack/{self.name}/x1/{quote(image_x1_name)}")
-            image_x1_file = ContentFile(image_x1_data, name=image_x1_name)
-        else:
-            image_x1_file = None
+            return ContentFile(image_x1_data, name=image_x1_name)
 
-        is_fileid = name == self.fileid
+        create_defaults = {
+            **defaults,
+            "raw_file": get_raw_file,
+            "image_tn": get_image_tn,
+            "image_x1": get_image_x1,
+        }
 
-        artfile = ArtFile.objects.create(
+        artfile, _ = ArtFile.objects.update_or_create(
+            defaults=defaults,
+            create_defaults=create_defaults,
             name=name,
             pack=self.pack,
-            raw_file=raw_file,
-            image_tn=image_tn_file,
-            image_x1=image_x1_file,
-            sauce_data=sauce.data,
-            is_fileid=is_fileid,
-            title=sauce.title,
-            author=sauce.author,
-            group=sauce.group,
-            date=sauce.date,
-            comments=sauce.comments,
-            datatype=sauce.datatype,
-            filetype=sauce.filetype,
-            pixel_width=sauce.pixel_width,
-            pixel_height=sauce.pixel_height,
-            character_width=sauce.character_width,
-            number_of_lines=sauce.number_of_lines,
-            ice_colors=sauce.ice_colors,
-            letter_spacing=sauce.letter_spacing,
-            font_name=sauce.font_name,
-            aspect_ratio=sauce.aspect_ratio,
         )
+
+        tags: list[ArtFileTag] = []
+        for tag_name in data.get("artists", []):
+            tag, _ = ArtFileTag.objects.get_or_create(category=TagCategory.ARTIST, name=tag_name)
+            tags.append(tag)
+        for tag_name in data.get("content", []):
+            tag, _ = ArtFileTag.objects.get_or_create(category=TagCategory.CONTENT, name=tag_name)
+            tags.append(tag)
+        for tag_name in data.get("groups", []):
+            tag, _ = ArtFileTag.objects.get_or_create(category=TagCategory.GROUP, name=tag_name)
+            tags.append(tag)
 
         artfile.tags.set(tags)
