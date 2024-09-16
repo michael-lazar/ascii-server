@@ -605,4 +605,8 @@ fieldset {
     .artfile-grid {
         margin: 0 auto;
     }
+
+    .artfile-grid-wrapper {
+        margin: 0;
+    }
 }
