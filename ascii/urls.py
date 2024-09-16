@@ -31,7 +31,7 @@ urlpatterns = [
     path("textmode/", TextmodeIndexView.as_view(), name="textmode-index"),
     path("textmode/search/", TextModeSearchView.as_view(), name="textmode-search"),
     path("textmode/pack/", TextmodePackListView.as_view(), name="textmode-pack-list"),
-    path("textmode/pack/<slug:pack>/", TextmodePackView.as_view(), name="textmode-pack"),
+    path("textmode/pack/<str:pack>/", TextmodePackView.as_view(), name="textmode-pack"),
     path("textmode/tags/", TextmodeTagListView.as_view(), name="textmode-tag-list"),
     path(
         "textmode/tags/<slug:category>/",
@@ -44,7 +44,7 @@ urlpatterns = [
         name="textmode-tag",
     ),
     path(
-        "textmode/pack/<slug:pack>/a/<str:artfile>",
+        "textmode/pack/<str:pack>/a/<str:artfile>",
         TextmodeArtfileView.as_view(),
         name="textmode-artfile",
     ),
