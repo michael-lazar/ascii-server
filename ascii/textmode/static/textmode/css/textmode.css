@@ -128,7 +128,7 @@ input[type="radio"] {
     word-wrap: break-word;
     color: black;
     background: #aaa;
-    padding: 5px;
+    padding: 2px;
 }
 
 .artfile-card-title {
@@ -137,7 +137,7 @@ input[type="radio"] {
     word-wrap: break-word;
     color: black;
     background: #ccc;
-    padding: 5px;
+    padding: 2px;
 }
 
 .artfile-card a {
