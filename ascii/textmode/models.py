@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import itertools
+import mimetypes
 import os
 
 from django.db import models
@@ -332,3 +333,11 @@ class ArtFile(BaseModel):
             data["Font Name"] = self.font_name
 
         return data
+
+    @property
+    def mimetype(self) -> str:
+        mimetype, _ = mimetypes.guess_type(self.name, strict=False)
+        return mimetype or ""
+
+    def is_audio(self) -> bool:
+        return self.datatype == DataType.AUDIO or self.mimetype.startswith("audio")

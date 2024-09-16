@@ -19,6 +19,13 @@ class SixteenColorsClient:
         )
         return resp.json()["results"][0]
 
+    def get_year(self, year: int) -> list[dict]:
+        resp = self.session.get(
+            f"{self.BASE_API}/year/{year}",
+            params={"pagesize": 500},
+        )
+        return resp.json()["results"]
+
     def get_file(self, path) -> bytes:
         resp = self.session.get(f"{self.BASE_URL}{path}")
         return resp.content
