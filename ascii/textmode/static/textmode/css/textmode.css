@@ -484,6 +484,18 @@ fieldset {
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
+.advanced-search select {
+    width: 100%;
+    height: 32px;
+    min-height: 32px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+}
+
+.advanced-search .select2-selection {
+    min-height: 32px;
+}
+
 .advanced-search-wrapper {
     display: flex;
     justify-content: center;
@@ -493,7 +505,6 @@ fieldset {
     font-style: italic;
     margin: 10px;
 }
-
 
 .advanced-search-wrapper summary {
     font-style: italic;
@@ -511,7 +522,7 @@ fieldset {
 
 .advanced-search-section {
     display: grid;
-    grid-template-columns: minmax(80px, auto) 1fr;
+    grid-template-columns: minmax(90px, auto) 1fr;
     align-items: center;
     gap: 5px;
 }

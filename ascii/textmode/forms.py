@@ -277,6 +277,7 @@ class AdvancedSearchForm(forms.Form):
         )
         self.fields["order"] = forms.ChoiceField(
             choices=(
+                ("", ""),
                 ("pack__year", "year"),
                 ("-pack__year", "year (reverse)"),
                 ("name", "filename"),

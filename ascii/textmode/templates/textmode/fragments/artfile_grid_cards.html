@@ -3,13 +3,13 @@
     {% if show_fileid and artfile.is_fileid %}
       <div class="artfile-card artfile-card-wide">
       {% if artfile.image_tn %}
-        <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}" width="{{ artfile.thumb_width_2x }}"
-             height="{{ artfile.thumb_height_2x }}">
+        <img loading="lazy" src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}"
+             width="{{ artfile.thumb_width_2x }}" height="{{ artfile.thumb_height_2x }}">
       {% endif %}
     {% else %}
       <div class="artfile-card">
       {% if artfile.image_tn %}
-        <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}" width="{{ artfile.thumb_width }}"
+        <img loading="lazy" src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}" width="{{ artfile.thumb_width }}"
              height="{{ artfile.thumb_height }}">
       {% endif %}
     {% endif %}
