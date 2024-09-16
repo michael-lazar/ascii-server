@@ -555,6 +555,12 @@ fieldset {
 }
 
 @media (max-width: 768px) {
+    .tag-list {
+        column-width: 100px;
+        column-gap: 10px;
+        padding: 0 10px;
+    }
+
     .content {
         padding: 5px;
     }
