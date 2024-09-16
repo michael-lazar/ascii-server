@@ -125,6 +125,7 @@ CHARACTER_FILETYPES = [
     FileType.AVATAR,
     FileType.HTML,
     FileType.SOURCE,
+    FileType.TUNDRADRAW,
 ]
 
 BITMAP_FILETYPES = [
