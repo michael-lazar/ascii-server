@@ -8,7 +8,7 @@ from django.views.generic import TemplateView
 
 from ascii.textmode.choices import TagCategory
 from ascii.textmode.forms import AdvancedSearchForm, PackFilterForm, SearchBarForm
-from ascii.textmode.models import ArtFile, ArtFileTag, ArtPack
+from ascii.textmode.models import ALT_SLASH, ArtFile, ArtFileTag, ArtPack
 
 PAGE_SIZE = 200
 
@@ -26,7 +26,11 @@ class TextmodeIndexView(TemplateView):
     template_name = "textmode/index.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        packs = ArtPack.objects.annotate_artfile_count().prefetch_fileid()[:10]
+        packs = (
+            ArtPack.objects.annotate_artfile_count()
+            .prefetch_fileid()
+            .order_by("-year", "-created_at")[:10]
+        )
 
         artist_tags = ArtFileTag.objects.for_tag_list(TagCategory.ARTIST)
         artist_tags = artist_tags.order_by("-artfile_count")[:20]
@@ -147,7 +151,10 @@ class TextmodeTagView(TemplateView):
             return ["textmode/tag.html"]
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        tag = get_object_or_404(ArtFileTag, category=kwargs["category"], name=kwargs["name"])
+        name = kwargs["name"]
+        name = name.replace(ALT_SLASH, "/")
+
+        tag = get_object_or_404(ArtFileTag, category=kwargs["category"], name=name)
 
         artfiles = tag.artfiles.select_related("pack").order_by("-is_fileid", "name")
 

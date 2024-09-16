@@ -99,7 +99,7 @@ class ArtFileAdmin(admin.ModelAdmin):
 
 @admin.register(ArtFileTag)
 class ArtFileTagAdmin(admin.ModelAdmin):
-    list_display = ["category", "name", "get_artfile_count"]
+    list_display = ["name", "category", "get_artfile_count"]
     search_fields = ["name"]
     readonly_fields = ["get_artfile_count"]
     list_filter = ["category"]

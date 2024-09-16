@@ -12,6 +12,9 @@ from ascii.core.models import BaseModel
 from ascii.core.utils import reverse
 from ascii.textmode.choices import AspectRatio, DataType, FileType, LetterSpacing, TagCategory
 
+# https://stackoverflow.com/a/67857443
+ALT_SLASH = "%2F"
+
 
 class ArtFileTagQuerySet(models.QuerySet):
 
@@ -59,7 +62,8 @@ class ArtFileTag(BaseModel):
 
     @property
     def public_url(self) -> str:
-        return reverse("textmode-tag", args=[self.category, self.name])
+        name = self.name.replace("/", ALT_SLASH)
+        return reverse("textmode-tag", args=[self.category, name])
 
 
 class ArtPackQuerySet(models.QuerySet):
