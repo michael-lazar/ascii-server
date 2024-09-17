@@ -15,6 +15,22 @@ from ascii.textmode.choices import AspectRatio, DataType, FileType, LetterSpacin
 # https://stackoverflow.com/a/67857443
 ALT_SLASH = "%2F"
 
+# Supported by the <sound> web player
+AUDIO_MIMETYPES = [
+    "audio/mpeg",  # .mp3
+    "audio/ogg",  # .ogg
+    "audio/wav",  # .wav
+    "audio/aac",  # .aac
+    "audio/webm",  # .weba
+]
+
+# Supported by the <video> web player
+VIDEO_MIMETYPES = [
+    "video/mp4",  # .mp4
+    "video/webm",  # .webm
+    "video/ogg",  # .ogv
+]
+
 
 class ArtFileTagQuerySet(models.QuerySet):
 
@@ -339,9 +355,11 @@ class ArtFile(BaseModel):
         return data
 
     @property
-    def mimetype(self) -> str:
-        mimetype, _ = mimetypes.guess_type(self.name, strict=False)
-        return mimetype or ""
+    def mimetype(self) -> str | None:
+        return mimetypes.guess_type(self.name, strict=False)[0]
 
     def is_audio(self) -> bool:
-        return self.datatype == DataType.AUDIO or self.mimetype.startswith("audio")
+        return self.mimetype in AUDIO_MIMETYPES
+
+    def is_video(self) -> bool:
+        return self.mimetype in VIDEO_MIMETYPES

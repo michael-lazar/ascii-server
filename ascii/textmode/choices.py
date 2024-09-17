@@ -69,7 +69,7 @@ class FileType(models.IntegerChoices):
     DL = 18, "DL"
     WPGBITMAP = 19, "WPG Bitmap"
     PNG = 20, "PNG"
-    JPG = 21, "JPG/JPeg"
+    JPG = 21, "JPG"
     MPG = 22, "MPG"
     AVI = 23, "AVI"
     DXF = 24, "DXF"

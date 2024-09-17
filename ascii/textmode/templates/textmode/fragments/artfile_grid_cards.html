@@ -2,15 +2,17 @@
   <a href="{{ artfile.public_url }}">
     {% if show_fileid and artfile.is_fileid %}
       <div class="artfile-card artfile-card-wide">
-      {% if artfile.image_tn %}
-        <img loading="lazy" src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}"
-             width="{{ artfile.thumb_width_2x }}" height="{{ artfile.thumb_height_2x }}">
-      {% endif %}
+      <img loading="lazy" src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}" width="{{ artfile.thumb_width_2x }}"
+           height="{{ artfile.thumb_height_2x }}">
     {% else %}
       <div class="artfile-card">
       {% if artfile.image_tn %}
         <img loading="lazy" src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}" width="{{ artfile.thumb_width }}"
              height="{{ artfile.thumb_height }}">
+      {% else %}
+        <div class="artfile-card-mimetype">
+          {{ artfile.mimetype|default:"Unknown" }}
+        </div>
       {% endif %}
     {% endif %}
     {% if show_pack_name %}

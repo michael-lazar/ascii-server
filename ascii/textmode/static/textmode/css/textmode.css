@@ -120,6 +120,17 @@ input[type="radio"] {
     width: 360px;
 }
 
+.artfile-card-mimetype {
+    font-size: larger;
+    color: white;
+    word-break: break-all;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+}
+
 .artfile-card-pack {
     text-align: center;
     font-size: x-small;
@@ -408,6 +419,19 @@ fieldset {
     width: auto;
     max-width: 100%;
     max-height: 100%;
+}
+
+.artfile-audio-container {
+    margin-top: 10px;
+}
+
+.artfile-video-container {
+    margin: 10px auto;
+}
+
+.artfile-video-container video {
+    max-width: 100%;
+    max-height: 400px;
 }
 
 .artfile-image-title {

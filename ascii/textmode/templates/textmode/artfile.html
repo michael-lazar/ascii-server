@@ -31,13 +31,25 @@
               <img src="{{ artfile.image_x1.url }}" alt="{{ artfile.name }}">
             </a>
           </div>
-          {% if artfile.title and artfile.author %}
-            <div class="artfile-image-title">{{ artfile.title }} by {{ artfile.author }}</div>
-          {% endif %}
+        {% elif artfile.is_audio %}
+          <div class="artfile-audio-container">
+            <audio controls preload="metadata">
+              <source src="{{ artfile.raw_file.url }}">
+            </audio>
+          </div>
+        {% elif artfile.is_video %}
+          <div class="artfile-video-container">
+            <video controls preload="metadata">
+              <source src="{{ artfile.raw_file.url }}">
+            </video>
+          </div>
         {% else %}
           <div>
             Preview not available, click <a href="{{ artfile.raw_file.url }}">here</a> to download.
           </div>
+        {% endif %}
+        {% if artfile.title and artfile.author %}
+          <div class="artfile-image-title">{{ artfile.title }} by {{ artfile.author }}</div>
         {% endif %}
         {% include 'textmode/fragments/pack_paginator.html' %}
       </div>
