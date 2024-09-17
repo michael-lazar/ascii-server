@@ -128,7 +128,7 @@ input[type="radio"] {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 120px;
+    height: 80px;
 }
 
 .artfile-card-pack {
