@@ -8,6 +8,8 @@
   <span>&gt;</span>
   <a href="{% url 'textmode-pack-list' %}">packs</a>
   <span>&gt;</span>
+  <a href="{% url 'textmode-pack-year-list' pack.year %}">{{ pack.year }}</a>
+  <span>&gt;</span>
   <a href="{{ pack.public_url }}">{{ pack.name }}</a>
 {% endblock %}
 

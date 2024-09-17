@@ -117,6 +117,26 @@ class TextmodePackListView(TemplateView):
         }
 
 
+class TextmodePackYearListView(TemplateView):
+    template_name = "textmode/pack_year_list.html"
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        year = kwargs["year"]
+
+        packs = ArtPack.objects.prefetch_fileid().filter(year=year).order_by("-created_at")
+
+        form = SearchBarForm(data=self.request.GET)
+        if form.is_valid():
+            if q := form.cleaned_data["q"]:
+                packs = packs.filter(name__icontains=q)
+
+        return {
+            "packs": packs,
+            "form": form,
+            "year": year,
+        }
+
+
 class TextmodeArtfileView(TemplateView):
     template_name = "textmode/artfile.html"
 

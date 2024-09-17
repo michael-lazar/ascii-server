@@ -20,6 +20,7 @@ from ascii.textmode.views import (
     TextModePackAutocomplete,
     TextmodePackListView,
     TextmodePackView,
+    TextmodePackYearListView,
     TextModeSearchView,
     TextmodeTagCategoryListView,
     TextmodeTagListView,
@@ -31,7 +32,12 @@ urlpatterns = [
     path("textmode/", TextmodeIndexView.as_view(), name="textmode-index"),
     path("textmode/search/", TextModeSearchView.as_view(), name="textmode-search"),
     path("textmode/pack/", TextmodePackListView.as_view(), name="textmode-pack-list"),
-    path("textmode/pack/<str:pack>/", TextmodePackView.as_view(), name="textmode-pack"),
+    path(
+        "textmode/pack/<int:year>/",
+        TextmodePackYearListView.as_view(),
+        name="textmode-pack-year-list",
+    ),
+    path("textmode/pack/<int:year>/<str:pack>/", TextmodePackView.as_view(), name="textmode-pack"),
     path("textmode/tags/", TextmodeTagListView.as_view(), name="textmode-tag-list"),
     path(
         "textmode/tags/<slug:category>/",
@@ -44,7 +50,7 @@ urlpatterns = [
         name="textmode-tag",
     ),
     path(
-        "textmode/pack/<str:pack>/a/<str:artfile>",
+        "textmode/pack/<int:year>/<str:pack>/a/<str:artfile>",
         TextmodeArtfileView.as_view(),
         name="textmode-artfile",
     ),

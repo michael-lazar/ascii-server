@@ -13,19 +13,19 @@
     {{ form }}
     <input type="submit" value="Go">
   </form>
-  <h2>Artist</h2>
+  <h2>Artist <a class="header-link" href="{% url 'textmode-tag-category-list' 'artist' %}">(view all)</a></h2>
   <ul class="tag-list">
     {% for tag in artist_tags %}
       <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
     {% endfor %}
   </ul>
-  <h2>Group</h2>
+  <h2>Group <a class="header-link" href="{% url 'textmode-tag-category-list' 'group' %}">(view all)</a></h2>
   <ul class="tag-list">
     {% for tag in group_tags %}
       <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
     {% endfor %}
   </ul>
-  <h2>Content</h2>
+  <h2>Content <a class="header-link" href="{% url 'textmode-tag-category-list' 'content' %}">(view all)</a></h2>
   <ul class="tag-list">
     {% for tag in content_tags %}
       <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>

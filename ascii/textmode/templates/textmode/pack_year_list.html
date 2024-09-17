@@ -5,18 +5,15 @@
 {% block breadcrumbs %}
   <span>&gt;</span>
   <a href="{% url 'textmode-pack-list' %}">packs</a>
+  <span>&gt;</span>
+  <a href="{% url 'textmode-pack-year-list' year %}">{{ year }}</a>
 {% endblock %}
 
 {% block content %}
-  <h1>Packs</h1>
+  <h1>Packs / {{ year }}</h1>
   <form method="get" class="searchbar">
     {{ form }}
     <input type="submit" value="Go">
   </form>
-  {% for year, packs in packs_by_year %}
-    <h2>{{ year }}
-      <a class="header-link" href="{% url 'textmode-pack-year-list' year %}">(view all)</a>
-    </h2>
-    {% include "textmode/fragments/pack_grid.html" %}
-  {% endfor %}
+  {% include "textmode/fragments/pack_grid.html" %}
 {% endblock %}

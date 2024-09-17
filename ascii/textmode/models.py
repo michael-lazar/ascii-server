@@ -128,7 +128,7 @@ class ArtPack(BaseModel):
 
     @property
     def public_url(self) -> str:
-        return reverse("textmode-pack", args=[self.name])
+        return reverse("textmode-pack", args=[self.year, self.name])
 
 
 class ArtFileQuerySet(models.QuerySet):
@@ -289,7 +289,7 @@ class ArtFile(BaseModel):
 
     @property
     def public_url(self) -> str:
-        return reverse("textmode-artfile", args=[self.pack.name, self.name])
+        return reverse("textmode-artfile", args=[self.pack.year, self.pack.name, self.name])
 
     @property
     def thumb_width(self) -> int:

@@ -10,12 +10,11 @@
 {% endblock %}
 
 {% block content %}
-  <h1>Tags</h1>
+  <h1>Tags / {{ category|title }}</h1>
   <form method="get" class="searchbar">
     {{ form }}
     <input type="submit" value="Go">
   </form>
-  <h2>{{ category|title }}</h2>
   <ul class="tag-list">
     {% for tag in tags %}
       <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
