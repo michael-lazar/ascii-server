@@ -202,12 +202,12 @@ def upload_to_x1(instance: ArtFile, filename: str) -> str:
 class ArtFile(BaseModel):
     created_at = models.DateTimeField(default=timezone.now)
 
-    name = models.CharField(max_length=100, db_index=True)
+    name = models.CharField(max_length=130, db_index=True)
     pack = models.ForeignKey(ArtPack, on_delete=models.CASCADE, related_name="artfiles")
 
     is_fileid = models.BooleanField(default=False, db_index=True)
 
-    raw_file = models.FileField(upload_to=upload_to_raw)
+    raw_file = models.FileField(upload_to=upload_to_raw, max_length=130)
     file_extension = models.CharField(max_length=20, blank=True, db_index=True)
     filesize = models.PositiveIntegerField(default=0, db_index=True)
 
@@ -216,12 +216,14 @@ class ArtFile(BaseModel):
         upload_to=upload_to_tn,
         null=True,
         blank=True,
+        max_length=130,
     )
     image_x1 = models.ImageField(
         verbose_name="Image (x1)",
         upload_to=upload_to_x1,
         null=True,
         blank=True,
+        max_length=130,
     )
 
     tags = models.ManyToManyField(ArtFileTag, blank=True, related_name="artfiles")
