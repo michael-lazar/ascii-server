@@ -44,11 +44,14 @@ class Sauce:
 
     @property
     def date(self) -> date | None:
-        date_int = self.data.get("Date")
-        if date_int is None:
+        if "Date" not in self.data:
             return None
 
-        return datetime.strptime(str(date_int), "%Y%m%d").date()
+        date_str = str(self.data["Date"])
+        if not date_str:
+            return None
+
+        return datetime.strptime(date_str, "%Y%m%d").date()
 
     @cached_property
     def datatype(self) -> DataType | None:
