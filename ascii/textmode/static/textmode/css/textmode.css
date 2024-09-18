@@ -531,6 +531,7 @@ fieldset {
 .advanced-search-results-total {
     font-style: italic;
     margin: 10px;
+    text-align: center;
 }
 
 .advanced-search-wrapper summary {
