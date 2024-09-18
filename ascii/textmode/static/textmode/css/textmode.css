@@ -358,7 +358,7 @@ input[type="radio"] {
 }
 
 .filter-results-table > *:nth-child(odd) {
-    font-weight: bold;
+    text-align: right;
 }
 
 .filter-results-table > *:nth-child(even) {
@@ -492,6 +492,7 @@ fieldset {
 .artfile-grid {
     overflow: hidden;
     min-width: 360px;
+    min-height: 20px;
     /* Hide until initialized by masonry.js */
     visibility: hidden;
 }

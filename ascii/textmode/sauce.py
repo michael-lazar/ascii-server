@@ -51,7 +51,11 @@ class Sauce:
         if not date_str:
             return None
 
-        return datetime.strptime(date_str, "%Y%m%d").date()
+        try:
+            return datetime.strptime(date_str, "%Y%m%d").date()
+        except Exception as e:
+            _logger.warning(f"Invalid date: {date_str}", exc_info=e)
+            return None
 
     @cached_property
     def datatype(self) -> DataType | None:
