@@ -65,6 +65,7 @@ class SixteenColorsPackImporter:
         except Exception as e:
             # See https://16colo.rs/pack/fuel27/, returns 403 FORBIDDEN
             _logger.warning(f"Failed to download pack: {self.name}, {data}", exc_info=e)
+            return None
 
         for artfile_name, artfile_data in data["files"].items():
             try:
