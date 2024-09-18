@@ -29,7 +29,9 @@
 {% block content %}
   <div class="artfile-body">
     <div class="artfile-content-wrapper">
-      <h1>Tags / {{ tag.category }} / {{ tag.name }}</h1>
+      <h1>Tags / {{ tag.category }} / {{ tag.name }}
+        <a class="header-link" href="{{ search_url }}">(search)</a>
+      </h1>
       {% include 'textmode/fragments/artfile_grid.html' with show_pack_name=1 %}
     </div>
   </div>

@@ -1,10 +1,13 @@
 <form method="get" class="pack-filter-form" id="packFilterForm">
-  <h2><span>Filter by</span></h2>
+  <h2>
+    <span>Filter by</span>
+    <a class="header-link" href="{{ search_url }}">(search)</a>
+  </h2>
   <div class="filter-fieldsets">
     {% if is_filtered %}
       <fieldset class="filter-results">
         <legend>
-          Filters
+          Applied Filters
           <a href="{{ request.path }}" class="sidebar-clear-link">[clear all]</a>
         </legend>
         <div class="filter-results-table">

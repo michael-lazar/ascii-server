@@ -241,9 +241,9 @@ input[type="radio"] {
 .sidebar h2 {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     border-bottom: 1px solid #bbb;
     padding-bottom: 10px;
+    align-items: flex-end;
     font-size: medium;
     background-color: #eee;
     box-shadow: none;

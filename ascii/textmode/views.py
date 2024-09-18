@@ -6,6 +6,7 @@ from django.http import Http404, HttpRequest
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
+from ascii.core.utils import reverse
 from ascii.textmode.choices import TagCategory
 from ascii.textmode.forms import AdvancedSearchForm, PackFilterForm, SearchBarForm
 from ascii.textmode.models import ALT_SLASH, ArtFile, ArtFileTag, ArtPack
@@ -83,6 +84,8 @@ class TextmodePackView(TemplateView):
                 elif collab == "joint":
                     artfiles = artfiles.filter(artist_count__gt=1)
 
+        search_url = reverse("textmode-search", qs={"pack": pack.name})
+
         is_filtered = any(form.cleaned_data.values())
 
         p = Paginator(artfiles, PAGE_SIZE)
@@ -93,6 +96,7 @@ class TextmodePackView(TemplateView):
             "page": page,
             "form": form,
             "is_filtered": is_filtered,
+            "search_url": search_url,
         }
 
 
@@ -181,9 +185,20 @@ class TextmodeTagView(TemplateView):
         p = Paginator(artfiles, PAGE_SIZE)
         page = p.page(get_page_number(self.request))
 
+        match tag.category:
+            case TagCategory.GROUP:
+                search_url = reverse("textmode-search", qs={"group": tag.name})
+            case TagCategory.ARTIST:
+                search_url = reverse("textmode-search", qs={"artist": tag.name})
+            case TagCategory.CONTENT:
+                search_url = reverse("textmode-search", qs={"content": tag.name})
+            case _:
+                raise ValueError
+
         return {
             "tag": tag,
             "page": page,
+            "search_url": search_url,
         }
 
 
