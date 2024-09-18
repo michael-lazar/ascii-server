@@ -54,13 +54,17 @@ class SixteenColorsPackImporter:
             zip_data = self.client.get_file(f"/archive/{self.year}/{quote(zip_name)}")
             return ContentFile(zip_data, name=zip_name)
 
-        self.pack, _ = ArtPack.objects.get_or_create(
-            name=self.name,
-            defaults={
-                "year": self.year,
-                "zip_file": get_zip_file,
-            },
-        )
+        try:
+            self.pack, _ = ArtPack.objects.get_or_create(
+                name=self.name,
+                defaults={
+                    "year": self.year,
+                    "zip_file": get_zip_file,
+                },
+            )
+        except Exception as e:
+            # See https://16colo.rs/pack/fuel27/, returns 403 FORBIDDEN
+            _logger.warning(f"Failed to download pack: {self.name}, {data}", exc_info=e)
 
         for artfile_name, artfile_data in data["files"].items():
             try:
