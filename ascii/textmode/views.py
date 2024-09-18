@@ -293,6 +293,7 @@ class TextModeSearchView(TemplateView):
             if max_year := form.cleaned_data["max_year"]:
                 artfiles = artfiles.filter(pack__year__lte=max_year)
             if order := form.cleaned_data["order"]:
+                artfiles = artfiles.filter(**{f"{order.lstrip('-')}__isnull": False})
                 artfiles = artfiles.order_by(order)
 
         p = Paginator(artfiles, PAGE_SIZE)
