@@ -589,6 +589,12 @@ fieldset {
     width: 100%;
 }
 
+.view-all-link {
+    text-align: center;
+    font-size: small;
+    margin: 10px;
+}
+
 @media (max-width: 768px) {
     .tag-list {
         column-width: 100px;

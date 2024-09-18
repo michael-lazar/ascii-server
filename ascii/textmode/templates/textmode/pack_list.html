@@ -15,7 +15,7 @@
   </form>
   {% for year, packs in packs_by_year %}
     <h2>{{ year }}
-      <a class="header-link" href="{% url 'textmode-pack-year-list' year %}">(view all)</a>
+      <a class="header-link" href="{% url 'textmode-pack-year-list' year %}">(view)</a>
     </h2>
     {% include "textmode/fragments/pack_grid.html" %}
   {% endfor %}

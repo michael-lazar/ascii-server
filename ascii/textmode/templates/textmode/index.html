@@ -7,29 +7,33 @@
     <span class="header-link">(mirrored from
       <a href="https://16colo.rs" class="header-link">16colo.rs</a>)</span>
   </h1>
-  <h2>Search <a class="header-link" href="{% url 'textmode-search' %}">(view all)</a></h2>
+  <h2>Search <a class="header-link" href="{% url 'textmode-search' %}">(options)</a></h2>
   <form method="get" class="searchbar" action="{% url 'textmode-search' %}">
     {{ form }}
     <input type="submit" value="Go">
   </form>
   <h2>By Pack <a class="header-link" href="{% url 'textmode-pack-list' %}">(view all)</a></h2>
   {% include "textmode/fragments/pack_grid.html" %}
+  <div class="view-all-link"><a href="{% url 'textmode-pack-list' %}">more...</a></div>
   <h2>By Artist <a class="header-link" href="{% url 'textmode-tag-category-list' 'artist' %}">(view all)</a></h2>
   <ul class="tag-list">
     {% for tag in artist_tags %}
       <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
     {% endfor %}
   </ul>
+  <div class="view-all-link"><a href="{% url 'textmode-tag-category-list' 'artist' %}">more...</a></div>
   <h2>By Group <a class="header-link" href="{% url 'textmode-tag-category-list' 'group' %}">(view all)</a></h2>
   <ul class="tag-list">
     {% for tag in group_tags %}
       <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
     {% endfor %}
   </ul>
+  <div class="view-all-link"><a href="{% url 'textmode-tag-category-list' 'group' %}">more...</a></div>
   <h2>By Content <a class="header-link" href="{% url 'textmode-tag-category-list' 'content' %}">(view all)</a></h2>
   <ul class="tag-list">
     {% for tag in content_tags %}
       <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
     {% endfor %}
   </ul>
+  <div class="view-all-link"><a href="{% url 'textmode-tag-category-list' 'content' %}">more...</a></div>
 {% endblock %}
