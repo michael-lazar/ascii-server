@@ -328,9 +328,18 @@ class ArtFile(BaseModel):
 
         return ArtFileTag.objects.groups().filter(name=self.group.lower()).first()
 
+    def get_title_tag(self) -> ArtFileTag | None:
+        if not self.title:
+            return None
+
+        return ArtFileTag.objects.content().filter(name=self.title.lower()).first()
+
     def get_sauce_display(self) -> dict[str, str]:
         data: dict = {}
-        if self.title:
+
+        if title_tag := self.get_title_tag():
+            data["Title"] = format_html("<a href='{}'>{}</a>", title_tag.public_url, self.title)
+        elif self.title:
             data["Title"] = self.title
 
         if author_tag := self.get_author_tag():
@@ -352,7 +361,7 @@ class ArtFile(BaseModel):
         if self.number_of_lines and self.character_width:
             data["Size"] = f"{self.character_width}x{self.number_of_lines}"
         if self.datatype is not None:
-            data["Type"] = f"{self.get_datatype_display()} / {self.get_filetype_display()}"
+            data["Type"] = f"{self.get_datatype_display()}/{self.get_filetype_display()}"
         if self.ice_colors is not None:
             data["ICE Color"] = "on" if self.ice_colors else "off"
         if self.letter_spacing is not None:
