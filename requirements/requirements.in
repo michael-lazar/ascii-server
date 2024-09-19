@@ -4,6 +4,7 @@ django-admin-interface
 django-autocomplete-light
 django-browser-reload
 django-cleanup
+django-debug-toolbar
 django-environ
 django-extensions
 gevent

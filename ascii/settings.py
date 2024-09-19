@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import sys
 
 import environ
 
@@ -10,6 +11,8 @@ env.smart_cast = False
 BASE_DIR = os.path.dirname(__file__)
 
 DATA_ROOT = os.path.normpath(os.path.join(BASE_DIR, "..", "data"))
+
+TESTING = "test" in sys.argv
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", True)
@@ -54,6 +57,16 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
+
+
+def show_toolbar_callback(request):
+    return request.user and request.user.is_superuser
+
+
+if not TESTING:
+    INSTALLED_APPS = [*INSTALLED_APPS, "debug_toolbar"]
+    MIDDLEWARE = [*MIDDLEWARE, "debug_toolbar.middleware.DebugToolbarMiddleware"]
+    DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": show_toolbar_callback}
 
 ROOT_URLCONF = "ascii.urls"
 
