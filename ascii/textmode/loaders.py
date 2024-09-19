@@ -24,9 +24,10 @@ class SixteenColorsPackImporter:
     year: int
     pack: ArtPack
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, skip_tags: bool = False):
         self.name = name
         self.client = SixteenColorsClient()
+        self.skip_tags = skip_tags
 
     def process(self) -> ArtPack | None:
 
@@ -78,7 +79,6 @@ class SixteenColorsPackImporter:
         return self.pack
 
     def process_file(self, name, data):
-
         is_joint = len(data.get("artists", [])) > 1
         sauce = Sauce(data.get("sauce", {}))
 
@@ -131,22 +131,32 @@ class SixteenColorsPackImporter:
             "image_x1": get_image_x1,
         }
 
-        artfile, _ = ArtFile.objects.update_or_create(
+        artfile, created = ArtFile.objects.update_or_create(
             defaults=defaults,
             create_defaults=create_defaults,
             name=name,
             pack=self.pack,
         )
 
-        tags: list[ArtFileTag] = []
-        for tag_name in data.get("artists", []):
-            tag, _ = ArtFileTag.objects.get_or_create(category=TagCategory.ARTIST, name=tag_name)
-            tags.append(tag)
-        for tag_name in data.get("content", []):
-            tag, _ = ArtFileTag.objects.get_or_create(category=TagCategory.CONTENT, name=tag_name)
-            tags.append(tag)
-        for tag_name in data.get("groups", []):
-            tag, _ = ArtFileTag.objects.get_or_create(category=TagCategory.GROUP, name=tag_name)
-            tags.append(tag)
+        if created and not self.skip_tags:
+            tags: list[ArtFileTag] = []
+            for tag_name in data.get("artists", []):
+                tag, _ = ArtFileTag.objects.get_or_create(
+                    category=TagCategory.ARTIST,
+                    name=tag_name,
+                )
+                tags.append(tag)
+            for tag_name in data.get("content", []):
+                tag, _ = ArtFileTag.objects.get_or_create(
+                    category=TagCategory.CONTENT,
+                    name=tag_name,
+                )
+                tags.append(tag)
+            for tag_name in data.get("groups", []):
+                tag, _ = ArtFileTag.objects.get_or_create(
+                    category=TagCategory.GROUP,
+                    name=tag_name,
+                )
+                tags.append(tag)
 
-        artfile.tags.set(tags)
+            artfile.tags.set(tags)

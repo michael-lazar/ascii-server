@@ -8,9 +8,10 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("name", type=str, help="The name of the pack")
+        parser.add_argument("--skip-tags", action="store_true", default=False)
 
     def handle(self, *args, **options):
         self.stdout.write(f"Fetching pack {options['name']}")
-        importer = SixteenColorsPackImporter(options["name"])
+        importer = SixteenColorsPackImporter(options["name"], options["skip_tags"])
         pack = importer.process()
         self.stdout.write(f"Import finished: {pack}")
