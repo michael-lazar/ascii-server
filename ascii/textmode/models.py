@@ -5,8 +5,9 @@ import mimetypes
 import os
 
 from django.db import models
-from django.db.models import Count, Exists, Manager, OuterRef, Prefetch, Q
+from django.db.models import Count, Exists, Manager, OuterRef, Prefetch
 from django.utils import timezone
+from django.utils.html import format_html
 
 from ascii.core.models import BaseModel
 from ascii.core.utils import reverse
@@ -34,14 +35,11 @@ VIDEO_MIMETYPES = [
 
 class ArtFileTagQuerySet(models.QuerySet):
 
-    def annotate_artfile_count(self) -> ArtFileTagQuerySet:
-        return self.annotate(artfile_count=Count("artfiles"))
-
     def visible(self) -> ArtFileTagQuerySet:
-        return self.filter(artfiles__isnull=False)
+        return self.filter(artfile_count__gt=0)
 
     def for_tag_list(self, category: TagCategory) -> ArtFileTagQuerySet:
-        return self.visible().filter(category=category).annotate_artfile_count().order_by("name")
+        return self.visible().filter(category=category).order_by("name")
 
     def artists(self) -> ArtFileTagQuerySet:
         return self.filter(category=TagCategory.ARTIST)
@@ -59,11 +57,12 @@ ArtFileTagManager = Manager.from_queryset(ArtFileTagQuerySet)  # noqa
 class ArtFileTag(BaseModel):
     category = models.CharField(choices=TagCategory.choices, db_index=True, max_length=20)
     name = models.CharField(max_length=100, db_index=True)
+    artfile_count = models.PositiveIntegerField(default=0, db_index=True)
 
     objects = ArtFileTagManager()
 
     # Annotated fields
-    artfile_count: int
+    tag_count: int
 
     class Meta:
         ordering = ["category", "name"]
@@ -150,13 +149,14 @@ class ArtFileQuerySet(models.QuerySet):
         )
         return list(qs)
 
-    def annotate_artist_count(self):
-        """
-        Count the number of artist tags associated with the file.
-        """
-        return self.annotate(
-            artist_count=Count("tags", filter=Q(tags__category=TagCategory.ARTIST))
+    def count_is_joint(self) -> list[tuple[bool, int]]:
+        qs = (
+            self.values("is_joint")
+            .annotate(count=Count("id", distinct=True))
+            .order_by("-count")
+            .values_list("is_joint", "count")
         )
+        return list(qs)
 
     def font_names(self) -> list[str]:
         return (
@@ -264,11 +264,9 @@ class ArtFile(BaseModel):
         db_index=True,
     )
     font_name = models.CharField(max_length=50, blank=True, db_index=True)
+    is_joint = models.BooleanField(default=False, db_index=True)
 
     objects = ArtFileManager()
-
-    # Annotated fields
-    artist_count: int
 
     class Meta:
         ordering = ["id"]
@@ -318,23 +316,33 @@ class ArtFile(BaseModel):
         qs = self.pack.artfiles.filter(name__lt=self.name)
         return qs.order_by("-name").first()
 
-    def get_artist_tags(self) -> ArtFileTagQuerySet:
-        return ArtFileTag.objects.filter(category=TagCategory.ARTIST, artfiles=self)
+    def get_author_tag(self) -> ArtFileTag | None:
+        if not self.author:
+            return None
 
-    def get_group_tags(self) -> ArtFileTagQuerySet:
-        return ArtFileTag.objects.filter(category=TagCategory.GROUP, artfiles=self)
+        return ArtFileTag.objects.artists().filter(name=self.author.lower()).first()
 
-    def get_content_tags(self) -> ArtFileTagQuerySet:
-        return ArtFileTag.objects.filter(category=TagCategory.CONTENT, artfiles=self)
+    def get_group_tag(self) -> ArtFileTag | None:
+        if not self.group:
+            return None
+
+        return ArtFileTag.objects.groups().filter(name=self.group.lower()).first()
 
     def get_sauce_display(self) -> dict[str, str]:
-        data = {}
+        data: dict = {}
         if self.title:
             data["Title"] = self.title
-        if self.author:
+
+        if author_tag := self.get_author_tag():
+            data["Author"] = format_html("<a href='{}'>{}</a>", author_tag.public_url, self.author)
+        elif self.author:
             data["Author"] = self.author
-        if self.group:
+
+        if group_tag := self.get_group_tag():
+            data["Group"] = format_html("<a href='{}'>{}</a>", group_tag.public_url, self.group)
+        elif self.group:
             data["Group"] = self.group
+
         if self.date:
             data["Date"] = self.date.strftime("%Y-%m-%d")
         if self.comments:

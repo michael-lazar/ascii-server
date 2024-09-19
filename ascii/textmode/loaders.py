@@ -79,11 +79,13 @@ class SixteenColorsPackImporter:
 
     def process_file(self, name, data):
 
+        is_joint = len(data.get("artists", [])) > 1
         sauce = Sauce(data.get("sauce", {}))
 
         defaults = {
-            "sauce_data": sauce.data,
             "is_fileid": name == self.fileid,
+            "is_joint": is_joint,
+            "sauce_data": sauce.data,
             "title": sauce.title,
             "author": sauce.author,
             "group": sauce.group,

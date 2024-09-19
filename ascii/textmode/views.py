@@ -27,11 +27,7 @@ class TextmodeIndexView(TemplateView):
     template_name = "textmode/index.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        packs = (
-            ArtPack.objects.annotate_artfile_count()
-            .prefetch_fileid()
-            .order_by("-year", "-created_at")[:10]
-        )
+        packs = ArtPack.objects.prefetch_fileid().order_by("-year")[:10]
 
         artist_tags = ArtFileTag.objects.for_tag_list(TagCategory.ARTIST)
         artist_tags = artist_tags.order_by("-artfile_count")[:20]
@@ -64,11 +60,7 @@ class TextmodePackView(TemplateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         pack = get_object_or_404(ArtPack, name=kwargs["pack"])
 
-        artfiles = (
-            pack.artfiles.select_related("pack")
-            .annotate_artist_count()
-            .order_by("-is_fileid", "name")
-        )
+        artfiles = pack.artfiles.select_related("pack").order_by("-is_fileid", "name")
 
         form = PackFilterForm(artfiles, data=self.request.GET)
         if form.is_valid():
@@ -80,9 +72,9 @@ class TextmodePackView(TemplateView):
                 artfiles = artfiles.filter(file_extension=extension)
             if collab := form.cleaned_data["collab"]:
                 if collab == "solo":
-                    artfiles = artfiles.filter(artist_count__lte=1)
+                    artfiles = artfiles.filter(is_joint=False)
                 elif collab == "joint":
-                    artfiles = artfiles.filter(artist_count__gt=1)
+                    artfiles = artfiles.filter(is_joint=True)
 
         search_url = reverse("textmode-search", qs={"pack": pack.name})
 
@@ -148,13 +140,7 @@ class TextmodeArtfileView(TemplateView):
         pack = get_object_or_404(ArtPack, name=kwargs["pack"])
         artfile = get_object_or_404(ArtFile, pack=pack, name=kwargs["artfile"])
 
-        # Note the order of the filters is important here!
-        # We need to count the artfiles before applying the filter.
-        tags = (
-            ArtFileTag.objects.order_by("category", "name")
-            .annotate_artfile_count()
-            .filter(artfiles=artfile)
-        )
+        tags = ArtFileTag.objects.order_by("category", "name").filter(artfiles=artfile)
 
         return {
             "pack": pack,
@@ -292,6 +278,8 @@ class TextModeSearchView(TemplateView):
                 artfiles = artfiles.filter(pack__year__gte=min_year)
             if max_year := form.cleaned_data["max_year"]:
                 artfiles = artfiles.filter(pack__year__lte=max_year)
+            if is_joint := form.cleaned_data["is_joint"]:
+                artfiles = artfiles.filter(is_joint__in=is_joint)
             if order := form.cleaned_data["order"]:
                 artfiles = artfiles.filter(**{f"{order.lstrip('-')}__isnull": False})
                 artfiles = artfiles.order_by(order)

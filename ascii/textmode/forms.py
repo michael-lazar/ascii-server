@@ -1,5 +1,3 @@
-from collections import Counter
-
 from dal import autocomplete
 from django import forms
 from django.db.models import Count
@@ -12,12 +10,12 @@ class ArtFileTagChoiceField(forms.ModelChoiceField):
 
     def __init__(self, category: TagCategory, artfiles: ArtFileQuerySet, **kwargs):
         queryset = ArtFileTag.objects.filter(category=category, artfiles__in=artfiles)
-        queryset = queryset.annotate(artfile_count=Count("name")).order_by("-artfile_count")
+        queryset = queryset.annotate(tag_count=Count("name")).order_by("-tag_count")
         initial = queryset.values_list("id", flat=True)
         super().__init__(queryset=queryset, initial=initial, **kwargs)
 
     def label_from_instance(self, obj: ArtFileTag) -> str:
-        return f"{obj.name} ({obj.artfile_count})"
+        return f"{obj.name} ({obj.tag_count})"
 
 
 class PackChoiceField(forms.ModelChoiceField):
@@ -45,19 +43,12 @@ class FileExtensionChoiceField(forms.ChoiceField):
 class CollabChoiceField(forms.ChoiceField):
 
     def __init__(self, artfiles: ArtFileQuerySet, **kwargs):
-
-        counter = Counter()
-        for artfile in artfiles.all():
-            if artfile.artist_count == 1:
-                counter["solo"] += 1
-            elif artfile.artist_count > 1:
-                counter["joint"] += 1
-
         choices = []
-        if count := counter["solo"]:
-            choices.append(("solo", f"solo ({count})"))
-        if count := counter["joint"]:
-            choices.append(("joint", f"joint ({count})"))
+        for is_joint, count in artfiles.count_is_joint():
+            if is_joint:
+                choices.append(("joint", f"joint ({count})"))
+            else:
+                choices.append(("solo", f"solo ({count})"))
 
         super().__init__(choices=choices, **kwargs)
 
@@ -152,6 +143,12 @@ class AdvancedSearchForm(forms.Form):
         self.fields["ice_colors"] = forms.MultipleChoiceField(
             choices=[(False, "no"), (True, "yes")],
             label="ICE Colors",
+            widget=autocomplete.Select2Multiple,
+            required=False,
+        )
+        self.fields["is_joint"] = forms.MultipleChoiceField(
+            choices=[(False, "solo"), (True, "joint")],
+            label="Collaboration",
             widget=autocomplete.Select2Multiple,
             required=False,
         )

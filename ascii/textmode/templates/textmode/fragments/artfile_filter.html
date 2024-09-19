@@ -7,7 +7,7 @@
     {% if is_filtered %}
       <fieldset class="filter-results">
         <legend>
-          Filters
+          Results ({{ page.paginator.count }})
           <a href="{{ request.path }}" class="sidebar-clear-link">[clear]</a>
         </legend>
         <div class="filter-results-table">

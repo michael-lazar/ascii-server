@@ -321,17 +321,8 @@ input[type="radio"] {
     font-weight: normal;
     font-size: small;
     text-decoration: none;
-    margin-left: 4px;
+    margin-left: 2px;
     color: darkblue;
-}
-
-.sidebar-legend-clear {
-    background: none;
-    border: none;
-    padding: 0 2px;
-    font-weight: normal;
-    color: darkblue;
-    cursor: pointer;
 }
 
 .sidebar-list {

@@ -12,7 +12,6 @@ from ascii.textmode.models import (
     ArtFile,
     ArtFileQuerySet,
     ArtFileTag,
-    ArtFileTagQuerySet,
     ArtPack,
     ArtPackQuerySet,
 )
@@ -111,11 +110,7 @@ class ArtFileTagAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     readonly_fields = ["get_artfile_count", "get_public_link"]
     list_filter = ["category"]
-
-    def get_queryset(self, request: HttpRequest) -> ArtFileTagQuerySet:
-        qs = cast(ArtFileTagQuerySet, super().get_queryset(request))
-        qs = qs.annotate_artfile_count()
-        return qs
+    exclude = ["artfile_count"]
 
     @admin.display(description="Files", ordering="artfile_count")
     def get_artfile_count(self, obj: ArtFileTag) -> str:
