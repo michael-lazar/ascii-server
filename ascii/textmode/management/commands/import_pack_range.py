@@ -14,13 +14,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for year in range(options["min_year"], options["max_year"] + 1):
-            self.stdout.write(f"Fetching packs for year {year}")
-
             client = SixteenColorsClient()
             data = client.get_year(year)
-            self.stdout.write(f"Found {len(data)} packs")
             for pack_data in data:
-                self.stdout.write(f"Fetching pack {pack_data['name']}")
                 importer = SixteenColorsPackImporter(pack_data["name"], options["skip_tags"])
                 importer.process()
 
