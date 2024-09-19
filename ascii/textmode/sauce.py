@@ -53,8 +53,8 @@ class Sauce:
 
         try:
             return datetime.strptime(date_str, "%Y%m%d").date()
-        except Exception as e:
-            _logger.warning(f"Invalid date: {date_str}", exc_info=e)
+        except Exception:
+            _logger.warning(f"Invalid date: {date_str}")
             return None
 
     @cached_property
@@ -96,8 +96,8 @@ class Sauce:
                     return FileType.EXECUTABLE
                 case _:
                     return FileType.NONE
-        except IndexError as e:
-            _logger.warning(f"Invalid filetype: {filetype}", exc_info=e)
+        except IndexError:
+            _logger.warning(f"Invalid filetype: {filetype}")
             return None
 
     @property

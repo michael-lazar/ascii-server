@@ -53,12 +53,9 @@ class BaseSession(requests.Session):
         kwargs["params"] = self.default_params | kwargs["params"]
 
         self.apply_rate_limit()
+
         response = super().request(*args, **kwargs)
-        try:
-            response.raise_for_status()
-        except requests.HTTPError as e:
-            _logger.warning(f"HTTP Response Body: {e.response.text}")
-            raise
+        response.raise_for_status()
 
         return response
 

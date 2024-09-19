@@ -340,7 +340,7 @@ class ArtFile(BaseModel):
         if self.comments:
             data["Comments"] = self.comments
         if self.pixel_width and self.pixel_height:
-            data["Size"] = f"{self.pixel_width}x{self.pixel_height} px"
+            data["Size"] = f"{self.pixel_width}x{self.pixel_height}px"
         if self.number_of_lines and self.character_width:
             data["Size"] = f"{self.character_width}x{self.number_of_lines}"
         if self.datatype is not None:
