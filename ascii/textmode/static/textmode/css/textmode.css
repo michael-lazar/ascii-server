@@ -438,7 +438,6 @@ fieldset {
     gap: 5px;
     align-items: stretch;
     margin: 20px 40px;
-    justify-content: center;
 }
 
 .searchbar input {
