@@ -277,10 +277,11 @@ class AdvancedSearchForm(forms.Form):
             ),
         )
 
-        pack_years = ArtPack.objects.list_years()
+        pack_years = list(ArtPack.objects.list_years())
 
         self.fields["min_year"] = forms.IntegerField(
             min_value=pack_years[0],
+            max_value=pack_years[-1],
             required=False,
             label="Min",
             widget=forms.NumberInput(
@@ -291,7 +292,8 @@ class AdvancedSearchForm(forms.Form):
             ),
         )
         self.fields["max_year"] = forms.IntegerField(
-            min_value=pack_years[-1],
+            min_value=pack_years[0],
+            max_value=pack_years[-1],
             required=False,
             label="Max",
             widget=forms.NumberInput(
