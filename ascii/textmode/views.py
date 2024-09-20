@@ -8,7 +8,7 @@ from django.views.generic import TemplateView
 
 from ascii.core.utils import reverse
 from ascii.textmode.choices import TagCategory
-from ascii.textmode.forms import AdvancedSearchForm, PackFilterForm, SearchBarForm
+from ascii.textmode.forms import AdvancedSearchForm, PackFilterForm, SearchBarForm, SearchPackForm
 from ascii.textmode.models import ALT_SLASH, ArtFile, ArtFileTag, ArtPack
 
 PAGE_SIZE = 100
@@ -38,14 +38,16 @@ class TextmodeIndexView(TemplateView):
         content_tags = ArtFileTag.objects.for_tag_list(TagCategory.CONTENT)
         content_tags = content_tags.order_by("-artfile_count")[:20]
 
-        form = SearchBarForm()
+        search_bar_form = SearchBarForm()
+        search_pack_form = SearchPackForm()
 
         return {
             "packs": packs,
             "artist_tags": artist_tags,
             "group_tags": group_tags,
             "content_tags": content_tags,
-            "form": form,
+            "search_bar_form": search_bar_form,
+            "search_pack_form": search_pack_form,
         }
 
 
@@ -98,10 +100,12 @@ class TextmodePackListView(TemplateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         packs = ArtPack.objects.prefetch_fileid().order_by("-year", "-created_at")
 
-        form = SearchBarForm(data=self.request.GET)
+        form = SearchPackForm(data=self.request.GET)
         if form.is_valid():
             if q := form.cleaned_data["q"]:
                 packs = packs.filter(name__icontains=q)
+            if year := form.cleaned_data["year"]:
+                packs = packs.filter(year=year)
 
         # For some reason the generators appear empty if I loop them inside of
         # the template, I need to cast them to lists first.

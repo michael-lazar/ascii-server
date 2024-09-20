@@ -40,6 +40,15 @@ class FileExtensionChoiceField(forms.ChoiceField):
         super().__init__(choices=choices, **kwargs)
 
 
+class PackYearChoiceField(forms.ChoiceField):
+
+    def __init__(self, **kwargs):
+        choices = [("", "all years")]
+        for year in ArtPack.objects.list_years():
+            choices.append((year, year))
+        super().__init__(choices=choices, **kwargs)
+
+
 class CollabChoiceField(forms.ChoiceField):
 
     def __init__(self, artfiles: ArtFileQuerySet, **kwargs):
@@ -112,11 +121,28 @@ class SearchBarForm(forms.Form):
         label="",
         widget=forms.TextInput(
             attrs={
-                "placeholder": "search...",
+                "placeholder": "name...",
                 "autocomplete": "off",
             },
         ),
     )
+
+
+class SearchPackForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["q"] = forms.CharField(
+            required=False,
+            label="",
+            widget=forms.TextInput(
+                attrs={
+                    "placeholder": "name...",
+                    "autocomplete": "off",
+                },
+            ),
+        )
+        self.fields["year"] = PackYearChoiceField(required=False)
 
 
 class AdvancedSearchForm(forms.Form):
@@ -250,8 +276,11 @@ class AdvancedSearchForm(forms.Form):
                 }
             ),
         )
+
+        pack_years = ArtPack.objects.list_years()
+
         self.fields["min_year"] = forms.IntegerField(
-            min_value=1990,
+            min_value=pack_years[0],
             required=False,
             label="Min",
             widget=forms.NumberInput(
@@ -262,7 +291,7 @@ class AdvancedSearchForm(forms.Form):
             ),
         )
         self.fields["max_year"] = forms.IntegerField(
-            min_value=2030,
+            min_value=pack_years[-1],
             required=False,
             label="Max",
             widget=forms.NumberInput(

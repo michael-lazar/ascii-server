@@ -9,10 +9,15 @@
   </h1>
   <h2>Search <a class="header-link" href="{% url 'textmode-search' %}">(options)</a></h2>
   <form method="get" class="searchbar" action="{% url 'textmode-search' %}">
-    {{ form }}
+    {{ search_bar_form.q }}
     <input type="submit" value="Go">
   </form>
   <h2>By Pack <a class="header-link" href="{% url 'textmode-pack-list' %}">(view all)</a></h2>
+  <form method="get" class="searchbar" action="{% url 'textmode-pack-list' %}">
+    {{ search_pack_form.q }}
+    {{ search_pack_form.year }}
+    <input type="submit" value="Go">
+  </form>
   {% include "textmode/fragments/pack_grid.html" %}
   <div class="view-all-link"><a href="{% url 'textmode-pack-list' %}">more...</a></div>
   <h2>By Artist <a class="header-link" href="{% url 'textmode-tag-category-list' 'artist' %}">(view all)</a></h2>

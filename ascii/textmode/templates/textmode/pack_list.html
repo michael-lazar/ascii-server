@@ -10,12 +10,13 @@
 {% block content %}
   <h1>Packs</h1>
   <form method="get" class="searchbar">
-    {{ form }}
+    {{ form.q }}
+    {{ form.year }}
     <input type="submit" value="Go">
   </form>
   {% for year, packs in packs_by_year %}
     <h2>{{ year }}
-      <a class="header-link" href="{% url 'textmode-pack-year-list' year %}">(view)</a>
+      <a class="header-link" href="{% url 'textmode-pack-year-list' year %}">(view all)</a>
     </h2>
     {% include "textmode/fragments/pack_grid.html" %}
   {% endfor %}

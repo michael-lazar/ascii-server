@@ -98,6 +98,9 @@ class ArtPackQuerySet(models.QuerySet):
     def group_by_year(self):
         return itertools.groupby(self, key=lambda obj: obj.year)
 
+    def list_years(self) -> ArtPackQuerySet:
+        return self.order_by("year").values_list("year", flat=True).distinct()
+
 
 ArtPackManager = Manager.from_queryset(ArtPackQuerySet)  # noqa
 

@@ -451,6 +451,13 @@ fieldset {
     box-sizing: border-box;
 }
 
+.searchbar select {
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
 .pagination {
     background: #eee;
     font-weight: bold;
