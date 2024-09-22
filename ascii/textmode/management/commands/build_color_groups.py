@@ -20,7 +20,7 @@ class Command(BaseCommand):
             description = "\n".join(
                 (
                     ", ".join(ANSI_COLORS[c] for c in colors if c < 8),
-                    ", ".join(ANSI_COLORS[c] for c in colors if 8 <= c),
+                    ", ".join(ANSI_COLORS[c] for c in colors if 8 <= c < 16),
                 )
             )
 
