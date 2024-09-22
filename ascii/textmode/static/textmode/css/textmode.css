@@ -600,6 +600,7 @@ fieldset {
     text-align: center;
     margin: 20px;
     font-style: italic;
+    white-space: pre-line;
 }
 
 

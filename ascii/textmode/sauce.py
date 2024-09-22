@@ -1,7 +1,12 @@
+from __future__ import annotations
+
 import logging
+import typing
 from datetime import date, datetime
 
 from django.utils.functional import cached_property
+from stransi import Ansi, SetAttribute, SetColor
+from stransi.attribute import Attribute
 
 from ascii.textmode.choices import (
     ARCHIVE_FILETYPES,
@@ -15,7 +20,59 @@ from ascii.textmode.choices import (
     LetterSpacing,
 )
 
+if typing.TYPE_CHECKING:
+    from ascii.textmode.models import ArtFile
+
 _logger = logging.getLogger(__name__)
+
+
+ANSI_COLORS = [
+    "Black",
+    "Red",
+    "Green",
+    "Yellow",
+    "Blue",
+    "Magenta",
+    "Cyan",
+    "White",
+    "Bright Black",
+    "Bright Red",
+    "Bright Green",
+    "Bright Yellow",
+    "Bright Blue",
+    "Bright Magenta",
+    "Bright Cyan",
+    "Bright White",
+]
+
+
+class ANSIFileInspector:
+
+    def __init__(self, artfile: ArtFile):
+        self.artfile = artfile
+
+        with self.artfile.raw_file.open("rb") as fp:
+            self.ansi = Ansi(fp.read().decode("cp437", errors="ignore"))
+
+    def get_colors(self) -> list[int]:
+        colors: set[int] = set()
+
+        is_bold = False
+        for instruction in self.ansi.instructions():
+            if isinstance(instruction, SetColor):
+                if instruction.color:
+                    code = instruction.color.code  # noqa
+                    if is_bold:
+                        code += 8
+                    colors.add(code)
+            if isinstance(instruction, SetAttribute):
+                match instruction.attribute:
+                    case Attribute.NORMAL:
+                        is_bold = False
+                    case Attribute.BOLD:
+                        is_bold = True
+
+        return sorted(colors)
 
 
 class Sauce:

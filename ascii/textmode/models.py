@@ -5,7 +5,7 @@ import mimetypes
 import os
 
 from django.db import models
-from django.db.models import Count, Exists, Manager, OuterRef, Prefetch
+from django.db.models import Count, Exists, Manager, OuterRef, Prefetch, Q
 from django.utils import timezone
 from django.utils.html import format_html
 
@@ -185,6 +185,9 @@ class ArtFileQuerySet(models.QuerySet):
             return self
 
         return self.filter(name__icontains=text)
+
+    def ansi(self) -> ArtFileQuerySet:
+        return self.filter(Q(filetype=FileType.ANSI) | (Q(file_extension__iexact=".ans")))
 
 
 ArtFileManager = Manager.from_queryset(ArtFileQuerySet)  # noqa

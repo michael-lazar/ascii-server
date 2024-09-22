@@ -125,7 +125,7 @@ class ArtFileTagAdmin(admin.ModelAdmin):
 
 @admin.register(Gallery)
 class GalleryAdmin(admin.ModelAdmin):
-    list_display = ["name", "visible", "get_artfile_count"]
+    list_display = ["name", "visible", "get_artfile_count", "get_public_link"]
     search_fields = ["name"]
     readonly_fields = ["get_artfile_count", "get_public_link"]
     autocomplete_fields = ["artfiles"]

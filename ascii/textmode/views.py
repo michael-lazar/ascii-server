@@ -28,7 +28,9 @@ class TextmodeIndexView(TemplateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         packs = ArtPack.objects.prefetch_fileid().order_by("-year")[:10]
-        galleries = Gallery.objects.visible().annotate_artfile_count()[:20]
+
+        galleries = Gallery.objects.visible().annotate_artfile_count()
+        galleries = galleries.order_by("-artfile_count")[:20]
 
         artist_tags = ArtFileTag.objects.for_tag_list(TagCategory.ARTIST)
         artist_tags = artist_tags.order_by("-artfile_count")[:20]
