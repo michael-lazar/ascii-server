@@ -305,7 +305,12 @@ class TextModeSearchView(TemplateView):
 
 
 class TextModeGalleryView(TemplateView):
-    template_name = "textmode/gallery.html"
+
+    def get_template_names(self) -> list[str]:
+        if self.request.headers.get("Hx-Request"):
+            return ["textmode/fragments/artfile_grid_partial.html"]
+        else:
+            return ["textmode/gallery.html"]
 
     def get_context_data(self, **kwargs):
         gallery = get_object_or_404(Gallery, id=kwargs["id"])
