@@ -14,6 +14,7 @@ from ascii.textmode.models import (
     ArtFileTag,
     ArtPack,
     ArtPackQuerySet,
+    Gallery,
 )
 
 
@@ -119,4 +120,26 @@ class ArtFileTagAdmin(admin.ModelAdmin):
 
     @admin.display(description="View")
     def get_public_link(self, obj: ArtFileTag) -> str:
+        return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)
+
+
+@admin.register(Gallery)
+class GalleryAdmin(admin.ModelAdmin):
+    list_display = ["name", "visible", "get_artfile_count"]
+    search_fields = ["name"]
+    readonly_fields = ["get_artfile_count", "get_public_link"]
+    autocomplete_fields = ["artfiles"]
+
+    def get_queryset(self, request: HttpRequest) -> ArtPackQuerySet:
+        qs = cast(ArtPackQuerySet, super().get_queryset(request))
+        qs = qs.annotate_artfile_count()
+        return qs
+
+    @admin.display(description="Files", ordering="artfile_count")
+    def get_artfile_count(self, obj: Gallery) -> str:
+        link_url = reverse("admin:textmode_artfile_changelist", qs={"galleries": obj.pk})
+        return format_html('<a href="{}">{}</a>', link_url, obj.artfile_count)
+
+    @admin.display(description="View")
+    def get_public_link(self, obj: Gallery) -> str:
         return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)

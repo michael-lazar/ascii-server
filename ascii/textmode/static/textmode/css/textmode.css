@@ -596,6 +596,13 @@ fieldset {
     margin: 10px;
 }
 
+.gallery-description {
+    text-align: center;
+    margin: 20px;
+    font-style: italic;
+}
+
+
 @media (max-width: 768px) {
     .tag-list {
         column-width: 100px;
@@ -611,6 +618,12 @@ fieldset {
     .advanced-search-wrapper {
         width: initial;
         margin: 0;
+    }
+
+    .gallery-description {
+        text-align: center;
+        margin: 10px 0;
+        font-style: italic;
     }
 
     .advanced-search {

@@ -9,7 +9,7 @@ from django.views.generic import TemplateView
 from ascii.core.utils import reverse
 from ascii.textmode.choices import TagCategory
 from ascii.textmode.forms import AdvancedSearchForm, PackFilterForm, SearchBarForm, SearchPackForm
-from ascii.textmode.models import ALT_SLASH, ArtFile, ArtFileTag, ArtPack
+from ascii.textmode.models import ALT_SLASH, ArtFile, ArtFileTag, ArtPack, Gallery
 
 PAGE_SIZE = 100
 
@@ -28,6 +28,7 @@ class TextmodeIndexView(TemplateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         packs = ArtPack.objects.prefetch_fileid().order_by("-year")[:10]
+        galleries = Gallery.objects.visible().annotate_artfile_count()[:20]
 
         artist_tags = ArtFileTag.objects.for_tag_list(TagCategory.ARTIST)
         artist_tags = artist_tags.order_by("-artfile_count")[:20]
@@ -43,6 +44,7 @@ class TextmodeIndexView(TemplateView):
 
         return {
             "packs": packs,
+            "galleries": galleries,
             "artist_tags": artist_tags,
             "group_tags": group_tags,
             "content_tags": content_tags,
@@ -137,7 +139,7 @@ class TextmodePackYearListView(TemplateView):
         }
 
 
-class TextmodeArtfileView(TemplateView):
+class TextmodeArtFileView(TemplateView):
     template_name = "textmode/artfile.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
@@ -298,6 +300,36 @@ class TextModeSearchView(TemplateView):
             "page": page,
             "is_filtered": is_filtered,
         }
+
+
+class TextModeGalleryView(TemplateView):
+    template_name = "textmode/gallery.html"
+
+    def get_context_data(self, **kwargs):
+        gallery = get_object_or_404(Gallery, id=kwargs["id"])
+        if not gallery.visible:
+            raise Http404
+
+        artfiles = gallery.artfiles.all()
+
+        p = Paginator(artfiles, PAGE_SIZE)
+        page = p.page(get_page_number(self.request))
+
+        return {"gallery": gallery, "page": page}
+
+
+class TextModeGalleryListView(TemplateView):
+    template_name = "textmode/gallery_list.html"
+
+    def get_context_data(self, **kwargs):
+        galleries = Gallery.objects.visible().annotate_artfile_count()
+
+        form = SearchBarForm(data=self.request.GET)
+        if form.is_valid():
+            if q := form.cleaned_data["q"]:
+                galleries = galleries.filter(name__icontains=q)
+
+        return {"galleries": galleries, "form": form}
 
 
 class TextModeArtistAutocomplete(autocomplete.Select2QuerySetView):

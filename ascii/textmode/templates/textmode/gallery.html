@@ -1,0 +1,39 @@
+{% extends "textmode/base.html" %}
+
+{% load static %}
+
+
+{% block title %}gallery/{{ gallery.name }}{% endblock %}
+
+{% block breadcrumbs %}
+  <span>&gt;</span>
+  <a href="{% url 'textmode-gallery-list' %}">gallery</a>
+  <span>&gt;</span>
+  <a href="{{ gallery.public_url }}">{{ gallery.id }}</a>
+{% endblock %}
+
+{% block headerlinks %}
+  {% if user.is_staff %}
+    <div><a href="{{ gallery.change_url }}">edit</a></div>
+  {% endif %}
+{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+  <script>
+    {% include "textmode/fragments/artfile_grid.js" %}
+  </script>
+{% endblock %}
+
+{% block content %}
+  <div class="artfile-body">
+    <div class="artfile-content-wrapper">
+      <h1>Gallery / {{ gallery.name }}</h1>
+      {% if gallery.description %}
+        <div class="gallery-description">
+          {{ gallery.description }}
+        </div>
+      {% endif %}
+      {% include 'textmode/fragments/artfile_grid.html' with show_pack_name=1 %}
+    </div>
+  </div>
+{% endblock %}

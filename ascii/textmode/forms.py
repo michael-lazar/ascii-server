@@ -121,7 +121,7 @@ class SearchBarForm(forms.Form):
         label="",
         widget=forms.TextInput(
             attrs={
-                "placeholder": "name...",
+                "placeholder": "search...",
                 "autocomplete": "off",
             },
         ),
@@ -137,7 +137,7 @@ class SearchPackForm(forms.Form):
             label="",
             widget=forms.TextInput(
                 attrs={
-                    "placeholder": "name...",
+                    "placeholder": "search...",
                     "autocomplete": "off",
                 },
             ),

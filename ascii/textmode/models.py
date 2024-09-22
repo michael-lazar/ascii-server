@@ -385,3 +385,38 @@ class ArtFile(BaseModel):
 
     def is_video(self) -> bool:
         return self.mimetype in VIDEO_MIMETYPES
+
+
+class GalleryQuerySet(models.QuerySet):
+
+    def visible(self) -> GalleryQuerySet:
+        return self.filter(visible=True)
+
+    def annotate_artfile_count(self) -> GalleryQuerySet:
+        return self.annotate(artfile_count=Count("artfiles"))
+
+
+GalleryManager = Manager.from_queryset(GalleryQuerySet)  # noqa
+
+
+class Gallery(BaseModel):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    artfiles = models.ManyToManyField(ArtFile, blank=True, related_name="galleries")
+    visible = models.BooleanField(default=False)
+
+    objects = GalleryManager()
+
+    # Annotated fields
+    artfile_count: int
+
+    class Meta:
+        ordering = ["-id"]
+        verbose_name_plural = "Galleries"
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def public_url(self) -> str:
+        return reverse("textmode-gallery", args=[self.id])

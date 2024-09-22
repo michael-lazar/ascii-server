@@ -1,0 +1,21 @@
+{% extends "textmode/base.html" %}
+
+{% load static %}
+
+{% block breadcrumbs %}
+  <span>&gt;</span>
+  <a href="{% url 'textmode-gallery-list' %}">gallery</a>
+{% endblock %}
+
+{% block content %}
+  <h1>Galleries</h1>
+  <form method="get" class="searchbar">
+    {{ form }}
+    <input type="submit" value="Go">
+  </form>
+  <ul class="tag-list">
+  {% for gallery in galleries %}
+    <li><a href="{{ gallery.public_url }}">{{ gallery.name }} ({{ gallery.artfile_count }})</a></li></li>
+  {% endfor %}
+  </ul>
+{% endblock %}
