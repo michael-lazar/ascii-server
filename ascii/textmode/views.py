@@ -309,9 +309,6 @@ class TextModeGalleryView(TemplateView):
 
     def get_context_data(self, **kwargs):
         gallery = get_object_or_404(Gallery, id=kwargs["id"])
-        if not gallery.visible:
-            raise Http404
-
         artfiles = gallery.artfiles.all()
 
         p = Paginator(artfiles, PAGE_SIZE)
