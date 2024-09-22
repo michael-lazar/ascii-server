@@ -20,7 +20,11 @@
         {% block breadcrumbs %}{% endblock %}
       </div>
       <div class="header-shortcuts">
-        {% block headerlinks %}{% endblock %}
+      {% block headerlinks %}
+        {% if user.is_staff %}
+          <div><a href="{% url 'admin:index' %}">edit</a></div>
+        {% endif %}
+      {% endblock %}
       </div>
     </div>
   </div>
