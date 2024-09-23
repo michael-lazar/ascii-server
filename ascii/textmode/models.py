@@ -7,30 +7,16 @@ import os
 from django.db import models
 from django.db.models import Count, Exists, Manager, OuterRef, Prefetch, Q
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 from django.utils.html import format_html
 
 from ascii.core.models import BaseModel
 from ascii.core.utils import reverse
 from ascii.textmode.choices import AspectRatio, DataType, FileType, LetterSpacing, TagCategory
+from ascii.textmode.constants import AUDIO_MIMETYPES, VIDEO_MIMETYPES
 
 # https://stackoverflow.com/a/67857443
 ALT_SLASH = "%2F"
-
-# Supported by the <sound> web player
-AUDIO_MIMETYPES = [
-    "audio/mpeg",  # .mp3
-    "audio/ogg",  # .ogg
-    "audio/wav",  # .wav
-    "audio/aac",  # .aac
-    "audio/webm",  # .weba
-]
-
-# Supported by the <video> web player
-VIDEO_MIMETYPES = [
-    "video/mp4",  # .mp4
-    "video/webm",  # .webm
-    "video/ogg",  # .ogv
-]
 
 
 class ArtFileTagQuerySet(models.QuerySet):
@@ -402,7 +388,12 @@ class GalleryQuerySet(models.QuerySet):
 GalleryManager = Manager.from_queryset(GalleryQuerySet)  # noqa
 
 
+def gen_slug():
+    return get_random_string(12)
+
+
 class Gallery(BaseModel):
+    slug = models.SlugField(unique=True, default=gen_slug, db_index=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
     artfiles = models.ManyToManyField(ArtFile, blank=True, related_name="galleries")
@@ -422,4 +413,4 @@ class Gallery(BaseModel):
 
     @property
     def public_url(self) -> str:
-        return reverse("textmode-gallery", args=[self.id])
+        return reverse("textmode-gallery", args=[self.slug])

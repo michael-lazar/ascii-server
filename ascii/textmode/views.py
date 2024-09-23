@@ -313,7 +313,7 @@ class TextModeGalleryView(TemplateView):
             return ["textmode/gallery.html"]
 
     def get_context_data(self, **kwargs):
-        gallery = get_object_or_404(Gallery, id=kwargs["id"])
+        gallery = get_object_or_404(Gallery, slug=kwargs["slug"])
         artfiles = gallery.artfiles.all()
 
         p = Paginator(artfiles, PAGE_SIZE)

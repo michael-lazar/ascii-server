@@ -62,7 +62,7 @@ urlpatterns = [
         name="textmode-gallery-list",
     ),
     path(
-        "textmode/gallery/<int:id>/",
+        "textmode/gallery/<slug:slug>/",
         TextModeGalleryView.as_view(),
         name="textmode-gallery",
     ),

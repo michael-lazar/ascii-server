@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 
+from ascii.textmode.constants import ANSI_COLORS
 from ascii.textmode.models import ArtFile, Gallery
-from ascii.textmode.sauce import ANSI_COLORS, ANSIFileInspector
+from ascii.textmode.sauce import ANSIFileInspector
 
 
 class Command(BaseCommand):
@@ -15,14 +16,18 @@ class Command(BaseCommand):
                 self.stderr.write(str(e))
                 continue
 
-            name = f"Color Palette: {colors}"
+            # Allow black/white in any color palette
+            if 0 in colors:
+                colors.remove(0)
+            if 7 in colors:
+                colors.remove(7)
 
-            description = "\n".join(
-                (
-                    ", ".join(ANSI_COLORS[c] for c in colors if c < 8),
-                    ", ".join(ANSI_COLORS[c] for c in colors if 8 <= c < 16),
-                )
-            )
+            # Skip palettes with > 2 colors
+            if len(colors) > 2:
+                continue
+
+            name = "/".join(ANSI_COLORS[c] for c in colors)
+            description = " and ".join(ANSI_COLORS[c] for c in colors)
 
             gallery, _ = Gallery.objects.get_or_create(name=name, description=description)
             gallery.artfiles.add(artfile)

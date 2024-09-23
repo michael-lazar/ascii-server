@@ -5,7 +5,7 @@
     {% else %}
       <span style="visibility: hidden">&lt;&lt; Previous</span>
     {% endif %}
-    <a href="{{ pack.public_url }}">Index</a>
+    <a href="{{ pack.public_url }}">{{ pack.name }}</a>
     {% if next %}
       <a href="{{ next.public_url }}">Next &gt;&gt;</a>
     {% else %}
