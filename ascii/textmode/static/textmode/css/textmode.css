@@ -199,8 +199,8 @@ input[type="radio"] {
 }
 
 .tag-list {
-    column-width: 200px;
-    column-gap: 20px;
+    column-width: 100px;
+    column-gap: 10px;
     list-style: none;
     padding: 0 40px;
     font-size: small;
@@ -603,11 +603,18 @@ fieldset {
     white-space: pre-line;
 }
 
+.index-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.index-grid-wide {
+    grid-column: span 2;
+}
 
 @media (max-width: 768px) {
     .tag-list {
-        column-width: 100px;
-        column-gap: 10px;
         padding: 0 10px;
     }
 
@@ -669,4 +676,15 @@ fieldset {
     .searchbar {
         margin: 10px;
     }
+
+    .index-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .index-grid-wide {
+        grid-column: span 1;
+    }
+
 }

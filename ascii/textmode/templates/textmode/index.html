@@ -7,60 +7,75 @@
     <span class="header-link">(mirrored from
       <a href="https://16colo.rs" class="header-link">16colo.rs</a>)</span>
   </h1>
-  <h2>Search <a class="header-link" href="{% url 'textmode-search' %}">(options)</a></h2>
-  <form method="get" class="searchbar" action="{% url 'textmode-search' %}">
-    {{ search_bar_form.q }}
-    <input type="submit" value="Go">
-  </form>
-  <h2>Packs <a class="header-link" href="{% url 'textmode-pack-list' %}">(view all)</a></h2>
-  <form method="get" class="searchbar" action="{% url 'textmode-pack-list' %}">
-    {{ search_pack_form.q }}
-    {{ search_pack_form.year }}
-    <input type="submit" value="Go">
-  </form>
-  {% include "textmode/fragments/pack_grid.html" %}
-  <div class="view-all-link"><a href="{% url 'textmode-pack-list' %}">more...</a></div>
-   <h2>Galleries <a class="header-link" href="{% url 'textmode-gallery-list' %}">(view all)</a></h2>
-  <form method="get" class="searchbar" action="{% url 'textmode-gallery-list' %}">
-    {{ search_bar_form.q }}
-    <input type="submit" value="Go">
-  </form>
-  <ul class="tag-list">
-  {% for gallery in galleries %}
-    <li><a href="{{ gallery.public_url }}">{{ gallery.name }} ({{ gallery.artfile_count }})</a></li></li>
-  {% endfor %}
-  </ul>
-  <h2>By Artist <a class="header-link" href="{% url 'textmode-tag-category-list' 'artist' %}">(view all)</a></h2>
-  <form method="get" class="searchbar" action="{% url 'textmode-tag-category-list' 'artist' %}">
-    {{ search_bar_form.q }}
-    <input type="submit" value="Go">
-  </form>
-  <ul class="tag-list">
-    {% for tag in artist_tags %}
-      <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
-    {% endfor %}
-  </ul>
-  <div class="view-all-link"><a href="{% url 'textmode-tag-category-list' 'artist' %}">more...</a></div>
-  <h2>By Group <a class="header-link" href="{% url 'textmode-tag-category-list' 'group' %}">(view all)</a></h2>
-  <form method="get" class="searchbar" action="{% url 'textmode-tag-category-list' 'group' %}">
-    {{ search_bar_form.q }}
-    <input type="submit" value="Go">
-  </form>
-  <ul class="tag-list">
-    {% for tag in group_tags %}
-      <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
-    {% endfor %}
-  </ul>
-  <div class="view-all-link"><a href="{% url 'textmode-tag-category-list' 'group' %}">more...</a></div>
-  <h2>By Content <a class="header-link" href="{% url 'textmode-tag-category-list' 'content' %}">(view all)</a></h2>
-  <form method="get" class="searchbar" action="{% url 'textmode-tag-category-list' 'content' %}">
-    {{ search_bar_form.q }}
-    <input type="submit" value="Go">
-  </form>
-  <ul class="tag-list">
-    {% for tag in content_tags %}
-      <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
-    {% endfor %}
-  </ul>
-  <div class="view-all-link"><a href="{% url 'textmode-tag-category-list' 'content' %}">more...</a></div>
+  <div class="index-grid">
+    <div class="index-grid-wide">
+      <h2>Search <a class="header-link" href="{% url 'textmode-search' %}">(options)</a></h2>
+      <form method="get" class="searchbar" action="{% url 'textmode-search' %}">
+        {{ search_bar_form.q }}
+        <input type="submit" value="Go">
+      </form>
+    </div>
+    <div class="index-grid-wide">
+      <h2>Packs <a class="header-link" href="{% url 'textmode-pack-list' %}">(view all)</a></h2>
+      <form method="get" class="searchbar" action="{% url 'textmode-pack-list' %}">
+        {{ search_pack_form.q }}
+        {{ search_pack_form.year }}
+        <input type="submit" value="Go">
+      </form>
+      {% include "textmode/fragments/pack_grid.html" %}
+      <div class="view-all-link"><a href="{% url 'textmode-pack-list' %}">more...</a></div>
+    </div>
+    <div>
+      <h2>By Gallery <a class="header-link" href="{% url 'textmode-gallery-list' %}">(view all)</a></h2>
+      <form method="get" class="searchbar" action="{% url 'textmode-gallery-list' %}">
+        {{ search_bar_form.q }}
+        <input type="submit" value="Go">
+      </form>
+      <ul class="tag-list">
+        {% for gallery in galleries %}
+          <li><a href="{{ gallery.public_url }}">{{ gallery.name }} ({{ gallery.artfile_count }})</a></li></li>
+        {% endfor %}
+      </ul>
+      <div class="view-all-link"><a href="{% url 'textmode-gallery-list' %}">more...</a></div>
+    </div>
+    <div>
+      <h2>By Artist <a class="header-link" href="{% url 'textmode-tag-category-list' 'artist' %}">(view all)</a></h2>
+      <form method="get" class="searchbar" action="{% url 'textmode-tag-category-list' 'artist' %}">
+        {{ search_bar_form.q }}
+        <input type="submit" value="Go">
+      </form>
+      <ul class="tag-list">
+        {% for tag in artist_tags %}
+          <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
+        {% endfor %}
+      </ul>
+      <div class="view-all-link"><a href="{% url 'textmode-tag-category-list' 'artist' %}">more...</a></div>
+    </div>
+    <div>
+      <h2>By Group <a class="header-link" href="{% url 'textmode-tag-category-list' 'group' %}">(view all)</a></h2>
+      <form method="get" class="searchbar" action="{% url 'textmode-tag-category-list' 'group' %}">
+        {{ search_bar_form.q }}
+        <input type="submit" value="Go">
+      </form>
+      <ul class="tag-list">
+        {% for tag in group_tags %}
+          <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
+        {% endfor %}
+      </ul>
+      <div class="view-all-link"><a href="{% url 'textmode-tag-category-list' 'group' %}">more...</a></div>
+    </div>
+    <div>
+      <h2>By Content <a class="header-link" href="{% url 'textmode-tag-category-list' 'content' %}">(view all)</a></h2>
+      <form method="get" class="searchbar" action="{% url 'textmode-tag-category-list' 'content' %}">
+        {{ search_bar_form.q }}
+        <input type="submit" value="Go">
+      </form>
+      <ul class="tag-list">
+        {% for tag in content_tags %}
+          <li><a href="{{ tag.public_url }}">{{ tag.name }} ({{ tag.artfile_count }})</a></li>
+        {% endfor %}
+      </ul>
+      <div class="view-all-link"><a href="{% url 'textmode-tag-category-list' 'content' %}">more...</a></div>
+    </div>
+  </div>
 {% endblock %}
