@@ -11,7 +11,7 @@ from ascii.textmode.choices import TagCategory
 from ascii.textmode.forms import AdvancedSearchForm, PackFilterForm, SearchBarForm, SearchPackForm
 from ascii.textmode.models import ALT_SLASH, ArtFile, ArtFileTag, ArtPack, Gallery
 
-PAGE_SIZE = 100
+PAGE_SIZE = 200
 
 
 def get_page_number(request: HttpRequest) -> int:
