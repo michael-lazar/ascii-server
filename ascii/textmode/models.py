@@ -5,7 +5,7 @@ import mimetypes
 import os
 
 from django.db import models
-from django.db.models import Count, Exists, Manager, OuterRef, Prefetch, Q
+from django.db.models import Count, Exists, Manager, OuterRef, Prefetch
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.html import format_html
@@ -173,7 +173,7 @@ class ArtFileQuerySet(models.QuerySet):
         return self.filter(name__icontains=text)
 
     def ansi(self) -> ArtFileQuerySet:
-        return self.filter(Q(filetype=FileType.ANSI) | (Q(file_extension__iexact=".ans")))
+        return self.filter(file_extension=".ans")
 
 
 ArtFileManager = Manager.from_queryset(ArtFileQuerySet)  # noqa
