@@ -198,6 +198,53 @@ input[type="radio"] {
     flex-grow: 1;
 }
 
+.collection-card {
+    background: black;
+    padding: 5px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+    line-break: anywhere;
+}
+
+.collection-grid {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 40px;
+    justify-content: flex-start;
+}
+
+.collection-card-title {
+    text-align: center;
+    font-size: x-small;
+    word-wrap: break-word;
+    color: black;
+    background: #ccc;
+    text-decoration: none;
+    padding: 5px;
+}
+
+.collection-card-images {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.collection-card a {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 10px;
+    width: 180px;
+    text-decoration: none;
+}
+
+.collection-card img {
+    height: 90px;
+    width: 90px;
+    object-fit: cover;
+    flex-grow: 1;
+
+}
+
 .tag-list {
     column-width: 100px;
     column-gap: 10px;
@@ -596,7 +643,7 @@ fieldset {
     margin: 10px;
 }
 
-.gallery-description {
+.collection-description {
     text-align: center;
     margin: 20px;
     font-style: italic;
@@ -628,7 +675,7 @@ fieldset {
         margin: 0;
     }
 
-    .gallery-description {
+    .collection-description {
         text-align: center;
         margin: 10px 0;
         font-style: italic;

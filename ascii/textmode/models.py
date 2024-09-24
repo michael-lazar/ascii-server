@@ -3,6 +3,7 @@ from __future__ import annotations
 import itertools
 import mimetypes
 import os
+from urllib.parse import quote
 
 from django.db import models
 from django.db.models import Count, Exists, Manager, OuterRef, Prefetch
@@ -280,6 +281,10 @@ class ArtFile(BaseModel):
         super().save(*args, **kwargs)
 
     @property
+    def sixteencolors_url(self) -> str:
+        return f"https://16colo.rs/pack/{quote(self.pack.name)}/{quote(self.name)}"
+
+    @property
     def public_url(self) -> str:
         return reverse("textmode-artfile", args=[self.pack.year, self.pack.name, self.name])
 
@@ -376,41 +381,54 @@ class ArtFile(BaseModel):
         return self.mimetype in VIDEO_MIMETYPES
 
 
-class GalleryQuerySet(models.QuerySet):
+class ArtCollectionQuerySet(models.QuerySet):
 
-    def visible(self) -> GalleryQuerySet:
+    def visible(self) -> ArtCollectionQuerySet:
         return self.filter(visible=True)
 
-    def annotate_artfile_count(self) -> GalleryQuerySet:
+    def annotate_artfile_count(self) -> ArtCollectionQuerySet:
         return self.annotate(artfile_count=Count("artfiles"))
 
 
-GalleryManager = Manager.from_queryset(GalleryQuerySet)  # noqa
+ArtCollectionManager = Manager.from_queryset(ArtCollectionQuerySet)  # noqa
 
 
 def gen_slug():
     return get_random_string(12)
 
 
-class Gallery(BaseModel):
+class ArtCollection(BaseModel):
     slug = models.SlugField(unique=True, default=gen_slug, db_index=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
-    artfiles = models.ManyToManyField(ArtFile, blank=True, related_name="galleries")
+    artfiles = models.ManyToManyField(
+        ArtFile,
+        blank=True,
+        related_name="collections",
+        through="ArtCollectionMapping",
+    )
     visible = models.BooleanField(default=False)
 
-    objects = GalleryManager()
+    objects = ArtCollectionManager()
 
     # Annotated fields
     artfile_count: int
 
     class Meta:
         ordering = ["-id"]
-        verbose_name_plural = "Galleries"
 
     def __str__(self):
         return self.name
 
     @property
     def public_url(self) -> str:
-        return reverse("textmode-gallery", args=[self.slug])
+        return reverse("textmode-collection", args=[self.slug])
+
+
+class ArtCollectionMapping(BaseModel):
+    artfile = models.ForeignKey(ArtFile, on_delete=models.CASCADE)
+    collection = models.ForeignKey(ArtCollection, on_delete=models.CASCADE)
+    order = models.IntegerField(default=0, db_index=True)
+
+    class Meta:
+        ordering = ["order", "id"]

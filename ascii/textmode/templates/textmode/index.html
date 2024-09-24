@@ -16,7 +16,24 @@
       </form>
     </div>
     <div class="index-grid-wide">
-      <h2>Packs <a class="header-link" href="{% url 'textmode-pack-list' %}">(view all)</a></h2>
+      <h2>Featured</h2>
+      <div class="collection-grid">
+        {% for item in featured %}
+          <div class="collection-card">
+            <div class="collection-card-images">
+              {% for artfile in item.artfiles %}
+                <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}">
+              {% endfor %}
+            </div>
+            <a href="{{ item.url }}">
+              <div class="collection-card-title">{{ item.name }}</div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="index-grid-wide">
+      <h2>By Pack <a class="header-link" href="{% url 'textmode-pack-list' %}">(view all)</a></h2>
       <form method="get" class="searchbar" action="{% url 'textmode-pack-list' %}">
         {{ search_pack_form.q }}
         {{ search_pack_form.year }}
@@ -26,17 +43,17 @@
       <div class="view-all-link"><a href="{% url 'textmode-pack-list' %}">more...</a></div>
     </div>
     <div>
-      <h2>By Gallery <a class="header-link" href="{% url 'textmode-gallery-list' %}">(view all)</a></h2>
-      <form method="get" class="searchbar" action="{% url 'textmode-gallery-list' %}">
+      <h2>By Gallery <a class="header-link" href="{% url 'textmode-collection-list' %}">(view all)</a></h2>
+      <form method="get" class="searchbar" action="{% url 'textmode-collection-list' %}">
         {{ search_bar_form.q }}
         <input type="submit" value="Go">
       </form>
       <ul class="tag-list">
-        {% for gallery in galleries %}
-          <li><a href="{{ gallery.public_url }}">{{ gallery.name }} ({{ gallery.artfile_count }})</a></li></li>
+        {% for collection in collections %}
+          <li><a href="{{ collection.public_url }}">{{ collection.name }} ({{ collection.artfile_count }})</a></li></li>
         {% endfor %}
       </ul>
-      <div class="view-all-link"><a href="{% url 'textmode-gallery-list' %}">more...</a></div>
+      <div class="view-all-link"><a href="{% url 'textmode-collection-list' %}">more...</a></div>
     </div>
     <div>
       <h2>By Artist <a class="header-link" href="{% url 'textmode-tag-category-list' 'artist' %}">(view all)</a></h2>

@@ -3,18 +3,18 @@
 {% load static %}
 
 
-{% block title %}gallery/{{ gallery.name }}{% endblock %}
+{% block title %}collection/{{ collection.name }}{% endblock %}
 
 {% block breadcrumbs %}
   <span>&gt;</span>
-  <a href="{% url 'textmode-gallery-list' %}">gallery</a>
+  <a href="{% url 'textmode-collection-list' %}">collection</a>
   <span>&gt;</span>
-  <a href="{{ gallery.public_url }}">{{ gallery.name }}</a>
+  <a href="{{ collection.public_url }}">{{ collection.name }}</a>
 {% endblock %}
 
 {% block headerlinks %}
   {% if user.is_staff %}
-    <div><a href="{{ gallery.change_url }}">edit</a></div>
+    <div><a href="{{ collection.change_url }}">edit</a></div>
   {% endif %}
 {% endblock %}
 
@@ -27,10 +27,10 @@
 {% block content %}
   <div class="artfile-body">
     <div class="artfile-content-wrapper">
-      <h1>Gallery / {{ gallery.name }}</h1>
-      {% if gallery.description %}
-        <div class="gallery-description">
-          {{ gallery.description }}
+      <h1>Gallery / {{ collection.name }}</h1>
+      {% if collection.description %}
+        <div class="collection-description">
+          {{ collection.description }}
         </div>
       {% endif %}
       {% include 'textmode/fragments/artfile_grid.html' with show_pack_name=1 %}

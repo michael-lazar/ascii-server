@@ -12,11 +12,11 @@ from ascii.fudan.views import (
     FudanScratchFileView,
 )
 from ascii.textmode.views import (
+    TextModeArtCollectionListView,
+    TextModeArtCollectionView,
     TextmodeArtFileView,
     TextModeArtistAutocomplete,
     TextModeContentAutocomplete,
-    TextModeGalleryListView,
-    TextModeGalleryView,
     TextModeGroupAutocomplete,
     TextmodeIndexView,
     TextModePackAutocomplete,
@@ -57,14 +57,14 @@ urlpatterns = [
         name="textmode-artfile",
     ),
     path(
-        "textmode/gallery/",
-        TextModeGalleryListView.as_view(),
-        name="textmode-gallery-list",
+        "textmode/collection/",
+        TextModeArtCollectionListView.as_view(),
+        name="textmode-collection-list",
     ),
     path(
-        "textmode/gallery/<slug:slug>/",
-        TextModeGalleryView.as_view(),
-        name="textmode-gallery",
+        "textmode/collection/<slug:slug>/",
+        TextModeArtCollectionView.as_view(),
+        name="textmode-collection",
     ),
     path(
         "textmode/autocomplete/artist/",

@@ -9,13 +9,22 @@ from ascii.core.admin import ReadOnlyTabularInline, linkify
 from ascii.core.utils import reverse
 from ascii.core.widgets import FormattedJSONWidget, ImagePreviewWidget
 from ascii.textmode.models import (
+    ArtCollection,
+    ArtCollectionMapping,
     ArtFile,
     ArtFileQuerySet,
     ArtFileTag,
     ArtPack,
     ArtPackQuerySet,
-    Gallery,
 )
+
+
+class ArtCollectionMappingInline(admin.TabularInline):
+    model = ArtCollectionMapping
+    fields = ["id", "collection", "artfile", "order"]
+    autocomplete_fields = ["collection", "artfile"]
+    extra = 0
+    show_change_link = False
 
 
 class ArtFileInline(ReadOnlyTabularInline):
@@ -62,7 +71,7 @@ class ArtPackAdmin(admin.ModelAdmin):
 
     @admin.display(description="View")
     def get_public_link(self, obj: ArtPack) -> str:
-        return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)
+        return format_html("<a href={} >{}</a>", obj.public_url, obj.public_url)
 
 
 @admin.register(ArtFile)
@@ -89,15 +98,26 @@ class ArtFileAdmin(admin.ModelAdmin):
     ]
     search_fields = ["name", "pack__name", "title", "author", "group"]
     autocomplete_fields = ["pack", "tags"]
-    readonly_fields = ["created_at", "filesize", "file_extension", "get_public_link"]
+    readonly_fields = [
+        "created_at",
+        "filesize",
+        "file_extension",
+        "get_public_link",
+        "get_sixteencolors_link",
+    ]
     formfield_overrides = {
         models.JSONField: {"widget": FormattedJSONWidget},
         models.ImageField: {"widget": ImagePreviewWidget},
     }
+    inlines = [ArtCollectionMappingInline]
 
     @admin.display(description="View")
     def get_public_link(self, obj: ArtFile) -> str:
-        return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)
+        return format_html("<a href={} >{}</a>", obj.public_url, obj.public_url)
+
+    @admin.display(description="Source")
+    def get_sixteencolors_link(self, obj: ArtFile) -> str:
+        return format_html("<a href={} >{}</a>", obj.sixteencolors_url, obj.sixteencolors_url)
 
     def get_queryset(self, request: HttpRequest) -> ArtFileQuerySet:
         qs = cast(ArtFileQuerySet, super().get_queryset(request))
@@ -120,16 +140,16 @@ class ArtFileTagAdmin(admin.ModelAdmin):
 
     @admin.display(description="View")
     def get_public_link(self, obj: ArtFileTag) -> str:
-        return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)
+        return format_html("<a href={} >{}</a>", obj.public_url, obj.public_url)
 
 
-@admin.register(Gallery)
-class GalleryAdmin(admin.ModelAdmin):
+@admin.register(ArtCollection)
+class ArtCollectionAdmin(admin.ModelAdmin):
     list_display = ["name", "visible", "get_artfile_count", "get_public_link"]
     list_editable = ["visible"]
     search_fields = ["name"]
     readonly_fields = ["get_artfile_count", "get_public_link"]
-    autocomplete_fields = ["artfiles"]
+    inlines = [ArtCollectionMappingInline]
 
     def get_queryset(self, request: HttpRequest) -> ArtPackQuerySet:
         qs = cast(ArtPackQuerySet, super().get_queryset(request))
@@ -137,10 +157,10 @@ class GalleryAdmin(admin.ModelAdmin):
         return qs
 
     @admin.display(description="Files", ordering="artfile_count")
-    def get_artfile_count(self, obj: Gallery) -> str:
-        link_url = reverse("admin:textmode_artfile_changelist", qs={"galleries": obj.pk})
+    def get_artfile_count(self, obj: ArtCollection) -> str:
+        link_url = reverse("admin:textmode_artfile_changelist", qs={"collections": obj.pk})
         return format_html('<a href="{}">{}</a>', link_url, obj.artfile_count)
 
     @admin.display(description="View")
-    def get_public_link(self, obj: Gallery) -> str:
-        return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)
+    def get_public_link(self, obj: ArtCollection) -> str:
+        return format_html("<a href={} >{}</a>", obj.public_url, obj.public_url)

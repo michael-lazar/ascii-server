@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from ascii.textmode.constants import ANSI_COLORS
-from ascii.textmode.models import ArtFile, Gallery
+from ascii.textmode.models import ArtCollection, ArtFile
 from ascii.textmode.sauce import ANSIFileInspector
 
 
@@ -29,7 +29,7 @@ class Command(BaseCommand):
             name = "/".join(ANSI_COLORS[c] for c in colors)
             description = " and ".join(ANSI_COLORS[c] for c in colors)
 
-            gallery, _ = Gallery.objects.get_or_create(name=name, description=description)
-            gallery.artfiles.add(artfile)
+            collection, _ = ArtCollection.objects.get_or_create(name=name, description=description)
+            collection.artfiles.add(artfile)
 
             self.stdout.write(name)
