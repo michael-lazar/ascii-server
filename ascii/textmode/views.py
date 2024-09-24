@@ -41,8 +41,8 @@ class TextmodeIndexView(TemplateView):
         content_tags = ArtFileTag.objects.for_tag_list(TagCategory.CONTENT)
         content_tags = content_tags.order_by("-artfile_count")[:20]
 
-        featured_tags = ArtFileTag.objects.filter(is_featured=True)
-        featured_collections = ArtCollection.objects.filter(is_featured=True)
+        featured_tags = ArtFileTag.objects.featured()
+        featured_collections = ArtCollection.objects.featured()
 
         search_bar_form = SearchBarForm()
         search_pack_form = SearchPackForm()

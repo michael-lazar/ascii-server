@@ -37,6 +37,17 @@ class ArtFileTagQuerySet(models.QuerySet):
     def content(self) -> ArtFileTagQuerySet:
         return self.filter(category=TagCategory.CONTENT)
 
+    def featured(self) -> ArtFileTagQuerySet:
+        qs = self.filter(is_featured=True)
+        qs = qs.prefetch_related(
+            Prefetch(
+                "artfiles",
+                queryset=ArtFile.objects.for_preview(),
+                to_attr="preview_artfiles",
+            )
+        )
+        return qs
+
 
 ArtFileTagManager = Manager.from_queryset(ArtFileTagQuerySet)  # noqa
 
@@ -51,6 +62,7 @@ class ArtFileTag(BaseModel):
 
     # Annotated fields
     tag_count: int
+    preview_artfiles: list[ArtFile]
 
     class Meta:
         ordering = ["category", "name"]
@@ -393,6 +405,17 @@ class ArtCollectionQuerySet(models.QuerySet):
     def annotate_artfile_count(self) -> ArtCollectionQuerySet:
         return self.annotate(artfile_count=Count("artfiles"))
 
+    def featured(self) -> ArtFileTagQuerySet:
+        qs = self.filter(is_featured=True)
+        qs = qs.prefetch_related(
+            Prefetch(
+                "artfiles",
+                queryset=ArtFile.objects.for_preview(),
+                to_attr="preview_artfiles",
+            )
+        )
+        return qs
+
 
 ArtCollectionManager = Manager.from_queryset(ArtCollectionQuerySet)  # noqa
 
@@ -404,7 +427,7 @@ def gen_slug():
 class ArtCollection(BaseModel):
     slug = models.SlugField(unique=True, default=gen_slug, db_index=True)
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     artfiles = models.ManyToManyField(
         ArtFile,
         blank=True,
@@ -418,6 +441,7 @@ class ArtCollection(BaseModel):
 
     # Annotated fields
     artfile_count: int
+    preview_artfiles: list[ArtFile]
 
     class Meta:
         ordering = ["-id"]
@@ -436,4 +460,4 @@ class ArtCollectionMapping(BaseModel):
     order = models.IntegerField(default=0, db_index=True)
 
     class Meta:
-        ordering = ["order", "id"]
+        ordering = ["order"]

@@ -226,6 +226,8 @@ input[type="radio"] {
 .collection-card-images {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    height: 100%;
 }
 
 .collection-card a {

@@ -1,7 +1,7 @@
 <div class="collection-card">
   <a href="{{ item.public_url }}">
     <div class="collection-card-images">
-      {% for artfile in item.artfiles.for_preview %}
+      {% for artfile in item.preview_artfiles %}
         <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}">
       {% endfor %}
     </div>
