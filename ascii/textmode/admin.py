@@ -144,7 +144,7 @@ class ArtFileTagAdmin(admin.ModelAdmin):
 class ArtCollectionAdmin(admin.ModelAdmin):
     list_display = ["name", "visible", "is_featured", "get_artfile_count", "get_public_link"]
     list_filter = ["visible", "is_featured"]
-    list_editable = ["visible"]
+    list_editable = ["visible", "is_featured"]
     search_fields = ["name"]
     readonly_fields = ["get_artfile_count", "get_public_link"]
     inlines = [ArtCollectionMappingInline]
