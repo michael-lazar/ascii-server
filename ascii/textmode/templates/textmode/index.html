@@ -18,17 +18,11 @@
     <div class="index-grid-wide">
       <h2>Featured</h2>
       <div class="collection-grid">
-        {% for item in featured %}
-          <div class="collection-card">
-            <div class="collection-card-images">
-              {% for artfile in item.artfiles %}
-                <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}">
-              {% endfor %}
-            </div>
-            <a href="{{ item.url }}">
-              <div class="collection-card-title">{{ item.name }}</div>
-            </a>
-          </div>
+        {% for item in featured_collections %}
+          {% include 'textmode/fragments/collection_card.html' %}
+        {% endfor %}
+        {% for item in featured_tags %}
+          {% include 'textmode/fragments/collection_card.html' %}
         {% endfor %}
       </div>
     </div>

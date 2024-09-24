@@ -41,15 +41,8 @@ class TextmodeIndexView(TemplateView):
         content_tags = ArtFileTag.objects.for_tag_list(TagCategory.CONTENT)
         content_tags = content_tags.order_by("-artfile_count")[:20]
 
-        featured = []
-        if tag := ArtFileTag.objects.artists().filter(name="ungenannt").first():
-            featured.append(
-                {
-                    "name": f"{tag.category}/{tag.name}",
-                    "url": tag.public_url,
-                    "artfiles": tag.artfiles.all()[:4],
-                }
-            )
+        featured_tags = ArtFileTag.objects.filter(is_featured=True)
+        featured_collections = ArtCollection.objects.filter(is_featured=True)
 
         search_bar_form = SearchBarForm()
         search_pack_form = SearchPackForm()
@@ -62,7 +55,8 @@ class TextmodeIndexView(TemplateView):
             "content_tags": content_tags,
             "search_bar_form": search_bar_form,
             "search_pack_form": search_pack_form,
-            "featured": featured,
+            "featured_tags": featured_tags,
+            "featured_collections": featured_collections,
         }
 
 

@@ -45,6 +45,7 @@ class ArtFileTag(BaseModel):
     category = models.CharField(choices=TagCategory.choices, db_index=True, max_length=20)
     name = models.CharField(max_length=100, db_index=True)
     artfile_count = models.PositiveIntegerField(default=0, db_index=True)
+    is_featured = models.BooleanField(default=False)
 
     objects = ArtFileTagManager()
 
@@ -175,6 +176,9 @@ class ArtFileQuerySet(models.QuerySet):
 
     def ansi(self) -> ArtFileQuerySet:
         return self.filter(file_extension=".ans")
+
+    def for_preview(self) -> ArtFileQuerySet:
+        return self.filter(image_tn__isnull=False)[:4]
 
 
 ArtFileManager = Manager.from_queryset(ArtFileQuerySet)  # noqa
@@ -408,6 +412,7 @@ class ArtCollection(BaseModel):
         through="ArtCollectionMapping",
     )
     visible = models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=False)
 
     objects = ArtCollectionManager()
 

@@ -26,8 +26,15 @@ class Command(BaseCommand):
             if len(colors) > 2:
                 continue
 
-            name = "/".join(ANSI_COLORS[c] for c in colors)
-            description = " and ".join(ANSI_COLORS[c] for c in colors)
+            if not colors:
+                name = "Black/White"
+                description = "Black and White"
+            else:
+                name = "/".join(ANSI_COLORS[c] for c in colors)
+                description = " and ".join(ANSI_COLORS[c] for c in colors)
+
+            name = name + " ANSi"
+            description = description + "ANSi"
 
             collection, _ = ArtCollection.objects.get_or_create(name=name, description=description)
             collection.artfiles.add(artfile)

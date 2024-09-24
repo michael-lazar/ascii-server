@@ -52,7 +52,7 @@ class ArtFileInline(ReadOnlyTabularInline):
 
 @admin.register(ArtPack)
 class ArtPackAdmin(admin.ModelAdmin):
-    list_display = ["name", "year", "get_artfile_count"]
+    list_display = ["name", "year", "get_artfile_count", "get_public_link"]
     search_fields = ["name"]
     list_filter = ["year"]
     readonly_fields = ["get_artfile_count", "created_at", "get_public_link"]
@@ -81,11 +81,7 @@ class ArtFileAdmin(admin.ModelAdmin):
         "is_fileid",
         "name",
         linkify("pack"),
-        "author",
-        "group",
-        "date",
-        "datatype",
-        "filetype",
+        "get_public_link",
     ]
     list_filter = [
         "pack",
@@ -127,10 +123,11 @@ class ArtFileAdmin(admin.ModelAdmin):
 
 @admin.register(ArtFileTag)
 class ArtFileTagAdmin(admin.ModelAdmin):
-    list_display = ["name", "category", "get_artfile_count"]
+    list_display = ["name", "category", "is_featured", "get_artfile_count", "get_public_link"]
     search_fields = ["name"]
     readonly_fields = ["get_artfile_count", "get_public_link"]
-    list_filter = ["category"]
+    list_filter = ["category", "is_featured"]
+    list_editable = ["is_featured"]
     exclude = ["artfile_count"]
 
     @admin.display(description="Files", ordering="artfile_count")
@@ -145,7 +142,8 @@ class ArtFileTagAdmin(admin.ModelAdmin):
 
 @admin.register(ArtCollection)
 class ArtCollectionAdmin(admin.ModelAdmin):
-    list_display = ["name", "visible", "get_artfile_count", "get_public_link"]
+    list_display = ["name", "visible", "is_featured", "get_artfile_count", "get_public_link"]
+    list_filter = ["visible", "is_featured"]
     list_editable = ["visible"]
     search_fields = ["name"]
     readonly_fields = ["get_artfile_count", "get_public_link"]
