@@ -410,7 +410,7 @@ class ArtCollectionQuerySet(models.QuerySet):
         qs = qs.prefetch_related(
             Prefetch(
                 "artfiles",
-                queryset=ArtFile.objects.for_preview(),
+                queryset=ArtFile.objects.order_by("artcollectionmapping__order").for_preview(),
                 to_attr="preview_artfiles",
             )
         )
@@ -452,6 +452,10 @@ class ArtCollection(BaseModel):
     @property
     def public_url(self) -> str:
         return reverse("textmode-collection", args=[self.slug])
+
+    @property
+    def ordered_artfiles(self) -> ArtFileQuerySet:
+        return self.artfiles.all().order_by("artcollectionmapping__order")
 
 
 class ArtCollectionMapping(BaseModel):

@@ -248,8 +248,8 @@ input[type="radio"] {
 }
 
 .tag-list {
-    column-width: 100px;
-    column-gap: 10px;
+    column-width: 150px;
+    column-gap: 20px;
     list-style: none;
     padding: 0 40px;
     font-size: small;
@@ -665,6 +665,8 @@ fieldset {
 @media (max-width: 768px) {
     .tag-list {
         padding: 0 10px;
+        column-width: 100px;
+        column-gap: 10px;
     }
 
     .content {

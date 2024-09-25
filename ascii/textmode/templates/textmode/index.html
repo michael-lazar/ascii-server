@@ -37,7 +37,7 @@
       <div class="view-all-link"><a href="{% url 'textmode-pack-list' %}">more...</a></div>
     </div>
     <div>
-      <h2>By Gallery <a class="header-link" href="{% url 'textmode-collection-list' %}">(view all)</a></h2>
+      <h2>By Collection <a class="header-link" href="{% url 'textmode-collection-list' %}">(view all)</a></h2>
       <form method="get" class="searchbar" action="{% url 'textmode-collection-list' %}">
         {{ search_bar_form.q }}
         <input type="submit" value="Go">

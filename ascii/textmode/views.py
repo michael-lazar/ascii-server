@@ -319,7 +319,7 @@ class TextModeArtCollectionView(TemplateView):
 
     def get_context_data(self, **kwargs):
         collection = get_object_or_404(ArtCollection, slug=kwargs["slug"])
-        artfiles = collection.artfiles.all()
+        artfiles = collection.ordered_artfiles.all()
 
         p = Paginator(artfiles, PAGE_SIZE)
         page = p.page(get_page_number(self.request))
