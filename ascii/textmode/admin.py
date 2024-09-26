@@ -21,10 +21,28 @@ from ascii.textmode.models import (
 
 class ArtCollectionMappingInline(admin.TabularInline):
     model = ArtCollectionMapping
-    fields = ["id", "collection", "artfile", "order"]
-    autocomplete_fields = ["collection", "artfile"]
+    fields = ["id", "collection", "artfile", "order", "get_image_preview"]
+    readonly_fields = ["get_image_preview", "artfile"]
+    autocomplete_fields = ["collection"]
     extra = 0
     show_change_link = False
+
+    formfield_overrides = {
+        models.JSONField: {"widget": FormattedJSONWidget},
+        models.ImageField: {"widget": ImagePreviewWidget},
+    }
+
+    @admin.display(description="Image Preview")
+    def get_image_preview(self, obj: ArtCollectionMapping) -> str:
+        if not obj.artfile.image_tn:
+            return "-"
+
+        return format_html(
+            "<a href='{}'><img src='{}' style='object-fit: cover; "
+            "max-height: 400px; max-width: 200px'></a>",
+            obj.artfile.image_x1.url,
+            obj.artfile.image_tn.url,
+        )
 
 
 class ArtFileInline(ReadOnlyTabularInline):
@@ -105,7 +123,6 @@ class ArtFileAdmin(admin.ModelAdmin):
         models.JSONField: {"widget": FormattedJSONWidget},
         models.ImageField: {"widget": ImagePreviewWidget},
     }
-    inlines = [ArtCollectionMappingInline]
 
     @admin.display(description="View")
     def get_public_link(self, obj: ArtFile) -> str:
@@ -142,9 +159,16 @@ class ArtFileTagAdmin(admin.ModelAdmin):
 
 @admin.register(ArtCollection)
 class ArtCollectionAdmin(admin.ModelAdmin):
-    list_display = ["name", "visible", "is_featured", "get_artfile_count", "get_public_link"]
+    list_display = [
+        "name",
+        "visible",
+        "is_featured",
+        "order",
+        "get_artfile_count",
+        "get_public_link",
+    ]
     list_filter = ["visible", "is_featured"]
-    list_editable = ["visible", "is_featured"]
+    list_editable = ["visible", "is_featured", "order"]
     search_fields = ["name"]
     readonly_fields = ["get_artfile_count", "get_public_link"]
     inlines = [ArtCollectionMappingInline]

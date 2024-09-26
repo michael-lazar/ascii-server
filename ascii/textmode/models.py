@@ -406,7 +406,7 @@ class ArtCollectionQuerySet(models.QuerySet):
         return self.annotate(artfile_count=Count("artfiles"))
 
     def featured(self) -> ArtFileTagQuerySet:
-        qs = self.filter(is_featured=True)
+        qs = self.filter(is_featured=True).order_by("order")
         qs = qs.prefetch_related(
             Prefetch(
                 "artfiles",
@@ -436,6 +436,7 @@ class ArtCollection(BaseModel):
     )
     visible = models.BooleanField(default=False)
     is_featured = models.BooleanField(default=False)
+    order = models.IntegerField(default=0, db_index=True)
 
     objects = ArtCollectionManager()
 
