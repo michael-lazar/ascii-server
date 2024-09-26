@@ -27,19 +27,21 @@ class TextmodeIndexView(TemplateView):
     template_name = "textmode/index.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        packs = ArtPack.objects.prefetch_fileid().order_by("-year")[:10]
+        packs = (
+            ArtPack.objects.prefetch_fileid().filter(fileid__extension=".ans").order_by("-year")[:8]
+        )
 
         collections = ArtCollection.objects.visible().annotate_artfile_count()
-        collections = collections.order_by("-artfile_count")[:20]
+        collections = collections.order_by("-artfile_count")[:16]
 
         artist_tags = ArtFileTag.objects.for_tag_list(TagCategory.ARTIST)
-        artist_tags = artist_tags.order_by("-artfile_count")[:20]
+        artist_tags = artist_tags.order_by("-artfile_count")[:16]
 
         group_tags = ArtFileTag.objects.for_tag_list(TagCategory.GROUP)
-        group_tags = group_tags.order_by("-artfile_count")[:20]
+        group_tags = group_tags.order_by("-artfile_count")[:16]
 
         content_tags = ArtFileTag.objects.for_tag_list(TagCategory.CONTENT)
-        content_tags = content_tags.order_by("-artfile_count")[:20]
+        content_tags = content_tags.order_by("-artfile_count")[:16]
 
         featured_tags = ArtFileTag.objects.featured()
         featured_collections = ArtCollection.objects.featured()
