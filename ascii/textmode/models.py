@@ -190,7 +190,7 @@ class ArtFileQuerySet(models.QuerySet):
         return self.filter(file_extension=".ans")
 
     def for_preview(self) -> ArtFileQuerySet:
-        return self.filter(image_tn__isnull=False)[:4]
+        return self.filter(image_tn__isnull=False).distinct()[:4]
 
 
 ArtFileManager = Manager.from_queryset(ArtFileQuerySet)  # noqa

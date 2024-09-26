@@ -26,7 +26,7 @@ class ArtCollectionMappingInline(admin.TabularInline):
     autocomplete_fields = ["collection"]
     extra = 0
     show_change_link = False
-
+    list_select_related = ["artfile"]
     formfield_overrides = {
         models.JSONField: {"widget": FormattedJSONWidget},
         models.ImageField: {"widget": ImagePreviewWidget},
