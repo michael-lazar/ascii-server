@@ -655,7 +655,7 @@ fieldset {
 .index-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 40px;
+    gap: 0 40px;
 }
 
 .index-grid-wide {
@@ -744,7 +744,7 @@ fieldset {
     .index-grid {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 10px;
+        gap: 0 10px;
     }
 
     .index-grid-wide {
