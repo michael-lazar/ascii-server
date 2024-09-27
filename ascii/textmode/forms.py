@@ -115,17 +115,98 @@ class PackFilterForm(forms.Form):
         )
 
 
-class SearchBarForm(forms.Form):
+class SearchFileForm(forms.Form):
     q = forms.CharField(
         required=False,
         label="",
         widget=forms.TextInput(
             attrs={
-                "placeholder": "search...",
+                "placeholder": "search all files...",
                 "autocomplete": "off",
             },
         ),
     )
+
+
+class SearchCollectionForm(forms.Form):
+    q = forms.CharField(
+        required=False,
+        label="",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "search collections...",
+                "autocomplete": "off",
+            },
+        ),
+    )
+
+
+class SearchArtistForm(forms.Form):
+    q = forms.CharField(
+        required=False,
+        label="",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "search artists...",
+                "autocomplete": "off",
+            },
+        ),
+    )
+
+
+class SearchGroupForm(forms.Form):
+    q = forms.CharField(
+        required=False,
+        label="",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "search groups...",
+                "autocomplete": "off",
+            },
+        ),
+    )
+
+
+class SearchContentForm(forms.Form):
+    q = forms.CharField(
+        required=False,
+        label="",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "search content...",
+                "autocomplete": "off",
+            },
+        ),
+    )
+
+
+class SearchTagForm(forms.Form):
+    q = forms.CharField(
+        required=False,
+        label="",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "search tags...",
+                "autocomplete": "off",
+            },
+        ),
+    )
+
+
+class SearchPackYearForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["q"] = forms.CharField(
+            required=False,
+            label="",
+            widget=forms.TextInput(
+                attrs={
+                    "placeholder": "search packs..",
+                    "autocomplete": "off",
+                },
+            ),
+        )
 
 
 class SearchPackForm(forms.Form):
@@ -137,7 +218,7 @@ class SearchPackForm(forms.Form):
             label="",
             widget=forms.TextInput(
                 attrs={
-                    "placeholder": "search...",
+                    "placeholder": "search packs..",
                     "autocomplete": "off",
                 },
             ),

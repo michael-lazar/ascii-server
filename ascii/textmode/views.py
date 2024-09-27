@@ -8,7 +8,18 @@ from django.views.generic import TemplateView
 
 from ascii.core.utils import reverse
 from ascii.textmode.choices import TagCategory
-from ascii.textmode.forms import AdvancedSearchForm, PackFilterForm, SearchBarForm, SearchPackForm
+from ascii.textmode.forms import (
+    AdvancedSearchForm,
+    PackFilterForm,
+    SearchArtistForm,
+    SearchCollectionForm,
+    SearchContentForm,
+    SearchFileForm,
+    SearchGroupForm,
+    SearchPackForm,
+    SearchPackYearForm,
+    SearchTagForm,
+)
 from ascii.textmode.models import ALT_SLASH, ArtCollection, ArtFile, ArtFileTag, ArtPack
 
 PAGE_SIZE = 200
@@ -44,8 +55,12 @@ class TextmodeIndexView(TemplateView):
         featured_tags = ArtFileTag.objects.featured()
         featured_collections = ArtCollection.objects.featured()
 
-        search_bar_form = SearchBarForm()
+        search_file_form = SearchFileForm()
         search_pack_form = SearchPackForm()
+        search_artist_form = SearchArtistForm()
+        search_group_form = SearchGroupForm()
+        search_content_form = SearchContentForm()
+        search_collection_form = SearchCollectionForm()
 
         return {
             "packs": packs,
@@ -53,8 +68,12 @@ class TextmodeIndexView(TemplateView):
             "artist_tags": artist_tags,
             "group_tags": group_tags,
             "content_tags": content_tags,
-            "search_bar_form": search_bar_form,
+            "search_file_form": search_file_form,
             "search_pack_form": search_pack_form,
+            "search_artist_form": search_artist_form,
+            "search_group_form": search_group_form,
+            "search_content_form": search_content_form,
+            "search_collection_form": search_collection_form,
             "featured_tags": featured_tags,
             "featured_collections": featured_collections,
         }
@@ -134,7 +153,7 @@ class TextmodePackYearListView(TemplateView):
 
         packs = ArtPack.objects.prefetch_fileid().filter(year=year).order_by("-created_at")
 
-        form = SearchBarForm(data=self.request.GET)
+        form = SearchPackYearForm(data=self.request.GET)
         if form.is_valid():
             if q := form.cleaned_data["q"]:
                 packs = packs.filter(name__icontains=q)
@@ -209,7 +228,7 @@ class TextmodeTagListView(TemplateView):
         group_tags = ArtFileTag.objects.for_tag_list(TagCategory.GROUP)
         content_tags = ArtFileTag.objects.for_tag_list(TagCategory.CONTENT)
 
-        form = SearchBarForm(data=self.request.GET)
+        form = SearchTagForm(data=self.request.GET)
         if form.is_valid():
             if q := form.cleaned_data["q"]:
                 artist_tags = artist_tags.filter(name__icontains=q)
@@ -234,7 +253,16 @@ class TextmodeTagCategoryListView(TemplateView):
 
         tags = ArtFileTag.objects.for_tag_list(category)
 
-        form = SearchBarForm(data=self.request.GET)
+        match category:
+            case TagCategory.ARTIST:
+                form = SearchArtistForm(data=self.request.GET)
+            case TagCategory.GROUP:
+                form = SearchGroupForm(data=self.request.GET)
+            case TagCategory.CONTENT:
+                form = SearchContentForm(data=self.request.GET)
+            case _:
+                raise Http404()
+
         if form.is_valid():
             if q := form.cleaned_data["q"]:
                 tags = tags.filter(name__icontains=q)
@@ -333,7 +361,7 @@ class TextModeArtCollectionListView(TemplateView):
     def get_context_data(self, **kwargs):
         collections = ArtCollection.objects.visible().annotate_artfile_count()
 
-        form = SearchBarForm(data=self.request.GET)
+        form = SearchCollectionForm(data=self.request.GET)
         if form.is_valid():
             if q := form.cleaned_data["q"]:
                 collections = collections.filter(name__icontains=q)

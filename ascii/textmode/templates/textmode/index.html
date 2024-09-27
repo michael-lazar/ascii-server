@@ -11,12 +11,12 @@
     <div class="index-grid-wide">
       <h2>Search <a class="header-link" href="{% url 'textmode-search' %}">(options)</a></h2>
       <form method="get" class="searchbar" action="{% url 'textmode-search' %}">
-        {{ search_bar_form.q }}
+        {{ search_file_form.q }}
         <input type="submit" value="Go">
       </form>
     </div>
     <div class="index-grid-wide">
-      <h2>Featured</h2>
+      <h2>Featured Works</h2>
       <div class="collection-grid">
         {% for item in featured_collections %}
           {% include 'textmode/fragments/collection_card.html' %}
@@ -38,7 +38,7 @@
     <div>
       <h2>By Collection <a class="header-link" href="{% url 'textmode-collection-list' %}">(view all)</a></h2>
       <form method="get" class="searchbar" action="{% url 'textmode-collection-list' %}">
-        {{ search_bar_form.q }}
+        {{ search_collection_form.q }}
         <input type="submit" value="Go">
       </form>
       <ul class="tag-list">
@@ -51,7 +51,7 @@
     <div>
       <h2>By Artist <a class="header-link" href="{% url 'textmode-tag-category-list' 'artist' %}">(view all)</a></h2>
       <form method="get" class="searchbar" action="{% url 'textmode-tag-category-list' 'artist' %}">
-        {{ search_bar_form.q }}
+        {{ search_artist_form.q }}
         <input type="submit" value="Go">
       </form>
       <ul class="tag-list">
@@ -64,7 +64,7 @@
     <div>
       <h2>By Group <a class="header-link" href="{% url 'textmode-tag-category-list' 'group' %}">(view all)</a></h2>
       <form method="get" class="searchbar" action="{% url 'textmode-tag-category-list' 'group' %}">
-        {{ search_bar_form.q }}
+        {{ search_group_form.q }}
         <input type="submit" value="Go">
       </form>
       <ul class="tag-list">
@@ -77,7 +77,7 @@
     <div>
       <h2>By Content <a class="header-link" href="{% url 'textmode-tag-category-list' 'content' %}">(view all)</a></h2>
       <form method="get" class="searchbar" action="{% url 'textmode-tag-category-list' 'content' %}">
-        {{ search_bar_form.q }}
+        {{ search_content_form.q }}
         <input type="submit" value="Go">
       </form>
       <ul class="tag-list">
