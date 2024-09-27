@@ -9,4 +9,9 @@
       </a>
     </div>
   {% endfor %}
+  {% if show_more %}
+    <div class="view-all-card">
+      <div class="view-all-link"><a href="{% url 'textmode-pack-list' %}">more...</a></div>
+    </div>
+  {% endif %}
 </div>

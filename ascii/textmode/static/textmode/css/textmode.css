@@ -645,6 +645,15 @@ fieldset {
     margin: 10px;
 }
 
+.view-all-card {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    width: 180px;;
+    min-height: 150px;
+}
+
 .collection-description {
     text-align: center;
     margin: 20px;
@@ -749,6 +758,10 @@ fieldset {
 
     .index-grid-wide {
         grid-column: span 1;
+    }
+
+    .view-all-card {
+        width: 140px;
     }
 
 }
