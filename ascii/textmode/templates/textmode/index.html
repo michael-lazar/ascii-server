@@ -33,7 +33,8 @@
         {{ search_pack_form.year }}
         <input type="submit" value="Go">
       </form>
-      {% include "textmode/fragments/pack_grid.html" with show_more=1 %}
+      {% include "textmode/fragments/pack_grid.html" %}
+      <div class="view-all-link"><a href="{% url 'textmode-pack-list' %}">more...</a></div>
     </div>
     <div>
       <h2>By Collection <a class="header-link" href="{% url 'textmode-collection-list' %}">(view all)</a></h2>
