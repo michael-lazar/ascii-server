@@ -1,4 +1,19 @@
-{% extends "core/base.html" %}
+{% extends "core/base.html" %}{% load static %}
+
+{% block extrastyle %}
+  <style>
+      @font-face {
+          font-family: 'Permanent Marker';
+          src: url({% static 'core/fonts/permanentmarker-regular.woff2' %}) format('woff2');
+          font-weight: normal;
+          font-style: normal;
+      }
+
+      h1 {
+          font-family: 'Permanent Marker', sans-serif;
+      }
+  </style>
+{% endblock %}
 
 {% block body %}
   <h1>🅰🆂🅲🅸🅸 🅰🆁🆃</h1>
