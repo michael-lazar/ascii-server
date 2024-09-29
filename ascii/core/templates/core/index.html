@@ -9,18 +9,114 @@
           font-style: normal;
       }
 
+      body {
+          background-color: blue;
+          color: white;
+          margin: auto;
+          padding: 0 2em;
+          font-size: 20px;
+          font-family: sans-serif;
+          max-width: 700px;
+      }
+
       h1 {
           font-family: 'Permanent Marker', sans-serif;
+          color: red;
+          letter-spacing: .3em;
+          text-align: center;
+          white-space: nowrap;
+          font-size: 4em;
+          text-shadow: 2px 2px 0px yellow;
+          margin: 0;
+      }
+
+      h2 {
+          color: white;
+      }
+
+      a, a:visited {
+          color: yellow;
+      }
+
+      dt {
+          font-weight: bold
+      }
+
+      dl {
+          display: flex;
+          flex-direction: column;
+          gap: .5em;
+      }
+
+      .subtitle {
+          text-align: center;
+          font-style: italic;
+      }
+
+      @media (max-width: 768px) {
+          body {
+              padding: 1em;
+          }
+
+          h1 {
+              font-size: 3em;
+              letter-spacing: .1em;
+          }
+
+          dd {
+              margin-left: 1em;
+          }
       }
   </style>
 {% endblock %}
 
 {% block body %}
-  <h1>🅰🆂🅲🅸🅸 🅰🆁🆃</h1>
-  <p>(in progress)</p>
-  <h2>Mirrors</h2>
-  <ul>
-    <li><a href="{% url 'fudan-bbs-menu' 'groups/rec.faq/ANSI' %}">Sun and Moon Guanghua BBS</a>
-    <li><a href="{% url 'textmode-index' %}">16colo.rs</a></li>
-  </ul>
+  <h1>Ascii Art</h1>
+  <p class="subtitle">Welcome to my ever-growing collection of text art.</p>
+  <h2>Sitemap</h2>
+  <dl>
+    <dt>Textmode - Underground BBS ANSI</dt>
+    <dd>
+      <p><a href="/textmode/">/textmode/</a></p>
+      <p>
+        A (partial) mirror of the <a href="https://16colo.rs">16colo.rs</a> ANSI & ASCII archive. Contains pictures
+        organized into "packs" and released by art groups over the span of decades. The archive is centered around the
+        MS-DOS ANSI art but also contains Amiga ASCII and other legacy character sets which are collectively
+        referred to as <a href="https://polyducks.co.uk/pages/what-is-textmode/"><i>"textmode"</i></a>. </p>
+    </dd>
+    <dt>Fudan - Chinese BBS ANSI</dt>
+    <dd>
+      <p><a href="/fudan/bbs/groups/rec.faq/ANSI/">/fudan/bbs/groups/rec.faq/ANSI/</a></p>
+      <p>
+        A translated mirror of the <a href="https://bbs.fudan.edu.cn/bbs/0an?path=/groups/rec.faq/ANSI/">Sun and Moon
+        Guanghua BBS</a> at Fudan University in Shanghai, China. This BBS was a main hub of ANSI art for
+        mainland China in the 2000's. There thousands of pictures cataloged by category and author, and other
+        documentation including history, <a href="/fudan/bbs/groups/rec.faq/ANSI/8/lessons/">full-blown classes</a> on
+        ANSI art, and technical references.</p>
+    </dd>
+    <dt>AA - Japanese Shift_JIS</dt>
+    <dd>
+      <p><a href="https://aa.mozz.us/">https://aa.mozz.us</a></p>
+      <p>
+        A mirror of the website <a href="http://en.utf8art.com">utf8art.com</a>, which catalogs Japanese ASCII art
+        (commonly referred to as just "aa") originating from
+        the popular <a href="https://2ch.net">2ch.net</a> textboard. </p>
+    </dd>
+    <dt>The ASCII Art Emporium - 7-bit ASCII</dt>
+    <dd>
+      <p><a href="https://ascii.mozz.us:7070">https://ascii.mozz.us:7070</a></p>
+      <p>
+        A large collection of "traditional" ASCII art, scraped from dozens of websites and converted into plain text
+        files. Also includes an archive of <a href="https://groups.google.com/g/alt.ascii-art">alt.ascii-art</a>
+        and other Usenet newsgroups. This collection can also be downloaded as a single, compressed file from <a
+        href="https://archive.org/details/ascii_emporium_20231114.tar">archive.org</a>.</p>
+    </dd>
+    <dt>Mozz's ASCII Art - Mixed</dt>
+    <dd>
+      <p><a href="https://mozz.us/ascii-art.html">https://mozz.us/ascii-art.html</a></p>
+      <p>
+        My humble collection of ASCII art drawn by yours truly. Also mirrored over the <a
+        href="https://portal.mozz.us/nex/mozz.us/ascii-art/">nex://</a> protocol.</p>
+    </dd>
+  </dl>
 {% endblock %}
