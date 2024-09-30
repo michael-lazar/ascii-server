@@ -34,12 +34,6 @@ h3 {
     margin: 10px;
 }
 
-.logo {
-    height: 1em;
-    margin-bottom: -3px;
-    box-shadow: -1px -1px 1px black;
-}
-
 .header-link {
     font-size: small;
     text-transform: none;

@@ -1,6 +1,13 @@
 body {
     font-family: sans-serif;
 }
+
 li {
     padding-bottom: 5px;
+}
+
+.logo {
+    height: 1em;
+    margin-bottom: -3px;
+    box-shadow: -1px -1px 1px black;
 }

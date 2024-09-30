@@ -12,7 +12,7 @@
 
 {% block body %}
   <div class="header">
-    <a href="/"><img class="logo" src="{% static 'core/favicon/apple-touch-icon.png' %}" /></a>
+    {% include 'core/fragments/home-icon.html' %}
     <div class="title"><a href="{% url 'textmode-index' %}">[textmode]</a></div>
     <div class="header-nav">
       <div class="header-breadcrumbs">
@@ -20,11 +20,11 @@
         {% block breadcrumbs %}{% endblock %}
       </div>
       <div class="header-shortcuts">
-      {% block headerlinks %}
-        {% if user.is_staff %}
-          <div><a href="{% url 'admin:index' %}">edit</a></div>
-        {% endif %}
-      {% endblock %}
+        {% block headerlinks %}
+          {% if user.is_staff %}
+            <div><a href="{% url 'admin:index' %}">edit</a></div>
+          {% endif %}
+        {% endblock %}
       </div>
     </div>
   </div>

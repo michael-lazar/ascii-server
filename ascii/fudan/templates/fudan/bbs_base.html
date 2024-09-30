@@ -3,22 +3,22 @@
 {% load static %}
 
 {% block extrahead %}
-<link href='{% static "fudan/css/bbs.css" %}' rel='stylesheet' />
-<script src="{% static "fudan/js/bbs.js" %}"></script>
+  <link href='{% static "fudan/css/bbs.css" %}' rel='stylesheet' />
+  <script src="{% static "fudan/js/bbs.js" %}"></script>
 {% endblock %}
 
 {% block extrastyle %}
-<style>
-  @font-face {
-      font-family: "SimSunWebBBS";
-      src: url('{% static 'core/fonts/SimSunWebBBS.woff2' %}') format('woff2');
-  }
-</style>
+  <style>
+      @font-face {
+          font-family: "SimSunWebBBS";
+          src: url('{% static 'core/fonts/SimSunWebBBS.woff2' %}') format('woff2');
+      }
+  </style>
 {% endblock %}
 
 {% block body %}
-<div class="bbs">
-  <div class="bbs-controls">
+  <div class="bbs">
+    <div class="bbs-controls">
       <div class="control">
         <span class="control-item inverse" id="font-size-display">20px</span>
         <span class="control-item" id="font-decrease">-</span>
@@ -32,24 +32,25 @@
         <span class="control-item {% if lang == "en" %}active{% endif %}" id="lang-en">en</span>
       </div>
       {% if user.is_staff %}
-      <div class="control">
-        <a class="control-item inverse" href="{{ obj.change_url }}" target="_blank">e</a>
-      </div>
+        <div class="control">
+          <a class="control-item inverse" href="{{ obj.change_url }}" target="_blank">e</a>
+        </div>
       {% endif %}
-       <div class="control toggle" id="toggle-toolbar">-</div>
-  </div>
-  <div class="bbs-content">
-    <div class="bbs-nav">
-      {% for parent in parents %}
-        <div><a href="{{ parent.menu.public_url }}">↑ {{ parent.get_translated_text }}</a></div>
+      <div class="control toggle" id="toggle-toolbar">-</div>
+      {% include 'core/fragments/home-icon.html' %}
+    </div>
+    <div class="bbs-content">
+      <div class="bbs-nav">
+        {% for parent in parents %}
+          <div><a href="{{ parent.menu.public_url }}">↑ {{ parent.get_translated_text }}</a></div>
         {% empty %}
-        <br>
-      {% endfor %}
-    </div>
-    {% block content %}{% endblock %}
-    <div class="bbs-footer">
-      <div>source: <a href="{{ obj.source_url }}">{{ obj.source_url }}</a></div>
+          <br>
+        {% endfor %}
+      </div>
+      {% block content %}{% endblock %}
+      <div class="bbs-footer">
+        <div>source: <a href="{{ obj.source_url }}">{{ obj.source_url }}</a></div>
+      </div>
     </div>
   </div>
-</div>
 {% endblock %}

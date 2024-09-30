@@ -101,6 +101,10 @@ body {
     font-size: 20px;
 }
 
+.bbs-controls img {
+    height: 1.2em;
+}
+
 .control {
     display: inline-flex;
     cursor: pointer;
