@@ -21,15 +21,11 @@
       }
 
       .floating-cat {
-          position: absolute;
-          top: 40%;
-          right: -20px;
-          justify-content: center;
-          z-index: -1;
+          float: right;
       }
 
       .floating-cat img {
-          max-width: 100px;
+          max-width: 50px;
       }
 
       .content {
@@ -93,10 +89,6 @@
           dd {
               margin-left: 1em;
           }
-
-          .floating-cat {
-              display: none;
-          }
       }
   </style>
 {% endblock %}
@@ -110,9 +102,6 @@
     <img src="{% static 'core/img/ascii-birds.png' %}" alt="flying birds">
   </div>
   <div class="content">
-    <div class="floating-cat">
-      <img src="{% static 'core/img/ascii-cat.png' %}" alt="floating cat">
-    </div>
     <h1>Ascii Art</h1>
     <p class="subtitle">Welcome to my ever-growing collection of textart.</p>
     <h2>Sitemap</h2>
@@ -128,6 +117,9 @@
       </dd>
       <dt>Fudan - Chinese BBS ANSI</dt>
       <dd>
+        <div class="floating-cat">
+          <img src="{% static 'core/img/ascii-cat.png' %}" alt="floating cat">
+        </div>
         <p><a href="/fudan/bbs/groups/rec.faq/ANSI/">/fudan/bbs/groups/rec.faq/ANSI/</a></p>
         <p>
           A translated mirror of the <a href="https://bbs.fudan.edu.cn/bbs/0an?path=/groups/rec.faq/ANSI/">Sun and Moon
