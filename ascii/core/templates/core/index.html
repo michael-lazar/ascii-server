@@ -9,17 +9,41 @@
           font-style: normal;
       }
 
-      .content {
-          background-color: #0000AA;
-          padding: 0 4em;
+      .hero {
           margin: auto;
+          max-width: 1000px;
+          position: relative;
+          z-index: -1;
+      }
+
+      .hero img {
+          max-width: 60%;
+      }
+
+      .floating-cat {
+          position: absolute;
+          top: 40%;
+          right: -40px;
+          justify-content: center;
+          z-index: -1;
+      }
+
+      .floating-cat img {
+          max-width: 100px;
+      }
+
+      .content {
+          padding: 0 4em;
+          margin: -30px auto;
           max-width: 700px;
+          position: relative;
       }
 
       body {
           background-color: #0000AA;
           color: white;
           font-family: sans-serif;
+          position: relative;
       }
 
       h1 {
@@ -73,6 +97,10 @@
           dd {
               margin-left: 1em;
           }
+
+          .floating-cat {
+              display: none;
+          }
       }
   </style>
 {% endblock %}
@@ -82,7 +110,13 @@
 {% endblock %}
 
 {% block body %}
+  <div class="hero">
+    <img src="{% static 'core/img/ascii-birds.png' %}" alt="flying birds">
+  </div>
   <div class="content">
+    <div class="floating-cat">
+      <img src="{% static 'core/img/ascii-cat.png' %}" alt="floating cat">
+    </div>
     <h1>Ascii Art</h1>
     <p class="subtitle">Welcome to my ever-growing collection of text art.</p>
     <h2>Sitemap</h2>
