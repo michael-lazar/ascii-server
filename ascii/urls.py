@@ -2,8 +2,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.urls import include, path
+from django.urls import include, path, register_converter
 
+from ascii.core.converters import DateConverter
 from ascii.core.views import IndexView
 from ascii.fudan.views import (
     FudanAssetFileView,
@@ -11,6 +12,7 @@ from ascii.fudan.views import (
     FudanBBSMenuView,
     FudanScratchFileView,
 )
+from ascii.mozz.views import MozzArtPostView, MozzIndexView
 from ascii.textmode.views import (
     TextModeArtCollectionListView,
     TextModeArtCollectionView,
@@ -29,18 +31,45 @@ from ascii.textmode.views import (
     TextmodeTagView,
 )
 
+register_converter(DateConverter, "date")
+
+
 urlpatterns = [
-    path("", IndexView.as_view(), name="index"),
-    path("textmode/", TextmodeIndexView.as_view(), name="textmode-index"),
-    path("textmode/search/", TextModeSearchView.as_view(), name="textmode-search"),
-    path("textmode/pack/", TextmodePackListView.as_view(), name="textmode-pack-list"),
+    path(
+        "",
+        IndexView.as_view(),
+        name="index",
+    ),
+    path(
+        "textmode/",
+        TextmodeIndexView.as_view(),
+        name="textmode-index",
+    ),
+    path(
+        "textmode/search/",
+        TextModeSearchView.as_view(),
+        name="textmode-search",
+    ),
+    path(
+        "textmode/pack/",
+        TextmodePackListView.as_view(),
+        name="textmode-pack-list",
+    ),
     path(
         "textmode/pack/<int:year>/",
         TextmodePackYearListView.as_view(),
         name="textmode-pack-year-list",
     ),
-    path("textmode/pack/<int:year>/<str:pack>/", TextmodePackView.as_view(), name="textmode-pack"),
-    path("textmode/tags/", TextmodeTagListView.as_view(), name="textmode-tag-list"),
+    path(
+        "textmode/pack/<int:year>/<str:pack>/",
+        TextmodePackView.as_view(),
+        name="textmode-pack",
+    ),
+    path(
+        "textmode/tags/",
+        TextmodeTagListView.as_view(),
+        name="textmode-tag-list",
+    ),
     path(
         "textmode/tags/<slug:category>/",
         TextmodeTagCategoryListView.as_view(),
@@ -86,10 +115,36 @@ urlpatterns = [
         TextModePackAutocomplete.as_view(),
         name="textmode-pack-autocomplete",
     ),
-    path("fudan/assets/<slug:slug>", FudanAssetFileView.as_view(), name="fudan-asset"),
-    path("fudan/scratch/<slug:slug>", FudanScratchFileView.as_view(), name="fudan-scratch"),
-    path("fudan/bbs/<path:path>/", FudanBBSMenuView.as_view(), name="fudan-bbs-menu"),
-    path("fudan/bbs/<path:path>", FudanBBSDocumentView.as_view(), name="fudan-bbs-document"),
+    path(
+        "fudan/assets/<slug:slug>",
+        FudanAssetFileView.as_view(),
+        name="fudan-asset",
+    ),
+    path(
+        "fudan/scratch/<slug:slug>",
+        FudanScratchFileView.as_view(),
+        name="fudan-scratch",
+    ),
+    path(
+        "fudan/bbs/<path:path>/",
+        FudanBBSMenuView.as_view(),
+        name="fudan-bbs-menu",
+    ),
+    path(
+        "fudan/bbs/<path:path>",
+        FudanBBSDocumentView.as_view(),
+        name="fudan-bbs-document",
+    ),
+    path(
+        "mozz/",
+        MozzIndexView.as_view(),
+        name="mozz-index",
+    ),
+    path(
+        "mozz/<date:date>/<slug:slug>/",
+        MozzArtPostView.as_view(),
+        name="mozz-art-post",
+    ),
     path("admin/", admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),

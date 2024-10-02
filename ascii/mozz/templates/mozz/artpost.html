@@ -1,0 +1,17 @@
+{% extends 'mozz/base.html' %}
+
+{% block headerlinks %}
+  {% if user.is_staff %}
+    <div><a href="{{ post.change_url }}">edit</a></div>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <a href="{{ post.image_x1.url }}">
+    <img src="{{ post.image_x1.url }}" alt="{{ post.title }}">
+  </a>
+  <div>{{ post.date }}</div>
+  <div>{{ post.title }}</div>
+  <a href="{{ post.image_x1.url }}">{{ post.image_x1_extension }}</a>
+  <a href="{{ post.file.url }}">{{ post.file_extension }}</a>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'mozz/base.html' %}
+
+{% block content %}
+  <div>
+    {% for post in posts %}
+      <a href="{{ post.public_url }}">
+        <img src="{{ post.image_x1.url }}" alt="{{ post.title }}">
+      </a>
+    {% endfor %}
+  </div>
+{% endblock %}
