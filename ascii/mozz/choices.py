@@ -2,7 +2,7 @@ from django.db import models
 
 
 class ArtPostFileType(models.TextChoices):
-    TEXT = "text", "Text"
+    TEXT = "text", "Plaintext"
     XBIN = "xbin", "XBin"
     IMAGE = "image", "Image"
 

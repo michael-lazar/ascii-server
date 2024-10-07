@@ -21,4 +21,8 @@ class MozzArtPostView(TemplateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         post = get_object_or_404(ArtPost, date=kwargs["date"], slug=kwargs["slug"])
-        return {"post": post}
+        return {
+            "post": post,
+            "prev": post.get_prev(),
+            "next": post.get_next(),
+        }

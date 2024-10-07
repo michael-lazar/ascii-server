@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block headerlinks %}
-  <a href="">scratchpad</a>
+  <a href="">scratchpad.txt</a>
   {% if user.is_staff %}
     <div><a href="{% url 'admin:mozz_artpost_changelist' %}">edit</a></div>
   {% endif %}
@@ -38,7 +38,9 @@
   <div class="art-grid">
     {% for post in posts %}
       <a class="art-grid-item" href="{{ post.public_url }}">
-        <img loading="lazy" src="{{ post.image_x1.url }}" alt="{{ post.title }}">
+        <div class="art-grid-item-preview">
+          <img loading="lazy" src="{{ post.image_tn.url }}" alt="{{ post.title }}">
+        </div>
         <span>{{ post.title }}</span>
       </a>
     {% endfor %}

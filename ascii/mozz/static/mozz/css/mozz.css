@@ -64,11 +64,10 @@ body {
 .art-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 10px;
+    gap: 20px;
 }
 
 .art-grid-item {
-    border: 1px solid #0000aa;
     padding: 10px;
     font-style: italic;
     text-align: center;
@@ -77,9 +76,110 @@ body {
     gap: 10px;
 }
 
-.art-grid-item img {
-    object-fit: contain;
+.art-grid-item-preview {
     max-width: 100%;
     max-height: 300px;
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.art-grid-item img {
+    max-width: 100%;
+    max-height: 100%;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    background: #eee;
+}
+
+.artpost-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.artpost {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    font-style: italic;
+    padding: 0 20px;
+}
+
+.artpost-header {
+    text-align: center;
+}
+
+.artpost-header h1 {
+    margin: 10px auto;
+    font-size: 1.5em;
+}
+
+.artpost-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    text-align: center;
+}
+
+.artpost-description {
+    white-space: pre-line;
+    max-width: 50em;
+}
+
+.artpost-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.artpost-image {
+    display: flex;
+    background: #eee;
+    padding: 8px;
+    max-width: 40em;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+.artpost-image a {
+    display: flex;
+}
+
+.artpost-image img {
+    height: auto;
+    width: auto;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.pagination {
+    background: #eee;
+    font-weight: bold;
+    padding: 5px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    font-size: small;
+    width: 100%;
+}
+
+.pagination-step-links {
+    display: flex;
+    justify-content: space-around;
+    padding: 0 20px;
+    flex: 1;
+    width: min(400px, 100%);
+    gap: 10px;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .artpost {
+        padding: 0;
+    }
 }

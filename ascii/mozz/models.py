@@ -4,7 +4,9 @@ import os
 from datetime import date
 
 from django.db import models
-from django.db.models import Manager
+from django.db.models import Manager, Q
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFit
 
 from ascii.core.models import BaseModel
 from ascii.core.utils import reverse
@@ -42,8 +44,11 @@ class ArtPost(BaseModel):
         blank=True,
         null=True,
     )
-
-    # TODO: Add thumbnail generation
+    image_tn = ImageSpecField(
+        source="image_x1",
+        processors=[ResizeToFit(height=300)],
+        format="PNG",
+    )
 
     objects = ArtPostManager()
 
@@ -75,3 +80,23 @@ class ArtPost(BaseModel):
 
         _, ext = os.path.splitext(self.image_x1.name)
         return ext.lower() if ext else ""
+
+    @property
+    def download_raw_name(self) -> str:
+        return f"{self.slug}{self.file_extension}"
+
+    @property
+    def download_image_name(self) -> str:
+        return f"{self.slug}{self.image_x1_extension}"
+
+    def get_prev(self) -> ArtPost | None:
+        qs = ArtPost.objects.visible().filter(
+            Q(date__gt=self.date) | Q(date=self.date, id__gt=self.id)
+        )
+        return qs.last()
+
+    def get_next(self) -> ArtPost | None:
+        qs = ArtPost.objects.visible().filter(
+            Q(date__lt=self.date) | Q(date=self.date, id__lt=self.id)
+        )
+        return qs.first()

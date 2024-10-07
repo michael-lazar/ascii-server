@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "colorfield",
     "dal",
     "dal_select2",
+    "imagekit",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

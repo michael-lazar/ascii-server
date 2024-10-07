@@ -7,6 +7,7 @@ django-cleanup
 django-debug-toolbar
 django-environ
 django-extensions
+django-imagekit
 gevent
 googletrans==3.1.0a0
 gunicorn

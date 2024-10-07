@@ -1,0 +1,15 @@
+<div class="pagination">
+  <div class="pagination-step-links">
+    {% if prev %}
+      <a href="{{ prev.public_url }}">&lt;&lt; Previous</a>
+    {% else %}
+      <span style="visibility: hidden">&lt;&lt; Previous</span>
+    {% endif %}
+    <a href="{% url 'mozz-index' %}">Home</a>
+    {% if next %}
+      <a href="{{ next.public_url }}">Next &gt;&gt;</a>
+    {% else %}
+      <span style="visibility: hidden">Next &gt;&gt;</span>
+    {% endif %}
+  </div>
+</div>

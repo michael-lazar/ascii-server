@@ -233,6 +233,7 @@ django==5.1.1 \
     --hash=sha256:71603f27dac22a6533fb38d83072eea9ddb4017fead6f67f2562a40402d61c3f
     # via
     #   -r requirements/requirements.in
+    #   django-appconf
     #   django-autocomplete-light
     #   django-browser-reload
     #   django-debug-toolbar
@@ -241,6 +242,10 @@ django-admin-interface==0.28.6 \
     --hash=sha256:444dea3caa1c878c2c0210662b0584b8ad9c7235955f0bbd04680733a3526b0f \
     --hash=sha256:c5dc5ef6865c9683b6ecd630fe588ef369350ee27afb89b24d56e6cdda914355
     # via -r requirements/requirements.in
+django-appconf==1.0.6 \
+    --hash=sha256:c3ae442fba1ff7ec830412c5184b17169a7a1e71cf0864a4c3f93cf4c98a1993 \
+    --hash=sha256:cfe87ea827c4ee04b9a70fab90b86d704cb02f2981f89da8423cb0fabf88efbf
+    # via django-imagekit
 django-autocomplete-light==3.11.0 \
     --hash=sha256:212576a17e3308ef7ca77e280b86684167916d2091d4b73640f38845d9516328
     # via -r requirements/requirements.in
@@ -267,6 +272,10 @@ django-environ==0.11.2 \
 django-extensions==3.2.3 \
     --hash=sha256:44d27919d04e23b3f40231c4ab7af4e61ce832ef46d610cc650d53e68328410a \
     --hash=sha256:9600b7562f79a92cbf1fde6403c04fee314608fefbb595502e34383ae8203401
+    # via -r requirements/requirements.in
+django-imagekit==5.0.0 \
+    --hash=sha256:a8e77ed6549751026a51f961bb2cd5fda739be691496da8eecbe68ffb966c261 \
+    --hash=sha256:aae9f74a8e9b6ceb5d15f7d8e266302901e76d9f532c78bd5135cb0fa206a6b0
     # via -r requirements/requirements.in
 filelock==3.13.3 \
     --hash=sha256:5ffa845303983e7a0b7ae17636509bc97997d58afeafa72fb141a17b152284cb \
@@ -619,6 +628,10 @@ parsel==1.9.0 \
     # via
     #   itemloaders
     #   scrapy
+pilkit==3.0 \
+    --hash=sha256:f6719e8cc0482e5447f5cb94f18b949d8e604ea9673a9b019c74d41b779e4eab \
+    --hash=sha256:fe1707b0411a1d0cbf9ad3986779fa5a346cec4582a188740924aa39f504d117
+    # via django-imagekit
 pillow==10.3.0 \
     --hash=sha256:048ad577748b9fa4a99a0548c64f2cb8d672d5bf2e643a739ac8faff1164238c \
     --hash=sha256:048eeade4c33fdf7e08da40ef402e748df113fd0b4584e32c4af74fe78baaeb2 \
@@ -689,7 +702,9 @@ pillow==10.3.0 \
     --hash=sha256:f0d0591a0aeaefdaf9a5e545e7485f89910c977087e7de2b6c388aec32011e9f \
     --hash=sha256:fdcbb4068117dfd9ce0138d068ac512843c52295ed996ae6dd1faf537b6dbc27 \
     --hash=sha256:ff61bfd9253c3915e6d41c651d5f962da23eda633cf02262990094a18a55371a
-    # via django-colorfield
+    # via
+    #   django-colorfield
+    #   pilkit
 protego==0.3.1 \
     --hash=sha256:2fbe8e9b7a7dbc5016a932b14c98d236aad4c29290bbe457b8d2779666ef7a41 \
     --hash=sha256:e94430d0d25cbbf239bc849d86c5e544fbde531fcccfa059953c7da344a1712c
