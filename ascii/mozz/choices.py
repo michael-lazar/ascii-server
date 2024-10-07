@@ -2,9 +2,9 @@ from django.db import models
 
 
 class ArtPostFileType(models.TextChoices):
-    TEXT = "text", "plaintext"
-    XBIN = "xbin", "xbin"
-    PNG = "png", "png"
+    TEXT = "text", "Text"
+    XBIN = "xbin", "XBin"
+    IMAGE = "image", "Image"
 
 
 class ArtPostFontName(models.TextChoices):

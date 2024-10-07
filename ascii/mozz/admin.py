@@ -11,17 +11,15 @@ class ArtFileAdmin(admin.ModelAdmin):
     list_display = [
         "slug",
         "date",
+        "visible",
         "title",
         "file_type",
         "font_name",
         "get_public_link",
     ]
-    list_filter = [
-        "date",
-        "file_type",
-        "font_name",
-    ]
     search_fields = ["slug", "title"]
+    list_editable = ["visible"]
+    list_filter = ["visible"]
     readonly_fields = ["get_public_link"]
     formfield_overrides = {
         models.ImageField: {"widget": ImagePreviewWidget},
@@ -29,4 +27,6 @@ class ArtFileAdmin(admin.ModelAdmin):
 
     @admin.display(description="View")
     def get_public_link(self, obj: ArtPost) -> str:
+        if not obj.id:
+            return "-"
         return format_html("<a href={} >{}</a>", obj.public_url, obj.public_url)

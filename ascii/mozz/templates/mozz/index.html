@@ -1,10 +1,45 @@
 {% extends 'mozz/base.html' %}
 
+{% load static %}
+
+{% block extrastyle %}
+  <style>
+      @font-face {
+          font-family: 'Kalam';
+          src: url({% static 'core/fonts/Kalam-Bold.woff2' %}) format('woff2');
+          font-weight: bold;
+          font-style: normal;
+      }
+  </style>
+{% endblock %}
+
+{% block headerlinks %}
+  <a href="">scratchpad</a>
+  {% if user.is_staff %}
+    <div><a href="{% url 'admin:mozz_artpost_changelist' %}">edit</a></div>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
-  <div>
+  <div class="preamble">
+    <h1>Mozz's ASCII Art Gallery</h1>
+    <p>
+      Welcome to my personal ASCII art page! I'm an aspiring student of plaintext artwork, following in the
+      footsteps of countless others. </p>
+    <p>
+      All works here are my own unless otherwise noted. You may share or remix this artwork for
+      non-commercial purposes, but please keep the artist signature intact. </p>
+    <p>
+      Alternatively, here's my scroll file for the pure text experience:
+      <a href="">./ascii-art.txt</a>
+    </p>
+    <p>—mozz</p>
+  </div>
+  <div class="art-grid">
     {% for post in posts %}
-      <a href="{{ post.public_url }}">
-        <img src="{{ post.image_x1.url }}" alt="{{ post.title }}">
+      <a class="art-grid-item" href="{{ post.public_url }}">
+        <img loading="lazy" src="{{ post.image_x1.url }}" alt="{{ post.title }}">
+        <span>{{ post.title }}</span>
       </a>
     {% endfor %}
   </div>

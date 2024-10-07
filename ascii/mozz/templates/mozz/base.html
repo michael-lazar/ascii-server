@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}mozz's ascii art gallery{% endblock %}
+{% block title %}mozz's gallery{% endblock %}
 
 {% block extrahead %}{{ block.super }}
   <script src='{% static 'admin/js/vendor/jquery/jquery.min.js' %}'></script>
@@ -12,12 +12,19 @@
 {% block body %}
   <div class="header">
     {% include 'core/fragments/home-icon.html' %}
-    <div class="title"><a href="{% url 'mozz-index' %}">[mozz's ascii art gallery]</a></div>
-    {% block headerlinks %}
-      {% if user.is_staff %}
-        <div><a href="{% url 'admin:index' %}">edit</a></div>
-      {% endif %}
-    {% endblock %}
+    <div class="title"><a href="{% url 'mozz-index' %}">mozz</a></div>
+    <div class="header-nav">
+      <div class="header-breadcrumbs">
+        {% block breadcrumbs %}{% endblock %}
+      </div>
+      <div class="header-shortcuts">
+        {% block headerlinks %}
+          {% if user.is_staff %}
+            <div><a href="{% url 'admin:index' %}">edit</a></div>
+          {% endif %}
+        {% endblock %}
+      </div>
+    </div>
   </div>
   <div class="content">
     {% block content %}{% endblock %}

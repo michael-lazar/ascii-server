@@ -1,9 +1,16 @@
 {% extends 'mozz/base.html' %}
 
+{% block title %}mozz's gallery - {{ post.title }}{% endblock %}
+
 {% block headerlinks %}
   {% if user.is_staff %}
     <div><a href="{{ post.change_url }}">edit</a></div>
   {% endif %}
+{% endblock %}
+
+{% block breadcrumbs %}
+  <span>/</span>
+  <a href="{{ post.public_url }}">{{ post.slug }}</a>
 {% endblock %}
 
 {% block content %}

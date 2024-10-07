@@ -14,7 +14,7 @@ from ascii.mozz.choices import ArtPostFileType, ArtPostFontName
 class ArtPostQuerySet(models.QuerySet):
 
     def visible(self) -> ArtPostQuerySet:
-        return self.filter(image_x1__isnull=False)
+        return self.filter(image_x1__isnull=False, visible=True)
 
 
 ArtPostManager = Manager.from_queryset(ArtPostQuerySet)  # noqa
@@ -27,6 +27,7 @@ def upload_to(instance: ArtPost, filename: str) -> str:
 class ArtPost(BaseModel):
     slug = models.SlugField(db_index=True)
     date = models.DateField(default=date.today, db_index=True)
+    visible = models.BooleanField(default=True)
 
     title = models.CharField(max_length=128)
     description = models.TextField(blank=True)
@@ -41,6 +42,8 @@ class ArtPost(BaseModel):
         blank=True,
         null=True,
     )
+
+    # TODO: Add thumbnail generation
 
     objects = ArtPostManager()
 
