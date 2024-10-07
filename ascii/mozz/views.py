@@ -5,6 +5,7 @@ from typing import Any
 from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateView
 
+from ascii.mozz.forms import MozzGalleryFilterForm
 from ascii.mozz.models import ArtPost
 
 
@@ -13,7 +14,19 @@ class MozzIndexView(TemplateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         posts = ArtPost.objects.visible()
-        return {"posts": posts}
+
+        form = MozzGalleryFilterForm(data=self.request.GET)
+        if form.is_valid():
+            if filetype := form.cleaned_data["filetype"]:
+                posts = posts.filter(file_type=filetype)
+
+        is_filtered = any(form.cleaned_data.values())
+
+        return {
+            "posts": posts,
+            "form": form,
+            "is_filtered": is_filtered,
+        }
 
 
 class MozzArtPostView(TemplateView):

@@ -1,6 +1,6 @@
 {% extends 'mozz/base.html' %}
 
-{% block title %}mozz's gallery - {{ post.title }}{% endblock %}
+{% block title %}mozz - {{ post.title }}{% endblock %}
 
 {% block headerlinks %}
   {% if user.is_staff %}
@@ -33,11 +33,11 @@
         {% endif %}
       </div>
       {% if post.description %}
-        <div class="artpost-description">{{ post.description }}
+        <div class="artpost-description"><b>Description: </b>{{ post.description }}
         </div>
       {% endif %}
       <div class="artpost-links">
-        <b>Downloads:</b>
+        <b>Download:</b>
         <a href="{{ post.file.url }}" download="{{ post.download_raw_name }}">
           Raw File ({{ post.file_extension }})
         </a>

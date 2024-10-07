@@ -13,6 +13,12 @@
   </style>
 {% endblock %}
 
+{% block extrahead %}{{ block.super }}
+  <script>
+    {% include "mozz/fragments/artgrid_filter.js" %}
+  </script>
+{% endblock %}
+
 {% block headerlinks %}
   <a href="">scratchpad.txt</a>
   {% if user.is_staff %}
@@ -35,10 +41,14 @@
     </p>
     <p>—mozz</p>
   </div>
-  <div class="art-grid">
+  <form method="get" class="artgrid-filter" id="artgridFilterForm">
+    <b>Filter</b>
+    {{ form.filetype }}
+  </form>
+  <div class="artgrid">
     {% for post in posts %}
-      <a class="art-grid-item" href="{{ post.public_url }}">
-        <div class="art-grid-item-preview">
+      <a class="artgrid-item" href="{{ post.public_url }}">
+        <div class="artgrid-item-preview">
           <img loading="lazy" src="{{ post.image_tn.url }}" alt="{{ post.title }}">
         </div>
         <span>{{ post.title }}</span>

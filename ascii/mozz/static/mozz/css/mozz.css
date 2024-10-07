@@ -53,7 +53,7 @@ body {
     font-style: italic;
     max-width: 700px;
     margin: auto;
-    padding-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .preamble h1 {
@@ -61,13 +61,27 @@ body {
     font-weight: bold;
 }
 
-.art-grid {
+.artgrid-filter {
+    background: #eee;
+    padding: 8px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    margin-bottom: 20px;
+}
+
+.artgrid-filter select {
+    padding: 2px;
+}
+
+.artgrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
 }
 
-.art-grid-item {
+.artgrid-item {
     padding: 10px;
     font-style: italic;
     text-align: center;
@@ -76,20 +90,19 @@ body {
     gap: 10px;
 }
 
-.art-grid-item-preview {
+.artgrid-item-preview {
     max-width: 100%;
-    max-height: 300px;
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.art-grid-item img {
+.artgrid-item img {
     max-width: 100%;
     max-height: 100%;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
-    padding: 4px;
+    padding: 8px;
     background: #eee;
 }
 

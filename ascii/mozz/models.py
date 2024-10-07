@@ -23,7 +23,9 @@ ArtPostManager = Manager.from_queryset(ArtPostQuerySet)  # noqa
 
 
 def upload_to(instance: ArtPost, filename: str) -> str:
-    return f"mozz/{instance.date.year}/{instance.slug}/{filename}"
+    _, ext = os.path.splitext(filename)
+    ext = ext.lower() if ext else ""
+    return f"mozz/{instance.date.year}/{instance.slug}{ext}"
 
 
 class ArtPost(BaseModel):
