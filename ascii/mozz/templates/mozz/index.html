@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block headerlinks %}
-  <a href="">scratchpad.txt</a>
+  <a href="{% url 'mozz-scroll-file' 'scratchpad' %}">scratchpad</a>
   {% if user.is_staff %}
     <div><a href="{% url 'admin:mozz_artpost_changelist' %}">edit</a></div>
   {% endif %}
@@ -30,14 +30,14 @@
   <div class="preamble">
     <h1>Mozz's ASCII Art Gallery</h1>
     <p>
-      Welcome to my personal ASCII art page! I'm an aspiring student of plaintext artwork, following in the
-      footsteps of countless others. </p>
+      Welcome to my personal ASCII art page! I'm an aspiring student of textmode artwork, following
+      in the footsteps of countless others who came before me.
     <p>
       All works here are my own unless otherwise noted. You may share or remix this artwork for
       non-commercial purposes, but please keep the artist signature intact. </p>
     <p>
       Alternatively, here's my scroll file for the pure text experience:
-      <a href="">./ascii-art.txt</a>
+      <a href="{% url 'mozz-scroll-file' 'ascii-art' %}">./ascii-art.txt</a>
     </p>
     <p>—mozz</p>
   </div>

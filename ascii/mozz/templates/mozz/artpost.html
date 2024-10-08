@@ -37,13 +37,12 @@
         </div>
       {% endif %}
       <div class="artpost-links">
-        <b>Download:</b>
-        <a href="{{ post.file.url }}" download="{{ post.download_raw_name }}">
-          Raw File ({{ post.file_extension }})
-        </a>
-        <a href="{{ post.image_x1.url }}" download="{{ post.download_image_name }}">
-          Image ({{ post.image_x1_extension }})
-        </a>
+        <b>Downloads:</b>
+        <a href="{{ post.image_x1.url }}">Image</a>
+        <a href="{{ post.file.url }}">Raw</a>
+        {% for attachment in post.attachments.all %}
+          <a href="{{ attachment.file.url }}">{{ attachment.name }}</a>
+        {% endfor %}
       </div>
     </div>
     {% include 'mozz/fragments/artpost_paginator.html' %}

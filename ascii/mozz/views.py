@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
 
 from ascii.mozz.forms import MozzGalleryFilterForm
-from ascii.mozz.models import ArtPost
+from ascii.mozz.models import ArtPost, ScrollFile
 
 
 class MozzIndexView(TemplateView):
@@ -33,9 +34,20 @@ class MozzArtPostView(TemplateView):
     template_name = "mozz/artpost.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        post = get_object_or_404(ArtPost, date=kwargs["date"], slug=kwargs["slug"])
+        post = get_object_or_404(
+            ArtPost.objects.visible().prefetch_related("attachments"),
+            date=kwargs["date"],
+            slug=kwargs["slug"],
+        )
         return {
             "post": post,
             "prev": post.get_prev(),
             "next": post.get_next(),
         }
+
+
+class MozzScrollFileView(View):
+
+    def get(self, *args, **kwargs) -> HttpResponse:
+        scrollfile = get_object_or_404(ScrollFile, slug=kwargs["slug"])
+        return HttpResponse(scrollfile.text.strip(), content_type="text/plain")

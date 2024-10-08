@@ -25,7 +25,7 @@ ArtPostManager = Manager.from_queryset(ArtPostQuerySet)  # noqa
 def upload_to(instance: ArtPost, filename: str) -> str:
     _, ext = os.path.splitext(filename)
     ext = ext.lower() if ext else ""
-    return f"mozz/{instance.date.year}/{instance.slug}{ext}"
+    return f"mozz/{instance.date.year}/{instance.slug}/{instance.slug}{ext}"
 
 
 class ArtPost(BaseModel):
@@ -73,7 +73,7 @@ class ArtPost(BaseModel):
     @property
     def file_extension(self) -> str:
         _, ext = os.path.splitext(self.file.name)
-        return ext.lower() if ext else ""
+        return ext.lower() if ext else "unknown"
 
     @property
     def image_x1_extension(self) -> str:
@@ -82,14 +82,6 @@ class ArtPost(BaseModel):
 
         _, ext = os.path.splitext(self.image_x1.name)
         return ext.lower() if ext else ""
-
-    @property
-    def download_raw_name(self) -> str:
-        return f"{self.slug}{self.file_extension}"
-
-    @property
-    def download_image_name(self) -> str:
-        return f"{self.slug}{self.image_x1_extension}"
 
     def get_prev(self) -> ArtPost | None:
         qs = ArtPost.objects.visible().filter(
@@ -102,3 +94,43 @@ class ArtPost(BaseModel):
             Q(date__lt=self.date) | Q(date=self.date, id__lt=self.id)
         )
         return qs.first()
+
+
+def upload_attachment_to(instance: ArtPostAttachment, filename: str) -> str:
+    return f"mozz/{instance.post.date.year}/{instance.post.slug}/attachments/{filename}"
+
+
+class ArtPostAttachment(BaseModel):
+    name = models.CharField(max_length=128)
+    post = models.ForeignKey(
+        ArtPost,
+        on_delete=models.CASCADE,
+        related_name="attachments",
+    )
+    file = models.FileField(upload_to=upload_attachment_to)
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self) -> str:
+        return self.name
+
+    @property
+    def file_extension(self) -> str:
+        _, ext = os.path.splitext(self.file.name)
+        return ext.lower() if ext else "unknown"
+
+
+class ScrollFile(BaseModel):
+    slug = models.SlugField(unique=True)
+    text = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self) -> str:
+        return f"{self.slug}.txt"
+
+    @property
+    def public_url(self) -> str:
+        return reverse("mozz-scroll-file", args=[self.slug])

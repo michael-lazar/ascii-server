@@ -12,7 +12,7 @@ from ascii.fudan.views import (
     FudanBBSMenuView,
     FudanScratchFileView,
 )
-from ascii.mozz.views import MozzArtPostView, MozzIndexView
+from ascii.mozz.views import MozzArtPostView, MozzIndexView, MozzScrollFileView
 from ascii.textmode.views import (
     TextModeArtCollectionListView,
     TextModeArtCollectionView,
@@ -141,9 +141,14 @@ urlpatterns = [
         name="mozz-index",
     ),
     path(
-        "mozz/<date:date>/<slug:slug>/",
+        "mozz/posts/<date:date>/<slug:slug>/",
         MozzArtPostView.as_view(),
         name="mozz-art-post",
+    ),
+    path(
+        "mozz/scroll/<slug:slug>.txt",
+        MozzScrollFileView.as_view(),
+        name="mozz-scroll-file",
     ),
     path("admin/", admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
