@@ -1,10 +1,8 @@
 from django.contrib import admin
-from django.db import models
 from django.utils.html import format_html
 from imagekit.admin import AdminThumbnail
 
 from ascii.core.admin import linkify
-from ascii.core.widgets import ImagePreviewWidget
 from ascii.mozz.models import ArtPost, ArtPostAttachment, ScrollFile
 
 
@@ -31,6 +29,7 @@ class ScrollFileAdmin(admin.ModelAdmin):
 @admin.register(ArtPostAttachment)
 class ArtPostAttachmentAdmin(admin.ModelAdmin):
     list_display = ["id", linkify("post"), "name", "file"]
+    list_editable = ["name"]
     autocomplete_fields = ["post"]
 
     def get_queryset(self, request):
@@ -40,7 +39,7 @@ class ArtPostAttachmentAdmin(admin.ModelAdmin):
 
 
 @admin.register(ArtPost)
-class ArtFileAdmin(admin.ModelAdmin):
+class ArtPostAdmin(admin.ModelAdmin):
     list_display = [
         "slug",
         "date",
@@ -54,9 +53,19 @@ class ArtFileAdmin(admin.ModelAdmin):
     list_editable = ["visible"]
     list_filter = ["visible"]
     readonly_fields = ["get_public_link", "image_tn"]
-    formfield_overrides = {
-        models.ImageField: {"widget": ImagePreviewWidget},
-    }
+    fields = [
+        "visible",
+        "get_public_link",
+        "slug",
+        "title",
+        "date",
+        "file_type",
+        "font_name",
+        "file",
+        "image_x1",
+        "description",
+        "image_tn",
+    ]
     inlines = [ArtPostAttachmentAdminInline]
 
     image_tn = AdminThumbnail(image_field="image_tn")
