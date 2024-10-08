@@ -39,7 +39,7 @@
       <div class="artpost-links">
         <b>Downloads:</b>
         <a href="{{ post.image_x1.url }}">Image</a>
-        <a href="{{ post.file.url }}">Raw</a>
+        <a href="{{ post.file.url }}" download>Raw ({{ post.file_extension }})</a>
         {% for attachment in post.attachments.all %}
           <a href="{{ attachment.file.url }}">{{ attachment.name }}</a>
         {% endfor %}
