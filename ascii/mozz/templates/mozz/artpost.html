@@ -22,9 +22,13 @@
         <div>{{ post.date }}</div>
       </div>
       <div class="artpost-image">
-        <a href="{{ post.image_x1.url }}">
-          <img src="{{ post.image_x1.url }}" alt="{{ post.title }}">
-        </a>
+        {% if post.image_x1 %}
+          <a href="{{ post.image_x1.url }}">
+            <img src="{{ post.image_x1.url }}" alt="{{ post.title }}">
+          </a>
+        {% else %}
+          <img alt="{{ post.title }}">
+        {% endif %}
       </div>
       <div class="artpost-details">
         <span>Format: {{ post.get_file_type_display }}</span>
@@ -38,7 +42,9 @@
       {% endif %}
       <div class="artpost-links">
         <b>Downloads:</b>
-        <a href="{{ post.image_x1.url }}">Image</a>
+        {% if post.image_x1 %}
+          <a href="{{ post.image_x1.url }}">Image</a>
+        {% endif %}
         <a href="{{ post.file.url }}" download>Raw ({{ post.file_extension }})</a>
         {% for attachment in post.attachments.all %}
           <a href="{{ attachment.file.url }}">{{ attachment.name }}</a>

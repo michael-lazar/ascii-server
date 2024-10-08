@@ -49,7 +49,11 @@
     {% for post in posts %}
       <a class="artgrid-item" href="{{ post.public_url }}">
         <div class="artgrid-item-preview">
-          <img loading="lazy" src="{{ post.image_tn.url }}" alt="{{ post.title }}">
+          {% if post.image_tn %}
+            <img loading="lazy" src="{{ post.image_tn.url }}" alt="{{ post.title }}">
+          {% else %}
+            <img loading="lazy" alt="{{ post.title }}">
+          {% endif %}
         </div>
         <span>{{ post.title }}</span>
       </a>

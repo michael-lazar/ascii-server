@@ -16,7 +16,7 @@ from ascii.mozz.choices import ArtPostFileType, ArtPostFontName
 class ArtPostQuerySet(models.QuerySet):
 
     def visible(self) -> ArtPostQuerySet:
-        return self.filter(image_x1__isnull=False, visible=True)
+        return self.filter(visible=True)
 
 
 ArtPostManager = Manager.from_queryset(ArtPostQuerySet)  # noqa
