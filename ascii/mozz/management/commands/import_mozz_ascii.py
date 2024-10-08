@@ -36,11 +36,11 @@ class Command(BaseCommand):
             slug = re.sub(r"[\W_]+", "-", title.replace("'", "")).lower().strip("-")
             text = center_pad_ascii_art("\n".join(lines[:offset]))
 
-            image_filename = os.path.join(
-                options["public_dir"], "ascii-art", date_str, f"{slug}.png"
-            )
-            with open(image_filename, "rb") as fp:
-                image_raw = fp.read()
+            # image_filename = os.path.join(
+            #     options["public_dir"], "ascii-art", date_str, f"{slug}.png"
+            # )
+            # with open(image_filename, "rb") as fp:
+            #     image_raw = fp.read()
 
             post, created = ArtPost.objects.update_or_create(
                 slug=slug,
@@ -50,7 +50,7 @@ class Command(BaseCommand):
                     "file_type": ArtPostFileType.TEXT,
                     "font_name": ArtPostFontName.MENLO,
                     "file": ContentFile(text, f"{slug}.txt"),
-                    "image_x1": ContentFile(image_raw, f"{slug}.png"),
+                    # "image_x1": ContentFile(image_raw, f"{slug}.png"),
                 },
             )
             self.stdout.write(f"({post}, {created})")
