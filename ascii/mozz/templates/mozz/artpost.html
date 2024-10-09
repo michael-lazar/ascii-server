@@ -37,7 +37,7 @@
         {% endif %}
       </div>
       {% if post.description %}
-        <div class="artpost-description"><b>Description: </b>{{ post.description }}
+        <div class="artpost-description"><b>Description: </b>{{ post.description | safe }}
         </div>
       {% endif %}
       <div class="artpost-links">

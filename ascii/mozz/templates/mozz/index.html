@@ -44,18 +44,21 @@
   <form method="get" class="artgrid-filter" id="artgridFilterForm">
     <b>Filter</b>
     {{ form.filetype }}
+    {{ form.category }}
   </form>
   <div class="artgrid">
     {% for post in posts %}
       <a class="artgrid-item" href="{{ post.public_url }}">
         <div class="artgrid-item-preview">
-          {% if post.image_tn %}
-            <img loading="lazy" src="{{ post.image_tn.url }}" alt="{{ post.title }}">
-          {% else %}
-            <img loading="lazy" alt="{{ post.title }}">
-          {% endif %}
+          <div class="artgrid-item-preview-container">
+            {% if post.image_tn %}
+              <img loading="lazy" src="{{ post.image_tn.url }}" alt="{{ post.title }}">
+            {% else %}
+              <img loading="lazy" src="" alt="{{ post.title }}">
+            {% endif %}
+            <div class="artgrid-item-title">{{ post.title }} {% if post.featured %}✨{% endif %}</div>
+          </div>
         </div>
-        <div class="artgrid-item-title">{{ post.title }}</div>
       </a>
     {% endfor %}
   </div>

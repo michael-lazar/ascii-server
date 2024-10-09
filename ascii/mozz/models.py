@@ -32,6 +32,7 @@ class ArtPost(BaseModel):
     slug = models.SlugField(db_index=True)
     date = models.DateField(default=date.today, db_index=True)
     visible = models.BooleanField(default=True)
+    featured = models.BooleanField(default=False)
 
     title = models.CharField(max_length=128)
     description = models.TextField(blank=True)
