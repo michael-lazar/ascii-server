@@ -182,14 +182,14 @@ select {
 
 .artpost-description {
     white-space: pre-line;
-    width: 40em;
+    max-width: 40em;
 }
 
 .artpost-links {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    width: 40em;
+    max-width: 40em;
     justify-content: center;
 }
 
