@@ -76,7 +76,7 @@ class ArtPost(BaseModel):
         return ext.lower() if ext else "unknown"
 
     @property
-    def image_x1_extension(self) -> str:
+    def image_extension(self) -> str:
         if not self.image_x1:
             return ""
 
