@@ -49,7 +49,7 @@ class ArtPost(BaseModel):
     )
     image_tn = ImageSpecField(
         source="image_x1",
-        processors=[ResizeToFit(height=300)],
+        processors=[ResizeToFit(height=300, width=400)],
         format="PNG",
     )
 

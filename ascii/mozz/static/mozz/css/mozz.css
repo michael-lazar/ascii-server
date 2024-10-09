@@ -7,7 +7,9 @@ select {
     border: 1px solid #aaa;
     border-radius: 4px;
     padding: 4px;
-    box-sizing: border-box;
+    background: white;
+    color: black;
+    line-height: 1.2em;
 }
 
 .logo {
@@ -66,17 +68,17 @@ select {
 .preamble h1 {
     text-align: center;
     font-weight: bold;
+    font-style: normal;
 }
 
 .artgrid-filter {
-    background: #eee;
-    padding: 6px 14px;
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    align-items: baseline;
+    align-items: center;
+    margin: auto;
     margin-bottom: 20px;
+    max-width: 700px;
 }
 
 .artgrid-filter select {
@@ -95,30 +97,10 @@ select {
 }
 
 .artgrid-item {
-    font-style: normal;
-    text-align: center;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    text-decoration: none;
-}
-
-.artgrid-item-preview {
-    max-width: 100%;
-    flex: 1;
-    display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.artgrid-item-title {
-    text-decoration: underline;
-}
-
-.artgrid-item-preview-container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
     gap: 10px;
 }
 
@@ -129,21 +111,6 @@ select {
     padding: 8px;
     box-sizing: border-box;
     background: #eee;
-}
-
-.artgrid-item-sparkle {
-    text-decoration: none;
-    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
-
-}
-
-.artgrid-item-featured {
-    position: absolute;
-    top: -5px;
-    right: 0;
-    font-size: 20px;
-    text-shadow: 2px 2px black;
-    transform: rotate(20deg);
 }
 
 .artpost-wrapper {
@@ -160,7 +127,6 @@ select {
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    font-style: italic;
     padding: 0 20px;
 }
 
@@ -178,11 +144,13 @@ select {
     flex-direction: column;
     gap: 5px;
     text-align: center;
+    font-style: italic;
 }
 
 .artpost-description {
     white-space: pre-line;
     max-width: 40em;
+    font-style: italic;
 }
 
 .artpost-links {
@@ -213,7 +181,7 @@ select {
     height: auto;
     width: auto;
     max-width: 100%;
-    max-height: 100%;
+    max-height: 500px;
 }
 
 .pagination {

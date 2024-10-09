@@ -37,13 +37,13 @@
         {% endif %}
       </div>
       {% if post.description %}
-        <div class="artpost-description"><b>Description: </b>{{ post.description | safe }}
+        <div class="artpost-description">{{ post.description | safe }}
         </div>
       {% endif %}
       <div class="artpost-links">
         <b>Downloads:</b>
         {% if post.image_x1 %}
-          <a href="{{ post.image_x1.url }}">preview ({{ post.image_extension }})</a>
+          <a href="{{ post.image_x1.url }}">image ({{ post.image_extension }})</a>
         {% endif %}
         <a href="{{ post.file.url }}" download>raw file ({{ post.file_extension }})</a>
         {% for attachment in post.attachments.all %}

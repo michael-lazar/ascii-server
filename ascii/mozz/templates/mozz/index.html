@@ -42,29 +42,22 @@
     <p>—mozz</p>
   </div>
   <form method="get" class="artgrid-filter" id="artgridFilterForm">
-    <b>Filter</b>
     {{ form.filetype }}
     {{ form.category }}
-    {% if is_filtered %}<a href="{% url 'mozz-index' %}">[reset]</a>{% endif %}
+    {% if is_filtered %}<a href="{% url 'mozz-index' %}">[view all]</a>{% endif %}
   </form>
   <div class="artgrid">
     {% for post in posts %}
-      <a class="artgrid-item" href="{{ post.public_url }}">
-        <div class="artgrid-item-preview">
-          <div class="artgrid-item-preview-container">
-            {% if post.image_tn %}
-              <img loading="lazy" src="{{ post.image_tn.url }}" alt="{{ post.title }}">
-            {% else %}
-              <img loading="lazy" src="" alt="{{ post.title }}">
-            {% endif %}
-            <div>
-              {#              {% if post.featured %}<span class="artgrid-item-sparkle">✨</span>{% endif %}#}
-              <span class="artgrid-item-title">{{ post.title }}</span>
-              {#              {% if post.featured %}<span class="artgrid-item-sparkle">✨</span>{% endif %}#}
-            </div>
-          </div>
-        </div>
-      </a>
+      <div class="artgrid-item">
+        <a class="artgrid-item-image" href="{{ post.public_url }}">
+          {% if post.image_tn %}
+            <img src="{{ post.image_tn.url }}" alt="{{ post.title }}">
+          {% else %}
+            <img src="" alt="{{ post.title }}">
+          {% endif %}
+        </a>
+        <a class="artgrid-item-title" href="{{ post.public_url }}">{{ post.title }}</a>
+      </div>
     {% endfor %}
   </div>
 {% endblock %}
