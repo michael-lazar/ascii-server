@@ -73,6 +73,7 @@ select {
     padding: 6px 14px;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     align-items: baseline;
     margin-bottom: 20px;
@@ -80,6 +81,11 @@ select {
 
 .artgrid-filter select {
     padding: 2px;
+}
+
+.artgrid-filter a {
+    font-size: smaller;
+    white-space: nowrap;
 }
 
 .artgrid {
@@ -94,6 +100,7 @@ select {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    text-decoration: none;
 }
 
 .artgrid-item-preview {
@@ -102,6 +109,10 @@ select {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.artgrid-item-title {
+    text-decoration: underline;
 }
 
 .artgrid-item-preview-container {
@@ -120,6 +131,11 @@ select {
     background: #eee;
 }
 
+.artgrid-item-sparkle {
+    text-decoration: none;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+
+}
 
 .artgrid-item-featured {
     position: absolute;

@@ -45,6 +45,7 @@
     <b>Filter</b>
     {{ form.filetype }}
     {{ form.category }}
+    {% if is_filtered %}<a href="{% url 'mozz-index' %}">[reset]</a>{% endif %}
   </form>
   <div class="artgrid">
     {% for post in posts %}
@@ -56,7 +57,11 @@
             {% else %}
               <img loading="lazy" src="" alt="{{ post.title }}">
             {% endif %}
-            <div class="artgrid-item-title">{{ post.title }} {% if post.featured %}✨{% endif %}</div>
+            <div>
+              {% if post.featured %}<span class="artgrid-item-sparkle">✨</span>{% endif %}
+              <span class="artgrid-item-title">{{ post.title }}</span>
+              {% if post.featured %}<span class="artgrid-item-sparkle">✨</span>{% endif %}
+            </div>
           </div>
         </div>
       </a>
