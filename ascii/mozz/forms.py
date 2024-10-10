@@ -9,6 +9,6 @@ class MozzGalleryFilterForm(forms.Form):
         required=False,
     )
     category = forms.ChoiceField(
-        choices=[("", "Category: All"), ("featured", "Category: Featured")],
+        choices=[("", "Category: All"), ("favorite", "Category: Favorites")],
         required=False,
     )

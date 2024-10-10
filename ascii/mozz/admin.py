@@ -44,19 +44,19 @@ class ArtPostAdmin(admin.ModelAdmin):
         "slug",
         "date",
         "visible",
-        "featured",
+        "favorite",
         "title",
         "file_type",
         "font_name",
         "get_public_link",
     ]
     search_fields = ["slug", "title"]
-    list_editable = ["visible", "featured"]
-    list_filter = ["visible", "featured"]
+    list_editable = ["visible", "favorite"]
+    list_filter = ["visible", "favorite"]
     readonly_fields = ["get_public_link", "image_tn"]
     fields = [
         "visible",
-        "featured",
+        "favorite",
         "get_public_link",
         "slug",
         "title",

@@ -22,8 +22,8 @@ class MozzIndexView(TemplateView):
                 posts = posts.filter(file_type=filetype)
             if category := form.cleaned_data["category"]:
                 match category:
-                    case "featured":
-                        posts = posts.filter(featured=True)
+                    case "favorite":
+                        posts = posts.filter(favorite=True)
 
         is_filtered = any(form.cleaned_data.values())
 
