@@ -118,7 +118,7 @@ urlpatterns = [
     ),
     path(
         "fudan/",
-        RedirectView.as_view(url="fudan/bbs/groups/rec.faq/ANSI/"),
+        RedirectView.as_view(url="bbs/groups/rec.faq/ANSI/"),
         name="fudan-index",
     ),
     path(
