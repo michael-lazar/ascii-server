@@ -124,7 +124,9 @@ a {
     padding: 8px;
     box-sizing: border-box;
     background: #eee;
+    image-rendering: -webkit-optimize-contrast;
     image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
 .artpost-wrapper {
