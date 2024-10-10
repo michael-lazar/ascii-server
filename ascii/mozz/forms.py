@@ -5,10 +5,10 @@ from ascii.mozz.choices import ArtPostFileType
 
 class MozzGalleryFilterForm(forms.Form):
     filetype = forms.ChoiceField(
-        choices=[("", "Format: All")] + [(k, f"Format: {v}") for k, v in ArtPostFileType.choices],
+        choices=[("", "All formats")] + ArtPostFileType.choices,
         required=False,
     )
     category = forms.ChoiceField(
-        choices=[("", "Category: All"), ("favorite", "Category: Favorites")],
+        choices=[("", "All categories"), ("favorite", "Favorites")],
         required=False,
     )
