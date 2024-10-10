@@ -46,7 +46,7 @@
   <form method="get" class="artgrid-filter" id="artgridFilterForm">
     {{ form.filetype }}
     {{ form.category }}
-    {% if is_filtered %}<a href="{% url 'mozz-index' %}">[view all]</a>{% endif %}
+    {% if is_filtered %}<a href="{% url 'mozz-index' %}">[show all]</a>{% endif %}
   </form>
   <div class="artgrid">
     {% for post in posts %}
