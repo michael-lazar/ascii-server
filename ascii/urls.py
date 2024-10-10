@@ -3,6 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, register_converter
+from django.views.generic.base import RedirectView
 
 from ascii.core.converters import DateConverter
 from ascii.core.views import IndexView
@@ -114,6 +115,11 @@ urlpatterns = [
         "textmode/autocomplete/pack/",
         TextModePackAutocomplete.as_view(),
         name="textmode-pack-autocomplete",
+    ),
+    path(
+        "fudan/",
+        RedirectView.as_view(url="fudan/bbs/groups/rec.faq/ANSI/"),
+        name="fudan-index",
     ),
     path(
         "fudan/assets/<slug:slug>",
