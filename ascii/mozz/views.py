@@ -39,7 +39,7 @@ class MozzArtPostView(TemplateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         post = get_object_or_404(
-            ArtPost.objects.visible().prefetch_related("attachments"),
+            ArtPost.objects.prefetch_related("attachments"),
             date=kwargs["date"],
             slug=kwargs["slug"],
         )
