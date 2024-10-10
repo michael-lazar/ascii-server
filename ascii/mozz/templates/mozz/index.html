@@ -29,17 +29,19 @@
 {% block content %}
   <div class="preamble">
     <h1>Mozz's ASCII Art Gallery</h1>
-    <p>
-      Welcome to my personal ASCII art page! I'm an aspiring student of textmode artwork, following
-      in the footsteps of countless others who came before me.
-    <p>
-      All works here are my own unless otherwise noted. You may share or remix this artwork for
-      non-commercial purposes, but please keep the artist signature intact. </p>
-    <p>
-      Alternatively, here's my scroll file for the pure text experience:
-      <a href="{% url 'mozz-scroll-file' 'ascii-art' %}">./ascii-art.txt</a>
-    </p>
-    <p>—mozz</p>
+    <div>
+      <p>
+        Welcome to my personal ASCII art page! I'm an aspiring student of textmode artwork, following
+        in the footsteps of countless others who came before me.
+      <p>
+        All works here are my own unless otherwise noted. You may share or remix this artwork for
+        non-commercial purposes, but please keep the artist signature intact. </p>
+      <p>
+        Alternatively, here's my scroll file for the pure text experience:
+        <a href="{% url 'mozz-scroll-file' 'ascii-art' %}">./ascii-art.txt</a>
+      </p>
+      <p>—mozz</p>
+    </div>
   </div>
   <form method="get" class="artgrid-filter" id="artgridFilterForm">
     {{ form.filetype }}
