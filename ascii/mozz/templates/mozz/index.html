@@ -53,7 +53,7 @@
       <div class="artgrid-item">
         <a class="artgrid-item-image" href="{{ post.public_url }}">
           {% if post.image_tn %}
-            <img src="{{ post.image_tn.url }}" alt="{{ post.title }}">
+            <img loading="lazy" src="{{ post.image_tn.url }}" alt="{{ post.title }}">
           {% else %}
             <img src="" alt="{{ post.title }}">
           {% endif %}
