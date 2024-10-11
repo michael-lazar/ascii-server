@@ -199,7 +199,7 @@ a {
 }
 
 .pagination {
-    background: white;
+    background: #eee;
     font-weight: bold;
     padding: 5px;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
