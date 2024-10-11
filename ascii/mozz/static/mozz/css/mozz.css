@@ -71,7 +71,6 @@ a {
     font-style: italic;
     max-width: 700px;
     margin: auto;
-    margin-bottom: 20px;
 }
 
 .preamble > * {
@@ -82,6 +81,7 @@ a {
     text-align: center;
     font-weight: bold;
     font-style: normal;
+    margin: 0;
 }
 
 .artgrid-filter {
@@ -207,6 +207,7 @@ a {
     justify-content: center;
     font-size: small;
     width: 100%;
+    border-radius: 2px;
 }
 
 .pagination-step-links {
