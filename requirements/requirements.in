@@ -13,6 +13,7 @@ googletrans==3.1.0a0
 gunicorn
 gunicorn
 lxml
+pillow
 requests
 scrapy
 stransi
