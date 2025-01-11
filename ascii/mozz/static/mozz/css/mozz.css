@@ -2,7 +2,7 @@ body {
     margin: 0;
     /*background: #fbfbfb;*/
     background-color: rgba(255, 255, 255, 0.8);
-    background-image: url('../img/plaid.jpg');
+    /*background-image: url('../img/plaid.jpg');*/
     background-repeat: repeat;
     background-size: auto;
     background-blend-mode: lighten;
@@ -104,7 +104,7 @@ a {
 
 .artgrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 20px;
 }
 
