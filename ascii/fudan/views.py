@@ -34,10 +34,18 @@ class FudanBBSMenuView(TemplateView):
 
         links = obj.links.all()
         parents = obj.parents.all().select_related("menu")
+        if parents:
+            next_link = parents[0].get_next()
+            prev_link = parents[0].get_prev()
+        else:
+            next_link = None
+            prev_link = None
 
         return {
             "links": links,
             "parents": parents,
+            "next_link": next_link,
+            "prev_link": prev_link,
             "obj": obj,
             "lang": "en",
         }
@@ -75,9 +83,17 @@ class FudanBBSDocumentView(TemplateView):
             content_en = obj.get_translated_text(start=start, end=end)
 
         parents = obj.parents.all().select_related("menu")
+        if parents:
+            next_link = parents[0].get_next()
+            prev_link = parents[0].get_prev()
+        else:
+            next_link = None
+            prev_link = None
 
         return {
             "parents": parents,
+            "next_link": next_link,
+            "prev_link": prev_link,
             "obj": obj,
             "content_zh": content_zh,
             "content_en": content_en,

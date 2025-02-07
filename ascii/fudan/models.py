@@ -161,6 +161,14 @@ class MenuLink(BaseModel):
             case _:
                 return " "
 
+    def get_prev(self) -> MenuLink | None:
+        qs = MenuLink.objects.filter(menu=self.menu, order__lt=self.order)
+        return qs.order_by("-order").first()
+
+    def get_next(self) -> MenuLink | None:
+        qs = MenuLink.objects.filter(menu=self.menu, order__gt=self.order)
+        return qs.order_by("order").first()
+
     def get_translation(self) -> Translation | None:
         parser = ANSIParser(self.text)
         original = parser.to_stripped_text()

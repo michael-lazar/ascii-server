@@ -20,6 +20,20 @@
   <div class="bbs">
     <div class="bbs-controls">
       <div class="control">
+        {% if prev_link %}
+          <a class="control-item" href="{{ prev_link.target_public_url }}">&lt;</a>
+        {% else %}
+          <span class="control-item disabled">&lt;</span>
+        {% endif %}
+      </div>
+      <div class="control">
+        {% if next_link %}
+          <a class="control-item" href="{{ next_link.target_public_url }}">&gt;</a>
+        {% else %}
+          <span class="control-item disabled">&gt;</span>
+        {% endif %}
+      </div>
+      <div class="control">
         <span class="control-item inverse" id="font-size-display">20px</span>
         <span class="control-item" id="font-decrease">-</span>
         <span class="control-item" id="font-increase">+</span>

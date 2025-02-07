@@ -125,13 +125,17 @@ body {
     padding: 1px 6px;
 }
 
-.control-item {
+.control-item, a.control-item:link, a.control-item:visited {
     background-color: var(--c0);
     color: var(--c11);
     padding: 1px 6px;
 }
 
-.control-item.inverse, .control-item.active, a.control-item:link, a.control-item:visited {
+.control-item.inverse, .control-item.active {
     background-color: var(--c11);
     color: var(--c0);
+}
+
+.control-item.disabled {
+    cursor: not-allowed;
 }
