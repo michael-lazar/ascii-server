@@ -2,13 +2,27 @@
 {% load static %}
 
 {% block extrastyle %}{{ block.super }}
-<style>
-  .bbs-raw {
-      max-width: 850px;
-      max-height: 500px;
-      overflow: auto;
-      border: 1px solid grey;
-      padding: 5px;
-  }
-</style>
+  <style>
+      @font-face {
+          font-family: "aahub";
+          src: url('{% static 'core/fonts/aahub.woff2' %}') format('woff2');
+      }
+
+      .bbs-raw {
+          max-width: 850px;
+          max-height: 500px;
+          overflow: auto;
+          border: 1px solid grey;
+          padding: 5px;
+      }
+
+      .huku-raw {
+          font-family: "aahub", sans-serif;
+          max-width: 850px;
+          max-height: 500px;
+          overflow: auto;
+          border: 1px solid grey;
+          padding: 5px;
+      }
+  </style>
 {% endblock %}

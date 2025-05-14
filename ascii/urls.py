@@ -13,6 +13,7 @@ from ascii.fudan.views import (
     FudanBBSMenuView,
     FudanScratchFileView,
 )
+from ascii.huku.views import MLTDirectoryView, MLTFileDownloadView, MLTFileView
 from ascii.mozz.views import MozzArtPostView, MozzIndexView, MozzScrollFileView
 from ascii.textmode.views import (
     TextModeArtCollectionListView,
@@ -140,6 +141,26 @@ urlpatterns = [
         "fudan/bbs/<path:path>",
         FudanBBSDocumentView.as_view(),
         name="fudan-bbs-document",
+    ),
+    path(
+        "huku/mlt/",
+        MLTDirectoryView.as_view(),
+        name="huku-mlt-directory-index",
+    ),
+    path(
+        "huku/mlt/<path:path>/",
+        MLTDirectoryView.as_view(),
+        name="huku-mlt-directory",
+    ),
+    path(
+        "huku/mlt/<path:path>",
+        MLTFileView.as_view(),
+        name="huku-mlt-file",
+    ),
+    path(
+        "huku/raw/<path:path>",
+        MLTFileDownloadView.as_view(),
+        name="huku-mlt-file-download",
     ),
     path(
         "mozz/",

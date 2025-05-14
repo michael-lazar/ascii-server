@@ -1,0 +1,40 @@
+{% extends "huku/base.html" %}
+
+{% load static %}
+
+{% block breadcrumbs %}
+  {{ breadcrumbs }}
+{% endblock %}
+
+{% block headerlinks %}
+  {% if user.is_staff %}
+    <div><a href="{{ obj.change_url }}">edit</a></div>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <h2>{{ obj.name }} /</h2>
+
+  <div class="directory-content">
+    <ul>
+      {% if obj.parent %}
+        <li>
+          <img alt="dir" src="{% static "huku/images/dir.gif" %}">
+          <a href="{{ obj.parent.public_url }}">..</a>
+        </li>
+      {% endif %}
+      {% for subdirectory in subdirectories %}
+        <li>
+          <img alt="dir" src="{% static "huku/images/dir.gif" %}">
+          <a href="{{ subdirectory.public_url }}">{{ subdirectory.name }}</a>
+        </li>
+      {% endfor %}
+      {% for file in files %}
+        <li>
+          <img alt="text" src="{% static "huku/images/text.gif" %}">
+          <a href="{{ file.public_url }}">{{ file.name }} ({{ file.artwork_count }})</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

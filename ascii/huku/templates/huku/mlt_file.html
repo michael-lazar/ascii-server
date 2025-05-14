@@ -1,0 +1,44 @@
+{% extends "huku/base.html" %}
+
+{% block breadcrumbs %}
+  {{ breadcrumbs }}
+{% endblock %}
+
+{% block headerlinks %}
+  {% if user.is_staff %}
+    <div><a href="{{ obj.change_url }}">edit</a></div>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <h2>
+    {{ obj.name }}
+    <span class="file-download">
+      <a href="{{ obj.download_url }}">(.mlt)</a>
+    </span>
+  </h2>
+
+  {% if headings %}
+    <div class="heading-bar-container">
+        <div class="heading-bar">
+        {% for item in headings %}
+          <a href="#{{ item.slug }}">{{ item.heading }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="file-content">
+   {% for item in sections %}
+      {% if item.is_heading %}
+        <h4 id="{{ item.slug }}">{{ item.heading }}</h4>
+      {% else %}
+        <div class="item-grid">
+        {% for artwork in item %}
+          <pre id="{{ artwork.slug }}" class="item">{{ artwork.text }}</pre>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,0 +1,126 @@
+html, body {
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: #eee;
+}
+
+h2 {
+    text-align: center;
+}
+
+
+.logo {
+    margin-right: 5px;
+    box-shadow: none;
+}
+
+.header {
+    background: #222;
+    padding: 8px 10px;
+    color: white;
+    display: flex;
+    gap: 5px;
+    overflow: hidden;
+}
+
+.header a {
+    color: white;
+    white-space: nowrap;
+}
+
+.title a {
+    text-decoration: none;
+    color: white;
+}
+
+.content {
+    margin: 10px;
+}
+
+.header-nav {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.header-breadcrumbs {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 7ch;
+    flex: 1;
+}
+
+.header-shortcuts {
+    display: flex;
+    gap: 10px;
+}
+
+.item-grid {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+.item-grid .item {
+    font-family: "aahub", sans-serif;
+    overflow: auto;
+    border: 1px solid grey;
+    padding: 5px;
+    margin-left: 20px;
+    max-width: fit-content;
+    max-height: fit-content;
+    font-size: x-small;
+    background: white;
+    user-select: none;
+}
+
+.heading-bar-container {
+    display: flex;
+    justify-content: center;
+}
+
+.heading-bar {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    flex-wrap: wrap;
+    font-size: small;
+    max-width: 1000px;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+}
+
+.heading-bar a {
+    white-space: nowrap;
+}
+
+.file-download {
+    font-weight: normal;
+    font-size: medium;
+}
+
+.directory-content {
+    font-size: small;
+}
+
+.directory-content ul {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    list-style: none;
+    padding-left: 0;
+}

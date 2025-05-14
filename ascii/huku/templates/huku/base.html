@@ -1,0 +1,36 @@
+{% extends "core/base.html" %}
+
+{% load static %}
+
+{% block extrastyle %}{{ block.super }}
+  <style>
+      @font-face {
+          font-family: "aahub";
+          src: url('{% static 'core/fonts/aahub.woff2' %}') format('woff2');
+      }
+  </style>
+  <link href='{% static "huku/css/huku.css" %}' rel='stylesheet' />
+{% endblock %}
+
+{% block body %}
+  <div class="header">
+    {% include 'core/fragments/home-icon.html' %}
+    <div class="header-nav">
+      <div class="header-breadcrumbs">
+        <a href="{% url 'huku-mlt-directory-index' %}">mlt</a>
+        <span class="sep">/</span>
+        {% block breadcrumbs %}{% endblock %}
+      </div>
+      <div class="header-shortcuts">
+        {% block headerlinks %}
+          {% if user.is_staff %}
+            <div><a href="{% url 'admin:index' %}">edit</a></div>
+          {% endif %}
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+{% endblock %}

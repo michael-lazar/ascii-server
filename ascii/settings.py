@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "ascii.translations",
     "ascii.textmode",
     "ascii.mozz",
+    "ascii.huku",
 ]
 
 MIDDLEWARE = [
