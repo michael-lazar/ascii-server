@@ -24,20 +24,18 @@ def build_directory_breadcrumbs(obj: MLTFile | MLTDirectory) -> str:
     )
 
 
-def structure_items(items: Iterable[MLTItem]) -> tuple[list, list]:
-    sections = []
-    headings = []
-
+def structure_items(items: Iterable[MLTItem]) -> Iterable[tuple[MLTItem | None, list[MLTItem]]]:
+    heading, buffer = None, []
     for item in items:
         if item.is_heading:
-            headings.append(item)
-            sections.append(item)
+            if buffer:
+                yield heading, buffer
+            heading, buffer = item, []
         else:
-            if not sections or not isinstance(sections[-1], list):
-                sections.append([])
-            sections[-1].append(item)
+            buffer.append(item)
 
-    return headings, sections
+    if buffer:
+        yield heading, buffer
 
 
 class HukuIndexView(TemplateView):
@@ -74,12 +72,11 @@ class HukuMLTFileView(TemplateView):
     def get_context_data(self, *args, **kwargs) -> dict:
         path = f"/{kwargs['path']}"
         obj = get_object_or_404(MLTFile, path=path)
-        headings, sections = structure_items(obj.items.all())
+        sections = structure_items(obj.items.all())
         breadcrumbs = build_directory_breadcrumbs(obj)
 
         return {
             "obj": obj,
-            "headings": headings,
             "sections": sections,
             "breadcrumbs": breadcrumbs,
         }

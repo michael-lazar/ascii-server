@@ -1,5 +1,7 @@
 {% extends "huku/base.html" %}
 
+{% load static %}
+
 {% block breadcrumbs %}
   <span class="sep">/</span>
   {{ breadcrumbs }}
@@ -20,23 +22,27 @@
       </span>
     </h2>
     <div class="file-content">
-      {% for item in sections %}
-      {% if item.is_heading %}
-        <div class="file-heading">
-          <h4 id="{{ item.slug }}">{{ item.heading }}</h4>
-        </div>
-      {% else %}
-        <div class="item-grid">
-          {% for artwork in item %}
-            <a href="{{ artwork.public_url }}">
-              <pre id="{{ artwork.slug }}" class="item-preview" translate="no">{{ artwork.text }}</pre>
+      {% for heading, items in sections %}
+      <div class="artwork-container">
+        {% if heading %}
+          <h3 id="{{ heading.slug }}">
+            <span>{{ heading.heading }}</span>
+            <a href="#{{ heading.slug }}" class="anchor-link">
+              <img src="{% static "huku/images/link-chain.svg" %}" alt="anchor" class="icon">
             </a>
+          </h3>
+        {% endif %}
+        <div class="artwork-grid">
+          {% for artwork in items %}
+            <div>
+              <a href="{{ artwork.public_url }}">
+                <pre id="{{ artwork.slug }}" class="artwork-preview" translate="no">{{ artwork.text }}</pre>
+              </a>
+            </div>
           {% endfor %}
         </div>
-      {% endif %}
-    {% endfor %}
+      </div>
+      {% endfor %}
     </div>
-
-
   </div>
 {% endblock %}

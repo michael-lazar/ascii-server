@@ -14,6 +14,10 @@ body {
     background: #eee;
 }
 
+h1 {
+    text-align: center;
+}
+
 h2 {
     background: black;
     color: white;
@@ -33,6 +37,12 @@ h3 {
     padding: 8px;
     margin: 0;
     font-size: medium;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1ch;
+    scroll-margin-top: 5px;
 }
 
 h2 a {
@@ -47,7 +57,7 @@ h2 a {
 }
 
 .header {
-    background: red;
+    background: #f90073;
     padding: 8px 10px;
     color: white;
     display: flex;
@@ -91,19 +101,51 @@ h2 a {
     gap: 10px;
 }
 
-.file-content .item-grid {
+.file-content {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.file-content h3 {
+    background: white;
+    color: black;
+    border-bottom: 1px solid grey;
+}
+
+.artwork-container {
+    font-size: small;
+    background: white;
+    border: 1px solid grey;
+}
+
+.anchor-link {
+    text-decoration: none;
+}
+
+.anchor-link img {
+    height: 1em;
+}
+
+.artwork-grid {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
     gap: 20px;
+    padding: 10px;
 }
 
-.file-content .item-grid a {
+.artwork-grid > div {
+    overflow: auto;
+}
+
+.artwork-grid a {
     text-decoration: none;
     color: black;
 }
 
-.item-grid .item-preview {
+.artwork-grid .artwork-preview {
     font-family: "aahub", sans-serif;
     overflow: auto;
     border: 1px solid grey;
@@ -155,4 +197,26 @@ h2 a {
 
 .directory-content > li {
     display: contents;
+}
+
+.directory-content-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12em, 1fr));
+    gap: 5px;
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+}
+
+.directory-content-preview > li {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.subtitle {
+    font-size: medium;
+    font-style: italic;
+    text-align: center;
+    margin: 20px 10px;
 }
