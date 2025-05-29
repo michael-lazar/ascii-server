@@ -1,0 +1,18 @@
+{% extends "huku/base.html" %}
+
+{% block breadcrumbs %}
+  {{ breadcrumbs }}
+{% endblock %}
+
+{% block headerlinks %}
+  {% if user.is_staff %}
+    <div><a href="{{ obj.change_url }}">edit</a></div>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <h3>Artwork from file: {{ parent.name }} (1 of 12)</h3>
+  <div class="item-content">
+    <pre class="item-viewbox" translate="no">{{ obj.text }}</pre>
+  </div>
+{% endblock %}

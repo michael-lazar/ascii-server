@@ -1,0 +1,11 @@
+{% extends "huku/base.html" %}
+
+{% load static %}
+
+{% block content %}
+  <h2>Shift_JIS Archive</h2>
+  <div class="box-container">
+    <h3>MLT Directory</h3>
+    {% include "huku/fragments/directory_preview.html" with directory=mlt_root %}
+  </div>
+{% endblock %}

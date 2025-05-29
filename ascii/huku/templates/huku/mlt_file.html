@@ -1,6 +1,7 @@
 {% extends "huku/base.html" %}
 
 {% block breadcrumbs %}
+  <span class="sep">/</span>
   {{ breadcrumbs }}
 {% endblock %}
 
@@ -11,34 +12,31 @@
 {% endblock %}
 
 {% block content %}
-  <h2>
-    {{ obj.name }}
-    <span class="file-download">
-      <a href="{{ obj.download_url }}">(.mlt)</a>
-    </span>
-  </h2>
-
-  {% if headings %}
-    <div class="heading-bar-container">
-        <div class="heading-bar">
-        {% for item in headings %}
-          <a href="#{{ item.slug }}">{{ item.heading }}</a>
-        {% endfor %}
-      </div>
-    </div>
-  {% endif %}
-
-  <div class="file-content">
-   {% for item in sections %}
+  <div class="box-container">
+    <h2>
+      <span>{{ obj.name }}</span>
+      <span class="file-download">
+        <a href="{{ obj.download_url }}">(download as .mlt)</a>
+      </span>
+    </h2>
+    <div class="file-content">
+      {% for item in sections %}
       {% if item.is_heading %}
-        <h4 id="{{ item.slug }}">{{ item.heading }}</h4>
+        <div class="file-heading">
+          <h4 id="{{ item.slug }}">{{ item.heading }}</h4>
+        </div>
       {% else %}
         <div class="item-grid">
-        {% for artwork in item %}
-          <pre id="{{ artwork.slug }}" class="item">{{ artwork.text }}</pre>
-        {% endfor %}
+          {% for artwork in item %}
+            <a href="{{ artwork.public_url }}">
+              <pre id="{{ artwork.slug }}" class="item-preview" translate="no">{{ artwork.text }}</pre>
+            </a>
+          {% endfor %}
         </div>
       {% endif %}
     {% endfor %}
+    </div>
+
+
   </div>
 {% endblock %}

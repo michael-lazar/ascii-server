@@ -1,0 +1,23 @@
+{% load static %}
+
+<ul class="directory-content directory-content-wrap">
+  {% if directory.parent %}
+    <li>
+        <img alt="dir" src="{% static "huku/images/back.gif" %}">
+        <a href="{{ directory.parent.public_url }}">(parent directory)</a>
+      </a>
+    </li>
+  {% endif %}
+  {% for subdirectory in directory.subdirectories.all %}
+    <li>
+      <img alt="dir" src="{% static "huku/images/dir.gif" %}">
+      <a href="{{ subdirectory.public_url }}">{{ subdirectory.name }}</a>
+    </li>
+  {% endfor %}
+  {% for file in directory.files.all %}
+    <li>
+      <img alt="text" src="{% static "huku/images/text.gif" %}">
+      <a href="{{ file.public_url }}">{{ file.name }} ({{ file.artwork_count }})</a>
+    </li>
+  {% endfor %}
+</ul>

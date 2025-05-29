@@ -8,6 +8,7 @@ django-debug-toolbar
 django-environ
 django-extensions
 django-imagekit
+fonttools[woff]
 gevent
 googletrans==3.1.0a0
 gunicorn
@@ -18,3 +19,4 @@ requests
 scrapy
 stransi
 telnetlib3
+uharfbuzz

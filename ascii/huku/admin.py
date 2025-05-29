@@ -96,10 +96,30 @@ class MLTFileAdmin(admin.ModelAdmin):
 @admin.register(MLTItem)
 class MLTItemAdmin(admin.ModelAdmin):
     autocomplete_fields = ["mlt_file"]
-    list_display = ["id", linkify("mlt_file"), "order", "heading", "line_count"]
-    search_fields = ["id", "heading", "text"]
+    list_display = ["slug", linkify("mlt_file"), "order", "item_type", "heading", "line_count"]
+    list_filter = ["item_type"]
+    search_fields = ["slug", "heading", "text"]
+    readonly_fields = ["get_image_preview", "get_public_link"]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.select_related("mlt_file")
         return qs
+
+    @admin.display(description="Preview")
+    def get_image_preview(self, obj: MLTItem) -> str:
+        if not obj.image:
+            return "-"
+
+        return format_html(
+            '<a href="{}"><img class="huku-image-preview" src="{}"/></a>',
+            obj.image.url,
+            obj.image.url,
+        )
+
+    @admin.display(description="View")
+    def get_public_link(self, obj: MLTFile) -> str:
+        if not obj.public_url:
+            return "-"
+
+        return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)

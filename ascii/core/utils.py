@@ -1,3 +1,5 @@
+import random
+import string
 from urllib.parse import urlencode
 
 from django.http import HttpRequest
@@ -14,3 +16,7 @@ def reverse(*args, qs: dict | tuple | None = None, **kwargs) -> str:
 
 def get_query_param(request: HttpRequest, name: str) -> str | None:
     return request.GET.get(name)  # noqa
+
+
+def gen_random_slug(length: int = 12) -> str:
+    return "".join(random.choices(string.digits + string.ascii_letters, k=length))

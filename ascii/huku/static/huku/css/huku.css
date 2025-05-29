@@ -15,7 +15,29 @@ body {
 }
 
 h2 {
-    text-align: center;
+    background: black;
+    color: white;
+    padding: 8px;
+    margin: 0;
+    font-size: large;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+h3 {
+    background: black;
+    color: white;
+    padding: 8px;
+    margin: 0;
+    font-size: medium;
+}
+
+h2 a {
+    color: white;
+    text-transform: none;
 }
 
 
@@ -25,12 +47,14 @@ h2 {
 }
 
 .header {
-    background: #222;
+    background: red;
     padding: 8px 10px;
     color: white;
     display: flex;
     gap: 5px;
     overflow: hidden;
+    line-height: 1em;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
 .header a {
@@ -67,18 +91,23 @@ h2 {
     gap: 10px;
 }
 
-.item-grid {
+.file-content .item-grid {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
+    gap: 20px;
 }
 
-.item-grid .item {
+.file-content .item-grid a {
+    text-decoration: none;
+    color: black;
+}
+
+.item-grid .item-preview {
     font-family: "aahub", sans-serif;
     overflow: auto;
     border: 1px solid grey;
     padding: 5px;
-    margin-left: 20px;
     max-width: fit-content;
     max-height: fit-content;
     font-size: x-small;
@@ -86,26 +115,20 @@ h2 {
     user-select: none;
 }
 
-.heading-bar-container {
+.item-content {
     display: flex;
     justify-content: center;
 }
 
-.heading-bar {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    flex-wrap: wrap;
-    font-size: small;
-    max-width: 1000px;
-    border-top: 1px solid gray;
-    border-bottom: 1px solid gray;
-}
-
-.heading-bar a {
-    white-space: nowrap;
+.item-content .item-viewbox {
+    font-family: "aahub", sans-serif;
+    overflow: auto;
+    border: 1px solid grey;
+    padding: 5px;
+    margin-left: 20px;
+    max-width: fit-content;
+    max-height: fit-content;
+    background: white;
 }
 
 .file-download {
@@ -113,14 +136,23 @@ h2 {
     font-size: medium;
 }
 
-.directory-content {
+.box-container {
     font-size: small;
+    background: white;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
-.directory-content ul {
-    display: flex;
-    flex-direction: column;
+.directory-content {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: end;
+    gap: 10px;
     flex-wrap: wrap;
     list-style: none;
-    padding-left: 0;
+    padding: 10px;
+    margin: 0;
+}
+
+.directory-content > li {
+    display: contents;
 }

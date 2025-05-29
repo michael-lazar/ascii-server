@@ -3,6 +3,7 @@
 {% load static %}
 
 {% block breadcrumbs %}
+  <span class="sep">/</span>
   {{ breadcrumbs }}
 {% endblock %}
 
@@ -13,23 +14,23 @@
 {% endblock %}
 
 {% block content %}
-  <h2>{{ obj.name }} /</h2>
-
-  <div class="directory-content">
-    <ul>
+  <div class="box-container">
+    <h2>Directory: {{ obj.display_name }}</h2>
+    <ul class="directory-content">
       {% if obj.parent %}
         <li>
-          <img alt="dir" src="{% static "huku/images/dir.gif" %}">
-          <a href="{{ obj.parent.public_url }}">..</a>
+            <img alt="dir" src="{% static "huku/images/back.gif" %}">
+            <a href="{{ obj.parent.public_url }}">(parent directory)</a>
+          </a>
         </li>
       {% endif %}
-      {% for subdirectory in subdirectories %}
+      {% for subdirectory in obj.subdirectories.all %}
         <li>
           <img alt="dir" src="{% static "huku/images/dir.gif" %}">
           <a href="{{ subdirectory.public_url }}">{{ subdirectory.name }}</a>
         </li>
       {% endfor %}
-      {% for file in files %}
+      {% for file in obj.files.all %}
         <li>
           <img alt="text" src="{% static "huku/images/text.gif" %}">
           <a href="{{ file.public_url }}">{{ file.name }} ({{ file.artwork_count }})</a>

@@ -182,6 +182,11 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
+        "fontTools": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
     },
 }
 

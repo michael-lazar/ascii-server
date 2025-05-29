@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from django.db import models
 from django.db.models import Count, Manager
-from django.utils.text import slugify
 
 from ascii.core.fields import NonStrippingTextField
 from ascii.core.models import BaseModel
-from ascii.core.utils import reverse
+from ascii.core.utils import gen_random_slug, reverse
 
 
 class MLTDirectoryQuerySet(models.QuerySet):
@@ -22,6 +21,7 @@ MLTDirectoryManager = Manager.from_queryset(MLTDirectoryQuerySet)  # noqa
 
 
 class MLTDirectory(BaseModel):
+    slug = models.SlugField(unique=True, default=gen_random_slug)
     path = models.CharField(max_length=512, unique=True)
     name = models.CharField(max_length=256)
     parent = models.ForeignKey(
@@ -52,6 +52,10 @@ class MLTDirectory(BaseModel):
         else:
             return reverse("huku-mlt-directory", args=[self.path[1:-1]])
 
+    @property
+    def display_name(self) -> str:
+        return self.name or "mlt"
+
 
 class MLTFileQuerySet(models.QuerySet):
 
@@ -59,10 +63,15 @@ class MLTFileQuerySet(models.QuerySet):
         return self.annotate(item_count=Count("items"))
 
 
-MLTFileManager = Manager.from_queryset(MLTFileQuerySet)  # noqa
+class MLTFileManager(Manager.from_queryset(MLTFileQuerySet)):  # noqa
+    def get_queryset(self):
+        # This is a large field that won't be used most of the time,
+        # so defer it as an optimization.
+        return super().get_queryset().defer("data")
 
 
 class MLTFile(BaseModel):
+    slug = models.SlugField(unique=True, default=gen_random_slug)
     parent = models.ForeignKey(
         MLTDirectory,
         on_delete=models.CASCADE,
@@ -101,7 +110,12 @@ class MLTItemType(models.TextChoices):
     ARTWORK = "artwork"
 
 
+def upload_to(instance: MLTItem, filename: str) -> str:
+    return f"huku/{instance.mlt_file.path}-{instance.order}.svg"
+
+
 class MLTItem(BaseModel):
+    slug = models.SlugField(unique=True, default=gen_random_slug)
     mlt_file = models.ForeignKey(
         MLTFile,
         on_delete=models.CASCADE,
@@ -112,21 +126,26 @@ class MLTItem(BaseModel):
     heading = models.CharField(max_length=256, blank=True)
     text = NonStrippingTextField(blank=True)
     line_count = models.IntegerField()
+    image = models.FileField(blank=True, null=True, upload_to=upload_to)
 
     def __str__(self):
         return f"MLTItem: {self.pk}"
 
     class Meta:
         verbose_name = "MLT Item"
-        ordering = ["order", "mlt_file"]
+        ordering = ["mlt_file", "order"]
 
     @property
     def is_heading(self) -> bool:
         return self.item_type == MLTItemType.HEADING
 
     @property
-    def slug(self) -> str:
+    def is_artwork(self) -> bool:
+        return self.item_type == MLTItemType.ARTWORK
+
+    @property
+    def public_url(self) -> str | None:
         if self.is_heading:
-            return f"{slugify(self.heading, allow_unicode=True)}-{self.line_count}"
-        else:
-            return f"item-{self.line_count}"
+            return None
+
+        return reverse("huku-mlt-item", args=[self.slug])

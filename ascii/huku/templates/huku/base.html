@@ -14,11 +14,12 @@
 
 {% block body %}
   <div class="header">
-    {% include 'core/fragments/home-icon.html' %}
+    <a href="/">
+      <img class="logo" src="{% static 'core/img/AA-white-red.png' %}" alt="aa" />
+    </a>
     <div class="header-nav">
       <div class="header-breadcrumbs">
-        <a href="{% url 'huku-mlt-directory-index' %}">mlt</a>
-        <span class="sep">/</span>
+        <a href="{% url 'huku-index' %}">home</a>
         {% block breadcrumbs %}{% endblock %}
       </div>
       <div class="header-shortcuts">

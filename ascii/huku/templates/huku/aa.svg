@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="{{ width }}"
+     height="{{ height }}"
+     font-size="{{ font_size }}"
+     text-rendering="geometricPrecision">
+  <defs>
+    <style type="text/css"><![CDATA[
+        @font-face {
+          font-family: 'aahub';
+          src: url('data:font/woff2;base64,{{ font_b64 }}') format('woff2');
+        }
+        text {
+            font-family: 'aahub', sans-serif;
+            xml:space: preserve;
+        }
+      ]]></style>
+  </defs>
+
+  {% for y, line in rows %}
+  <text x="0"
+        y="{{ y }}"
+        xml:space="preserve">{{ line }}</text>
+  {% endfor %}
+</svg>
