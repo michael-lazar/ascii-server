@@ -171,7 +171,7 @@ urlpatterns = [
     path(
         "huku/artwork/<slug:slug>/",
         HukuMLTArtworkView.as_view(),
-        name="huku-mlt-item",
+        name="huku-mlt-artwork",
     ),
     path(
         "huku/raw/<path:path>",

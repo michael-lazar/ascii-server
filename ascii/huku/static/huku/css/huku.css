@@ -23,7 +23,7 @@ h2 {
     color: white;
     padding: 8px;
     margin: 0;
-    font-size: large;
+    font-size: medium;
     text-transform: uppercase;
     display: flex;
     justify-content: space-between;
@@ -57,7 +57,7 @@ h2 a {
 }
 
 .header {
-    background: #f90073;
+    background: red;
     padding: 8px 10px;
     color: white;
     display: flex;
@@ -118,6 +118,26 @@ h2 a {
     font-size: small;
     background: white;
     border: 1px solid grey;
+}
+
+.artwork-container h3 {
+    background-image: repeating-linear-gradient(
+            -45deg,
+            rgba(0, 144, 255, 0.5) 0px,
+            rgba(0, 144, 255, 0.5) 1px,
+            white 1px,
+            white 20px
+    )
+}
+
+.artwork-container h3.nsfw-header {
+    background-image: repeating-linear-gradient(
+            -45deg,
+            rgba(255, 0, 0, 0.5) 0px,
+            rgba(255, 0, 0, 0.5) 1px,
+            white 1px,
+            white 20px
+    )
 }
 
 .anchor-link {
@@ -188,7 +208,7 @@ h2 a {
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: end;
-    gap: 10px;
+    gap: 5px 10px;
     flex-wrap: wrap;
     list-style: none;
     padding: 10px;

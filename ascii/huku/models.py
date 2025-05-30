@@ -58,9 +58,7 @@ class MLTDirectory(BaseModel):
 
 
 class MLTFileQuerySet(models.QuerySet):
-
-    def annotate_item_count(self) -> MLTFileQuerySet:
-        return self.annotate(item_count=Count("items"))
+    pass
 
 
 class MLTFileManager(Manager.from_queryset(MLTFileQuerySet)):  # noqa
@@ -71,12 +69,7 @@ class MLTFileManager(Manager.from_queryset(MLTFileQuerySet)):  # noqa
 
 
 class MLTFile(BaseModel):
-    slug = models.SlugField(unique=True, default=gen_random_slug)
-    parent = models.ForeignKey(
-        MLTDirectory,
-        on_delete=models.CASCADE,
-        related_name="files",
-    )
+    parent = models.ForeignKey(MLTDirectory, on_delete=models.CASCADE, related_name="files")
     path = models.CharField(max_length=256, unique=True)
     name = models.CharField(max_length=256)
     last_update = models.DateField(blank=True, null=True)
@@ -105,47 +98,37 @@ class MLTFile(BaseModel):
         return reverse("huku-mlt-file-download", args=[f"{self.path[1:]}.mlt"])
 
 
-class MLTItemType(models.TextChoices):
-    HEADING = "heading"
-    ARTWORK = "artwork"
-
-
-def upload_to(instance: MLTItem, filename: str) -> str:
-    return f"huku/{instance.mlt_file.path}-{instance.order}.svg"
-
-
-class MLTItem(BaseModel):
-    slug = models.SlugField(unique=True, default=gen_random_slug)
-    mlt_file = models.ForeignKey(
-        MLTFile,
-        on_delete=models.CASCADE,
-        related_name="items",
-    )
-    item_type = models.CharField(max_length=8, choices=MLTItemType.choices, db_index=True)
+class MLTSection(BaseModel):
+    mlt_file = models.ForeignKey(MLTFile, on_delete=models.CASCADE, related_name="sections")
+    slug = models.SlugField(db_index=True)
+    name = models.CharField(max_length=256)
+    nsfw = models.BooleanField(default=False, verbose_name="NSFW")
     order = models.PositiveIntegerField(default=0, db_index=True)
-    heading = models.CharField(max_length=256, blank=True)
-    text = NonStrippingTextField(blank=True)
-    line_count = models.IntegerField()
-    image = models.FileField(blank=True, null=True, upload_to=upload_to)
+    artwork_count = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"MLTItem: {self.pk}"
+        return f"MLTSection: {self.pk}"
 
     class Meta:
-        verbose_name = "MLT Item"
-        ordering = ["mlt_file", "order"]
+        verbose_name = "MLT Section"
+        ordering = ["order"]
+
+
+class MLTArtwork(BaseModel):
+    section = models.ForeignKey(MLTSection, on_delete=models.CASCADE, related_name="artwork")
+    slug = models.SlugField(unique=True, default=gen_random_slug)
+    nsfw = models.BooleanField(default=False, verbose_name="NSFW")
+    order = models.PositiveIntegerField(default=0, db_index=True)
+    text = NonStrippingTextField(blank=True)
+    line_count = models.IntegerField()
+
+    def __str__(self):
+        return f"MLTArtwork: {self.pk}"
+
+    class Meta:
+        verbose_name = "MLT Artwork"
+        ordering = ["order"]
 
     @property
-    def is_heading(self) -> bool:
-        return self.item_type == MLTItemType.HEADING
-
-    @property
-    def is_artwork(self) -> bool:
-        return self.item_type == MLTItemType.ARTWORK
-
-    @property
-    def public_url(self) -> str | None:
-        if self.is_heading:
-            return None
-
-        return reverse("huku-mlt-item", args=[self.slug])
+    def public_url(self) -> str:
+        return reverse("huku-mlt-artwork", args=[self.slug])

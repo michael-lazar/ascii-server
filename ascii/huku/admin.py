@@ -6,7 +6,14 @@ from django.utils.html import format_html
 
 from ascii.core.admin import linkify
 from ascii.core.utils import reverse
-from ascii.huku.models import MLTDirectory, MLTDirectoryQuerySet, MLTFile, MLTFileQuerySet, MLTItem
+from ascii.huku.models import (
+    MLTArtwork,
+    MLTDirectory,
+    MLTDirectoryQuerySet,
+    MLTFile,
+    MLTFileQuerySet,
+    MLTSection,
+)
 
 
 class MLTFileInline(admin.TabularInline):
@@ -65,22 +72,15 @@ class MLTFileAdmin(admin.ModelAdmin):
         "nsfw",
         "decoding_error",
         "artwork_count",
-        "get_item_count",
     ]
     search_fields = ["id", "path"]
     list_filter = ["nsfw", "decoding_error"]
-    readonly_fields = ["get_public_link", "get_item_count", "get_data"]
+    readonly_fields = ["get_public_link", "get_data"]
 
     def get_queryset(self, request):
         qs = cast(MLTFileQuerySet, super().get_queryset(request))
         qs = qs.select_related("parent")
-        qs = qs.annotate_item_count()
         return qs
-
-    @admin.display(description="Items", ordering="item_count")
-    def get_item_count(self, obj: MLTFile) -> str:
-        link_url = reverse("admin:huku_mltitem_changelist", qs={"mlt_file": obj.pk})
-        return format_html('<a href="{}">{}</a>', link_url, obj.item_count)
 
     @admin.display(description="Data")
     def get_data(self, obj: MLTFile) -> str:
@@ -93,33 +93,36 @@ class MLTFileAdmin(admin.ModelAdmin):
         return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)
 
 
-@admin.register(MLTItem)
-class MLTItemAdmin(admin.ModelAdmin):
+@admin.register(MLTSection)
+class MLTSectionAdmin(admin.ModelAdmin):
     autocomplete_fields = ["mlt_file"]
-    list_display = ["slug", linkify("mlt_file"), "order", "item_type", "heading", "line_count"]
-    list_filter = ["item_type"]
-    search_fields = ["slug", "heading", "text"]
-    readonly_fields = ["get_image_preview", "get_public_link"]
+    list_display = ["name", "slug", linkify("mlt_file"), "order", "get_artwork_count"]
+    search_fields = ["slug", "name"]
+    readonly_fields = ["get_artwork_count"]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.select_related("mlt_file")
         return qs
 
-    @admin.display(description="Preview")
-    def get_image_preview(self, obj: MLTItem) -> str:
-        if not obj.image:
-            return "-"
+    @admin.display(description="Artwork", ordering="artwork_count")
+    def get_artwork_count(self, obj: MLTFile) -> str:
+        link_url = reverse("admin:huku_mltartwork_changelist", qs={"section": obj.pk})
+        return format_html('<a href="{}">{}</a>', link_url, obj.artwork_count)
 
-        return format_html(
-            '<a href="{}"><img class="huku-image-preview" src="{}"/></a>',
-            obj.image.url,
-            obj.image.url,
-        )
+
+@admin.register(MLTArtwork)
+class MLTArtworkAdmin(admin.ModelAdmin):
+    autocomplete_fields = ["section"]
+    list_display = ["slug", linkify("section"), "order", "line_count"]
+    search_fields = ["slug", "text"]
+    readonly_fields = ["get_public_link"]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.select_related("section")
+        return qs
 
     @admin.display(description="View")
-    def get_public_link(self, obj: MLTFile) -> str:
-        if not obj.public_url:
-            return "-"
-
+    def get_public_link(self, obj: MLTArtwork) -> str:
         return format_html("<a href={} target='_blank'>{}</a>", obj.public_url, obj.public_url)

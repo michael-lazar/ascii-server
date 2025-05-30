@@ -22,18 +22,16 @@
       </span>
     </h2>
     <div class="file-content">
-      {% for heading, items in sections %}
+      {% for section in obj.sections.all %}
       <div class="artwork-container">
-        {% if heading %}
-          <h3 id="{{ heading.slug }}">
-            <span>{{ heading.heading }}</span>
-            <a href="#{{ heading.slug }}" class="anchor-link">
-              <img src="{% static "huku/images/link-chain.svg" %}" alt="anchor" class="icon">
-            </a>
-          </h3>
-        {% endif %}
+        <h3 id="{{ section.slug }}" {% if section.nsfw %}class="nsfw-header"{% endif %}>
+          <span>{{ section.name }} ({{ section.artwork_count }})</span>
+          <a href="#{{ section.slug }}" class="anchor-link">
+            <img src="{% static "huku/images/link-chain.svg" %}" alt="anchor" class="icon">
+          </a>
+        </h3>
         <div class="artwork-grid">
-          {% for artwork in items %}
+          {% for artwork in section.artwork.all %}
             <div>
               <a href="{{ artwork.public_url }}">
                 <pre id="{{ artwork.slug }}" class="artwork-preview" translate="no">{{ artwork.text }}</pre>

@@ -1,12 +1,10 @@
-from collections.abc import Iterable
-
-from django.http import Http404, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.html import format_html_join, mark_safe
 from django.views.generic.base import TemplateView, View
 
 from ascii.core.utils import reverse
-from ascii.huku.models import MLTDirectory, MLTFile, MLTItem
+from ascii.huku.models import MLTArtwork, MLTDirectory, MLTFile
 
 
 def build_directory_breadcrumbs(obj: MLTFile | MLTDirectory) -> str:
@@ -22,20 +20,6 @@ def build_directory_breadcrumbs(obj: MLTFile | MLTDirectory) -> str:
         '<a href="{}">{}</a>',
         crumbs[::-1],
     )
-
-
-def structure_items(items: Iterable[MLTItem]) -> Iterable[tuple[MLTItem | None, list[MLTItem]]]:
-    heading, buffer = None, []
-    for item in items:
-        if item.is_heading:
-            if buffer:
-                yield heading, buffer
-            heading, buffer = item, []
-        else:
-            buffer.append(item)
-
-    if buffer:
-        yield heading, buffer
 
 
 class HukuIndexView(TemplateView):
@@ -72,7 +56,7 @@ class HukuMLTFileView(TemplateView):
     def get_context_data(self, *args, **kwargs) -> dict:
         path = f"/{kwargs['path']}"
         obj = get_object_or_404(MLTFile, path=path)
-        sections = structure_items(obj.items.all())
+        sections = obj.sections.all()
         breadcrumbs = build_directory_breadcrumbs(obj)
 
         return {
@@ -83,19 +67,14 @@ class HukuMLTFileView(TemplateView):
 
 
 class HukuMLTArtworkView(TemplateView):
-    template_name = "huku/mlt_item.html"
+    template_name = "huku/mlt_artwork.html"
 
     def get_context_data(self, *args, **kwargs) -> dict:
-        obj = get_object_or_404(MLTItem, slug=kwargs["slug"])
-        if not obj.is_artwork:
-            raise Http404()
-
-        parent = obj.mlt_file
-        breadcrumbs = build_directory_breadcrumbs(parent)
+        obj = get_object_or_404(MLTArtwork, slug=kwargs["slug"])
+        breadcrumbs = build_directory_breadcrumbs(obj.section.mlt_file)
 
         return {
             "obj": obj,
-            "parent": parent,
             "breadcrumbs": breadcrumbs,
         }
 
