@@ -66,16 +66,19 @@ class HukuMLTFileView(TemplateView):
         }
 
 
+# TODO: Make it look like a section in the file, with only a single artwork in the center, centered on the page
+# TODO: Add an obvious way to get back to the file from the individual artwork
+# TODO: Better header colors
+# TODO: Align file size and add date
+
+
 class HukuMLTArtworkView(TemplateView):
     template_name = "huku/mlt_artwork.html"
 
     def get_context_data(self, *args, **kwargs) -> dict:
         obj = get_object_or_404(MLTArtwork, slug=kwargs["slug"])
-        breadcrumbs = build_directory_breadcrumbs(obj.section.mlt_file)
-
         return {
             "obj": obj,
-            "breadcrumbs": breadcrumbs,
         }
 
 

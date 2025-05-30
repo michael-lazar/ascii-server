@@ -21,7 +21,6 @@
         <li>
             <img alt="dir" src="{% static "huku/images/back.gif" %}">
             <a href="{{ obj.parent.public_url }}">Parent Directory</a>
-          </a>
         </li>
       {% endif %}
       {% for subdirectory in obj.subdirectories.all %}
@@ -33,7 +32,7 @@
       {% for file in obj.files.all %}
         <li>
           <img alt="text" src="{% static "huku/images/text.gif" %}">
-          <a href="{{ file.public_url }}">{{ file.name }} ({{ file.artwork_count }})</a>
+          <span><a href="{{ file.public_url }}">{{ file.name }}</a> ({{ file.artwork_count }})</span>
         </li>
       {% endfor %}
     </ul>
