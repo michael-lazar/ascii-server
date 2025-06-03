@@ -57,11 +57,7 @@ class MLTDirectory(BaseModel):
         return self.name or "mlt"
 
 
-class MLTFileQuerySet(models.QuerySet):
-    pass
-
-
-class MLTFileManager(Manager.from_queryset(MLTFileQuerySet)):  # noqa
+class MLTFileManager(Manager):  # noqa
     def get_queryset(self):
         # This is a large field that won't be used most of the time,
         # so defer it as an optimization.

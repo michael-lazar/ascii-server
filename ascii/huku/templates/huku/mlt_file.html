@@ -16,20 +16,22 @@
 {% block content %}
   <div class="box-container">
     <h2>
-      <span>{{ obj.name }}</span>
+      <span>File: {{ obj.name }}</span>
       <span class="file-download">
         <a href="{{ obj.download_url }}">(download as .mlt)</a>
       </span>
     </h2>
     <div class="file-content">
       {% for section in obj.sections.all %}
-      <div class="artwork-container">
-        <h3 id="{{ section.slug }}" {% if section.nsfw %}class="nsfw-header"{% endif %}>
-          <span>{{ section.name }} ({{ section.artwork_count }})</span>
-          <a href="#{{ section.slug }}" class="anchor-link">
-            <img src="{% static "huku/images/link-chain.svg" %}" alt="anchor" class="icon">
-          </a>
-        </h3>
+      <details class="section-container" open>
+        <summary id="{{ section.slug }}">
+          <div class="section-container-header">
+            <span>{{ section.name }} ({{ section.artwork_count }})</span>
+            <a href="#{{ section.slug }}" class="anchor-link">
+              <img src="{% static "huku/images/link-chain.svg" %}" alt="anchor" class="icon">
+            </a>
+          </div>
+        </summary>
         <div class="artwork-grid">
           {% for artwork in section.artwork.all %}
             <div>
@@ -39,7 +41,7 @@
             </div>
           {% endfor %}
         </div>
-      </div>
+      </details>
       {% endfor %}
     </div>
   </div>

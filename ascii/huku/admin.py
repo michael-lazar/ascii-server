@@ -11,7 +11,6 @@ from ascii.huku.models import (
     MLTDirectory,
     MLTDirectoryQuerySet,
     MLTFile,
-    MLTFileQuerySet,
     MLTSection,
 )
 
@@ -78,7 +77,7 @@ class MLTFileAdmin(admin.ModelAdmin):
     readonly_fields = ["get_public_link", "get_data"]
 
     def get_queryset(self, request):
-        qs = cast(MLTFileQuerySet, super().get_queryset(request))
+        qs = super().get_queryset(request)
         qs = qs.select_related("parent")
         return qs
 

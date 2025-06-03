@@ -111,41 +111,42 @@ h2 a {
 .file-content h3 {
     background: white;
     color: black;
-    border-bottom: 1px solid grey;
 }
 
-.artwork-container {
+.section-container {
     font-size: small;
     background: white;
     border: 1px solid grey;
 }
 
-.artwork-container h3 {
-    background-image: repeating-linear-gradient(
-            -45deg,
-            rgba(0, 144, 255, 0.5) 0px,
-            rgba(0, 144, 255, 0.5) 1px,
-            white 1px,
-            white 20px
-    )
+.section-container summary {
+    background-color: #eaeaea;
+    color: black;
+    padding: 5px;
+    font-size: medium;
+    cursor: pointer;
+    line-height: 1em;
 }
 
-.artwork-container h3.nsfw-header {
-    background-image: repeating-linear-gradient(
-            -45deg,
-            rgba(255, 0, 0, 0.5) 0px,
-            rgba(255, 0, 0, 0.5) 1px,
-            white 1px,
-            white 20px
-    )
+
+.section-container:open summary {
+    border-bottom: 1px solid grey;
 }
+
+.section-container-header {
+    display: inline;
+}
+
 
 .anchor-link {
     text-decoration: none;
+    float: right;
 }
 
 .anchor-link img {
     height: 1em;
+    position: relative;
+    bottom: 0;
 }
 
 .artwork-grid {
@@ -177,12 +178,14 @@ h2 a {
     user-select: none;
 }
 
-.item-content {
+.artwork-content {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
 }
 
-.item-content .item-viewbox {
+.artwork-content .artwork-viewbox {
     font-family: "aahub", sans-serif;
     overflow: auto;
     border: 1px solid grey;
@@ -200,7 +203,7 @@ h2 a {
 
 .box-container {
     font-size: small;
-    background: white;
+    background: #fafafa;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
@@ -239,4 +242,10 @@ h2 a {
     font-style: italic;
     text-align: center;
     margin: 20px 10px;
+}
+
+.index-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 40px;
 }

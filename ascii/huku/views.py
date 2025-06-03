@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.utils.html import format_html_join, mark_safe
+from django.utils.html import format_html_join
+from django.utils.safestring import mark_safe
 from django.views.generic.base import TemplateView, View
 
 from ascii.core.utils import reverse
@@ -77,8 +78,10 @@ class HukuMLTArtworkView(TemplateView):
 
     def get_context_data(self, *args, **kwargs) -> dict:
         obj = get_object_or_404(MLTArtwork, slug=kwargs["slug"])
+        breadcrumbs = build_directory_breadcrumbs(obj.section.mlt_file)
         return {
             "obj": obj,
+            "breadcrumbs": breadcrumbs,
         }
 
 

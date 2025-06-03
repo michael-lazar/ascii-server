@@ -1,7 +1,10 @@
 {% extends "huku/base.html" %}
 
 {% block breadcrumbs %}
-  {{ breadcrumbs }}
+<span class="sep">/</span>
+{{ breadcrumbs }}
+<span class="sep">/</span>
+<a href="{{ obj.public_url }}">{{ obj.slug }}</a>
 {% endblock %}
 
 {% block headerlinks %}
@@ -11,8 +14,10 @@
 {% endblock %}
 
 {% block content %}
-  <h3>{{ obj.section.name }} ({{ obj.order|add:1 }} of {{ obj.section.artwork_count }})</h3>
-  <div class="item-content">
-    <pre class="item-viewbox" translate="no">{{ obj.text }}</pre>
+  <div class="section-container">
+    <h3>{{ obj.section.name }} ({{ obj.order|add:1 }} of {{ obj.section.artwork_count }})</h3>
+    <div class="artwork-content">
+      <pre class="artwork-viewbox" translate="no">{{ obj.text }}</pre>
+    </div>
   </div>
 {% endblock %}
