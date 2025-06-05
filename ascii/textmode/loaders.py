@@ -12,6 +12,7 @@ _logger = logging.getLogger(__name__)
 
 BLACKLIST = [
     "2xl_crew-the_collection",  # 50 MB pack with a directory in it, generally weird
+    "openworld-01",  # Empty, broken pack
 ]
 
 
