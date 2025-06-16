@@ -46,10 +46,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (bbsWrapText) {
       const newWhiteSpace = "pre-line";
       document.querySelectorAll(".bbs-document").forEach((span) => {
-        span.style.whiteSpace = newWhiteSpace;
+        span.style.setProperty('white-space', newWhiteSpace, 'important');
       });
       document.querySelectorAll(".bbs-menu > span").forEach((span) => {
-        span.style.whiteSpace = newWhiteSpace;
+        span.style.setProperty('white-space', newWhiteSpace, 'important');
       });
     }
 
@@ -169,11 +169,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const newWhiteSpace = bbsWrapText ? "pre" : "pre-line";
 
     bbsDocuments.forEach((span) => {
-      span.style.whiteSpace = newWhiteSpace;
+      span.style.setProperty('white-space', newWhiteSpace, 'important');
     });
 
     bbsMenuItems.forEach((span) => {
-      span.style.whiteSpace = newWhiteSpace;
+      span.style.setProperty('white-space', newWhiteSpace, 'important');
     });
 
     whitespaceToggle.classList.toggle("active");
@@ -400,6 +400,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!cursorVisible && hasNavigation) {
       cursorVisible = true;
       sessionStorage.setItem('fudan_cursor_enabled', 'true');
+      // Update cursor button visual state
+      cursorToggle.classList.add("active");
       restoreNavigationPosition();
     }
   }
@@ -435,6 +437,27 @@ document.addEventListener("DOMContentLoaded", function () {
     // Toggle language with 't'
     if (event.key === "t") {
       toggleLanguage();
+      event.preventDefault();
+      return;
+    }
+
+    // Toggle text wrapping with 'w'
+    if (event.key === "w") {
+      whitespaceToggle.click();
+      event.preventDefault();
+      return;
+    }
+
+    // Increase font size with '+'
+    if (event.key === "+" || event.key === "=") {
+      fontIncrease.click();
+      event.preventDefault();
+      return;
+    }
+
+    // Decrease font size with '-'
+    if (event.key === "-") {
+      fontDecrease.click();
       event.preventDefault();
       return;
     }
