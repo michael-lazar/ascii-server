@@ -4,6 +4,37 @@
 
 {% block extrahead %}
   <link href='{% static "fudan/css/bbs.css" %}' rel='stylesheet' />
+  <script>
+    // Apply critical settings immediately to prevent flash
+    (function() {
+      try {
+        var savedFontSize = sessionStorage.getItem('fudan_font_size');
+        var savedWrapText = sessionStorage.getItem('fudan_wrap_text') === 'true';
+        var savedToolbarExpanded = sessionStorage.getItem('fudan_toolbar_expanded') !== 'false';
+
+        var criticalCSS = '';
+
+        if (savedFontSize && savedFontSize !== '20') {
+          criticalCSS += '.bbs { font-size: ' + savedFontSize + 'px !important; }';
+        }
+
+        if (savedWrapText) {
+          criticalCSS += '.bbs-document, .bbs-menu > span { white-space: pre-line !important; }';
+        }
+
+        // Note: toolbar state will be handled by JavaScript to avoid conflicts
+
+        // Set toggle button text immediately
+        var toggleButtonText = savedToolbarExpanded ? '-' : '+';
+
+        if (criticalCSS) {
+          document.write('<style>' + criticalCSS + '</style>');
+        }
+      } catch (e) {
+        // Silently fail if sessionStorage unavailable
+      }
+    })();
+  </script>
   <script src="{% static "fudan/js/bbs.js" %}"></script>
 {% endblock %}
 
@@ -19,11 +50,42 @@
 {% block body %}
   <div class="bbs">
     <div class="bbs-controls">
+      {% include 'core/fragments/home-icon.html' %}
+      <div class="control toggle" id="toggle-toolbar">
+        <script>
+          try {
+            var expanded = sessionStorage.getItem('fudan_toolbar_expanded') !== 'false';
+            document.currentScript.parentNode.textContent = expanded ? '-' : '+';
+          } catch (e) {
+            document.currentScript.parentNode.textContent = '-';
+          }
+        </script>
+      </div>
+      {% if user.is_staff %}
+        <div class="control">
+          <a class="control-item inverse" href="{{ obj.change_url }}" target="_blank">e</a>
+        </div>
+      {% endif %}
+      <div class="control collapsible">
+        <span class="control-item {% if lang == "zh" %}active{% endif %}" id="lang-zh">zh</span>
+        <span class="control-item {% if lang == "en" %}active{% endif %}" id="lang-en">en</span>
+      </div>
+      <div class="control collapsible">
+        <span class="control-item" id="cursor-toggle">cursor</span>
+      </div>
+      <div class="control collapsible">
+        <span class="control-item" id="whitespace-toggle">wrap</span>
+      </div>
+      <div class="control collapsible">
+        <span class="control-item inverse" id="font-size-display">20px</span>
+        <span class="control-item" id="font-decrease">-</span>
+        <span class="control-item" id="font-increase">+</span>
+      </div>
       <div class="control">
-        {% if parents %}
-          <a class="control-item control-item-parent" href="{{ parents.0.menu.public_url }}">..</a>
+        {% if next_link %}
+          <a class="control-item" href="{{ next_link.target_public_url }}">&gt;</a>
         {% else %}
-          <span class="control-item control-item-parent disabled">..</span>
+          <span class="control-item disabled">&gt;</span>
         {% endif %}
       </div>
       <div class="control">
@@ -34,31 +96,12 @@
         {% endif %}
       </div>
       <div class="control">
-        {% if next_link %}
-          <a class="control-item" href="{{ next_link.target_public_url }}">&gt;</a>
+        {% if parents %}
+          <a class="control-item control-item-parent" href="{{ parents.0.menu.public_url }}">..</a>
         {% else %}
-          <span class="control-item disabled">&gt;</span>
+          <span class="control-item control-item-parent disabled">..</span>
         {% endif %}
       </div>
-      <div class="control collapsible">
-        <span class="control-item inverse" id="font-size-display">20px</span>
-        <span class="control-item" id="font-decrease">-</span>
-        <span class="control-item" id="font-increase">+</span>
-      </div>
-      <div class="control collapsible">
-        <span class="control-item" id="whitespace-toggle">wrap</span>
-      </div>
-      <div class="control collapsible">
-        <span class="control-item {% if lang == "zh" %}active{% endif %}" id="lang-zh">zh</span>
-        <span class="control-item {% if lang == "en" %}active{% endif %}" id="lang-en">en</span>
-      </div>
-      {% if user.is_staff %}
-        <div class="control">
-          <a class="control-item inverse" href="{{ obj.change_url }}" target="_blank">e</a>
-        </div>
-      {% endif %}
-      <div class="control toggle" id="toggle-toolbar">-</div>
-      {% include 'core/fragments/home-icon.html' %}
     </div>
     <div class="bbs-content">
       <div class="bbs-nav">

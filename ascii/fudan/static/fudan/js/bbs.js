@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const fontDecrease = document.getElementById("font-decrease");
 
   const whitespaceToggle = document.getElementById("whitespace-toggle");
+  const cursorToggle = document.getElementById("cursor-toggle");
 
   const contentEn = document.querySelectorAll(".content-en");
   const contentZh = document.querySelectorAll(".content-zh");
@@ -20,8 +21,17 @@ document.addEventListener("DOMContentLoaded", function () {
   let bbsFontSize = parseInt(sessionStorage.getItem("fudan_font_size")) || 20;
   let bbsWrapText = sessionStorage.getItem("fudan_wrap_text") === "true";
   let isToolbarExpanded =
-    sessionStorage.getItem("fudan_toolbar_expanded") !== "true"; // default false
+    sessionStorage.getItem("fudan_toolbar_expanded") !== "false"; // default true
   let bbsLanguage = langZh.classList.contains("active") ? "zh" : "en";
+
+  // Navigation state
+  let currentLinkIndex = 0;
+  let allLinksZh = [];
+  let allLinksEn = [];
+  let parentLinks = [];
+  let isMenuPage = false;
+  let hasNavigation = false;
+  let cursorVisible = sessionStorage.getItem('fudan_cursor_enabled') === 'true';
 
   // Apply settings immediately to prevent flashing
   function applySettingsImmediately() {
@@ -157,6 +167,27 @@ document.addEventListener("DOMContentLoaded", function () {
     sessionStorage.setItem("fudan_wrap_text", bbsWrapText.toString());
   });
 
+  cursorToggle.addEventListener("click", function () {
+    cursorVisible = !cursorVisible;
+    cursorToggle.classList.toggle("active");
+
+    // Save cursor visibility state to session storage
+    sessionStorage.setItem("fudan_cursor_enabled", cursorVisible.toString());
+
+    if (cursorVisible && hasNavigation) {
+      // Show cursor at appropriate position
+      restoreNavigationPosition();
+    } else {
+      // Hide cursor by removing all highlighting
+      [allLinksZh, allLinksEn].forEach((linkArray) => {
+        linkArray.forEach((link) => {
+          link.setAttribute("aria-selected", "false");
+          link.classList.remove("keyboard-selected");
+        });
+      });
+    }
+  });
+
   fontIncrease.addEventListener("click", function () {
     bbsFontSize += 4;
     refreshFontSize();
@@ -180,6 +211,11 @@ document.addEventListener("DOMContentLoaded", function () {
       whitespaceToggle.classList.add("active");
     }
 
+    // Update cursor toggle state
+    if (cursorVisible) {
+      cursorToggle.classList.add("active");
+    }
+
     // Update toolbar toggle button
     if (!isToolbarExpanded) {
       toggleToolbarButton.textContent = "+";
@@ -188,14 +224,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Initialize UI state
   initializeUIState();
-
-  // Navigation state
-  let currentLinkIndex = 0;
-  let allLinksZh = [];
-  let allLinksEn = [];
-  let parentLinks = [];
-  let isMenuPage = false;
-  let hasNavigation = false;
 
   // Initialize navigation
   function initializeNavigation() {
@@ -232,7 +260,9 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       if (allLinksZh.length > 0 || allLinksEn.length > 0) {
-        restoreNavigationPosition();
+        if (cursorVisible) {
+          restoreNavigationPosition();
+        }
       }
     }
   }
@@ -305,6 +335,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Highlight navigation link for accessibility
   function highlightNavigationLink(index) {
+    // Only highlight if cursor is visible
+    if (!cursorVisible) return;
+
     // Update all links (parent + menu/content links)
     [allLinksZh, allLinksEn].forEach((linkArray) => {
       linkArray.forEach((link, i) => {
@@ -325,6 +358,15 @@ document.addEventListener("DOMContentLoaded", function () {
     currentLinkIndex = index;
     // Save position whenever it changes
     saveNavigationPosition();
+  }
+
+  // Enable cursor and show initial highlight
+  function enableCursor() {
+    if (!cursorVisible && hasNavigation) {
+      cursorVisible = true;
+      sessionStorage.setItem('fudan_cursor_enabled', 'true');
+      restoreNavigationPosition();
+    }
   }
 
   // Navigate to parent page
@@ -365,6 +407,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle arrow keys
     switch (event.key) {
       case "ArrowUp":
+        enableCursor(); // Show cursor on first arrow key
         if (hasNavigation) {
           // Move cursor up through all links (parent + menu/content)
           if (currentLinkIndex > 0) {
@@ -378,6 +421,7 @@ document.addEventListener("DOMContentLoaded", function () {
         break;
 
       case "ArrowDown":
+        enableCursor(); // Show cursor on first arrow key
         if (hasNavigation) {
           // Move cursor down through all links (parent + menu/content)
           const maxLinks = Math.max(allLinksZh.length, allLinksEn.length);
@@ -392,6 +436,7 @@ document.addEventListener("DOMContentLoaded", function () {
         break;
 
       case "ArrowLeft":
+        enableCursor(); // Show cursor on first arrow key
         if (hasNavigation) {
           // Navigate to parent if we're highlighting a parent link
           if (currentLinkIndex < parentLinks.length && parentLinks.length > 0) {
@@ -408,6 +453,7 @@ document.addEventListener("DOMContentLoaded", function () {
         break;
 
       case "ArrowRight":
+        enableCursor(); // Show cursor on first arrow key
         if (hasNavigation) {
           // Open the currently selected link
           const currentLinks = bbsLanguage === "en" ? allLinksEn : allLinksZh;
