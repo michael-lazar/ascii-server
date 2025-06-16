@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const whitespaceToggle = document.getElementById("whitespace-toggle");
   const cursorToggle = document.getElementById("cursor-toggle");
+  const navToggle = document.getElementById("nav-toggle");
 
   const contentEn = document.querySelectorAll(".content-en");
   const contentZh = document.querySelectorAll(".content-zh");
@@ -22,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let bbsWrapText = sessionStorage.getItem("fudan_wrap_text") === "true";
   let isToolbarExpanded =
     sessionStorage.getItem("fudan_toolbar_expanded") !== "false"; // default true
+  let bbsNavVisible = sessionStorage.getItem("fudan_nav_visible") !== "false"; // default true
   let bbsLanguage = langZh.classList.contains("active") ? "zh" : "en";
 
   // Navigation state
@@ -37,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function applySettingsImmediately() {
     // Apply font size
     if (bbsFontSize !== 20) {
-      document.querySelector(".bbs").style.fontSize = `${bbsFontSize}px`;
+      document.querySelector(".bbs").style.setProperty('font-size', `${bbsFontSize}px`, 'important');
     }
 
     // Apply wrap setting
@@ -60,6 +62,14 @@ document.addEventListener("DOMContentLoaded", function () {
         element.classList.add("hidden");
       });
     }
+
+    // Apply nav visibility state
+    if (!bbsNavVisible) {
+      const navElements = document.querySelectorAll(".control.nav-button");
+      navElements.forEach((element) => {
+        element.classList.add("hidden");
+      });
+    }
   }
 
   // Apply settings as soon as possible
@@ -67,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function refreshFontSize() {
     fontDisplay.textContent = `${bbsFontSize}px`;
-    document.querySelector(".bbs").style.fontSize = `${bbsFontSize}px`;
+    document.querySelector(".bbs").style.setProperty('font-size', `${bbsFontSize}px`, 'important');
     // Save font size to session storage
     sessionStorage.setItem("fudan_font_size", bbsFontSize.toString());
   }
@@ -188,6 +198,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  navToggle.addEventListener("click", function () {
+    bbsNavVisible = !bbsNavVisible;
+    navToggle.classList.toggle("active");
+
+    // Save nav visibility state to session storage
+    sessionStorage.setItem("fudan_nav_visible", bbsNavVisible.toString());
+
+    // Toggle visibility of navigation buttons
+    const navElements = document.querySelectorAll(".control.nav-button");
+    navElements.forEach((element) => {
+      element.classList.toggle("hidden");
+    });
+  });
+
   fontIncrease.addEventListener("click", function () {
     bbsFontSize += 4;
     refreshFontSize();
@@ -214,6 +238,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // Update cursor toggle state
     if (cursorVisible) {
       cursorToggle.classList.add("active");
+    }
+
+    // Update nav toggle state
+    if (bbsNavVisible) {
+      navToggle.classList.add("active");
     }
 
     // Update toolbar toggle button
@@ -407,8 +436,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle arrow keys
     switch (event.key) {
       case "ArrowUp":
-        enableCursor(); // Show cursor on first arrow key
-        if (hasNavigation) {
+        if (!cursorVisible) {
+          enableCursor(); // Just show cursor on first arrow key
+        } else if (hasNavigation) {
           // Move cursor up through all links (parent + menu/content)
           if (currentLinkIndex > 0) {
             highlightNavigationLink(currentLinkIndex - 1);
@@ -421,8 +451,9 @@ document.addEventListener("DOMContentLoaded", function () {
         break;
 
       case "ArrowDown":
-        enableCursor(); // Show cursor on first arrow key
-        if (hasNavigation) {
+        if (!cursorVisible) {
+          enableCursor(); // Just show cursor on first arrow key
+        } else if (hasNavigation) {
           // Move cursor down through all links (parent + menu/content)
           const maxLinks = Math.max(allLinksZh.length, allLinksEn.length);
           if (currentLinkIndex < maxLinks - 1) {
@@ -436,8 +467,9 @@ document.addEventListener("DOMContentLoaded", function () {
         break;
 
       case "ArrowLeft":
-        enableCursor(); // Show cursor on first arrow key
-        if (hasNavigation) {
+        if (!cursorVisible) {
+          enableCursor(); // Just show cursor on first arrow key
+        } else if (hasNavigation) {
           // Navigate to parent if we're highlighting a parent link
           if (currentLinkIndex < parentLinks.length && parentLinks.length > 0) {
             window.location.href = parentLinks[currentLinkIndex].href;
@@ -453,8 +485,9 @@ document.addEventListener("DOMContentLoaded", function () {
         break;
 
       case "ArrowRight":
-        enableCursor(); // Show cursor on first arrow key
-        if (hasNavigation) {
+        if (!cursorVisible) {
+          enableCursor(); // Just show cursor on first arrow key
+        } else if (hasNavigation) {
           // Open the currently selected link
           const currentLinks = bbsLanguage === "en" ? allLinksEn : allLinksZh;
           if (

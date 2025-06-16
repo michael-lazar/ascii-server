@@ -10,7 +10,6 @@
       try {
         var savedFontSize = sessionStorage.getItem('fudan_font_size');
         var savedWrapText = sessionStorage.getItem('fudan_wrap_text') === 'true';
-        var savedToolbarExpanded = sessionStorage.getItem('fudan_toolbar_expanded') !== 'false';
 
         var criticalCSS = '';
 
@@ -23,10 +22,6 @@
         }
 
         // Note: toolbar state will be handled by JavaScript to avoid conflicts
-
-        // Set toggle button text immediately
-        var toggleButtonText = savedToolbarExpanded ? '-' : '+';
-
         if (criticalCSS) {
           document.write('<style>' + criticalCSS + '</style>');
         }
@@ -74,6 +69,9 @@
         <span class="control-item" id="cursor-toggle">cursor</span>
       </div>
       <div class="control collapsible">
+        <span class="control-item" id="nav-toggle">nav</span>
+      </div>
+      <div class="control collapsible">
         <span class="control-item" id="whitespace-toggle">wrap</span>
       </div>
       <div class="control collapsible">
@@ -81,21 +79,21 @@
         <span class="control-item" id="font-decrease">-</span>
         <span class="control-item" id="font-increase">+</span>
       </div>
-      <div class="control">
+      <div class="control nav-button">
         {% if next_link %}
           <a class="control-item" href="{{ next_link.target_public_url }}">&gt;</a>
         {% else %}
           <span class="control-item disabled">&gt;</span>
         {% endif %}
       </div>
-      <div class="control">
+      <div class="control nav-button">
         {% if prev_link %}
           <a class="control-item" href="{{ prev_link.target_public_url }}">&lt;</a>
         {% else %}
           <span class="control-item disabled">&lt;</span>
         {% endif %}
       </div>
-      <div class="control">
+      <div class="control nav-button">
         {% if parents %}
           <a class="control-item control-item-parent" href="{{ parents.0.menu.public_url }}">..</a>
         {% else %}
