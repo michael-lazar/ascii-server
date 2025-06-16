@@ -141,6 +141,10 @@ body {
     cursor: not-allowed;
 }
 
+.control-item-parent {
+    padding-right: 1px !important;
+}
+
 a.keyboard-selected {
     outline: 2px solid var(--c12);
 }

@@ -20,6 +20,13 @@
   <div class="bbs">
     <div class="bbs-controls">
       <div class="control">
+        {% if parents %}
+          <a class="control-item control-item-parent" href="{{ parents.0.menu.public_url }}">..</a>
+        {% else %}
+          <span class="control-item control-item-parent disabled">..</span>
+        {% endif %}
+      </div>
+      <div class="control">
         {% if prev_link %}
           <a class="control-item" href="{{ prev_link.target_public_url }}">&lt;</a>
         {% else %}
