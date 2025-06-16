@@ -15,14 +15,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const bbsMenuItems = document.querySelectorAll(".bbs-menu > span");
 
   const toggleToolbarButton = document.getElementById("toggle-toolbar");
-  const toolbarElements = document.querySelectorAll(
-    ".bbs-controls > div:not(#toggle-toolbar)",
-  );
 
   // Load saved settings immediately to prevent flashing
-  let bbsFontSize = parseInt(sessionStorage.getItem('fudan_font_size')) || 20;
-  let bbsWrapText = sessionStorage.getItem('fudan_wrap_text') === 'true';
-  let isToolbarExpanded = sessionStorage.getItem('fudan_toolbar_expanded') !== 'false'; // default true
+  let bbsFontSize = parseInt(sessionStorage.getItem("fudan_font_size")) || 20;
+  let bbsWrapText = sessionStorage.getItem("fudan_wrap_text") === "true";
+  let isToolbarExpanded =
+    sessionStorage.getItem("fudan_toolbar_expanded") !== "true"; // default false
   let bbsLanguage = langZh.classList.contains("active") ? "zh" : "en";
 
   // Apply settings immediately to prevent flashing
@@ -34,19 +32,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Apply wrap setting
     if (bbsWrapText) {
-      const newWhiteSpace = 'pre-line';
-      document.querySelectorAll('.bbs-document').forEach(span => {
+      const newWhiteSpace = "pre-line";
+      document.querySelectorAll(".bbs-document").forEach((span) => {
         span.style.whiteSpace = newWhiteSpace;
       });
-      document.querySelectorAll('.bbs-menu > span').forEach(span => {
+      document.querySelectorAll(".bbs-menu > span").forEach((span) => {
         span.style.whiteSpace = newWhiteSpace;
       });
     }
 
     // Apply toolbar collapsed state
     if (!isToolbarExpanded) {
-      const toolbarElements = document.querySelectorAll('.bbs-controls > div:not(#toggle-toolbar)');
-      toolbarElements.forEach(element => {
+      const collapsibleElements = document.querySelectorAll(
+        ".control.collapsible",
+      );
+      collapsibleElements.forEach((element) => {
         element.classList.add("hidden");
       });
     }
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fontDisplay.textContent = `${bbsFontSize}px`;
     document.querySelector(".bbs").style.fontSize = `${bbsFontSize}px`;
     // Save font size to session storage
-    sessionStorage.setItem('fudan_font_size', bbsFontSize.toString());
+    sessionStorage.setItem("fudan_font_size", bbsFontSize.toString());
   }
 
   function showEnglish() {
@@ -119,7 +119,10 @@ document.addEventListener("DOMContentLoaded", function () {
   toggleToolbarButton.addEventListener("click", function () {
     isToolbarExpanded = !isToolbarExpanded;
 
-    toolbarElements.forEach((element) => {
+    const collapsibleElements = document.querySelectorAll(
+      ".control.collapsible",
+    );
+    collapsibleElements.forEach((element) => {
       element.classList.toggle("hidden");
     });
 
@@ -130,7 +133,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Save toolbar state to session storage
-    sessionStorage.setItem('fudan_toolbar_expanded', isToolbarExpanded.toString());
+    sessionStorage.setItem(
+      "fudan_toolbar_expanded",
+      isToolbarExpanded.toString(),
+    );
   });
 
   whitespaceToggle.addEventListener("click", function () {
@@ -148,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
     bbsWrapText = !bbsWrapText;
 
     // Save wrap text state to session storage
-    sessionStorage.setItem('fudan_wrap_text', bbsWrapText.toString());
+    sessionStorage.setItem("fudan_wrap_text", bbsWrapText.toString());
   });
 
   fontIncrease.addEventListener("click", function () {
@@ -206,7 +212,9 @@ document.addEventListener("DOMContentLoaded", function () {
       // Get all links from Chinese content
       const zhContent = bbsContent.querySelector(".content-zh");
       if (zhContent) {
-        const zhMenuLinks = Array.from(zhContent.querySelectorAll(".bbs-menu a"));
+        const zhMenuLinks = Array.from(
+          zhContent.querySelectorAll(".bbs-menu a"),
+        );
         allLinksZh = [...parentLinks, ...zhMenuLinks];
       } else {
         allLinksZh = [...parentLinks];
@@ -215,7 +223,9 @@ document.addEventListener("DOMContentLoaded", function () {
       // Get all links from English content
       const enContent = bbsContent.querySelector(".content-en");
       if (enContent) {
-        const enMenuLinks = Array.from(enContent.querySelectorAll(".bbs-menu a"));
+        const enMenuLinks = Array.from(
+          enContent.querySelectorAll(".bbs-menu a"),
+        );
         allLinksEn = [...parentLinks, ...enMenuLinks];
       } else {
         allLinksEn = [...parentLinks];
@@ -247,14 +257,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Check all links for matching referrer
       const allLinks = [...allLinksZh, ...allLinksEn];
-      const matchingLinkIndex = allLinks.findIndex(link => {
+      const matchingLinkIndex = allLinks.findIndex((link) => {
         const linkPath = new URL(link.href).pathname;
         return linkPath === referrerPath;
       });
 
       if (matchingLinkIndex !== -1) {
         // Convert to navigation index (links may be duplicated)
-        targetIndex = matchingLinkIndex % Math.max(allLinksZh.length, allLinksEn.length);
+        targetIndex =
+          matchingLinkIndex % Math.max(allLinksZh.length, allLinksEn.length);
       }
     }
 
@@ -386,7 +397,10 @@ document.addEventListener("DOMContentLoaded", function () {
         if (hasNavigation) {
           // Open the currently selected link
           const currentLinks = bbsLanguage === "en" ? allLinksEn : allLinksZh;
-          if (currentLinks.length > 0 && currentLinkIndex < currentLinks.length) {
+          if (
+            currentLinks.length > 0 &&
+            currentLinkIndex < currentLinks.length
+          ) {
             window.location.href = currentLinks[currentLinkIndex].href;
           }
         }

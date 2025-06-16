@@ -148,3 +148,8 @@ body {
 a.keyboard-selected {
     outline: 2px solid var(--c12);
 }
+
+/* Collapsible toolbar controls */
+.control.collapsible.hidden {
+    display: none;
+}
