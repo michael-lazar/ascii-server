@@ -139,3 +139,7 @@ body {
 .control-item.disabled {
     cursor: not-allowed;
 }
+
+a.keyboard-selected {
+    outline: 2px solid var(--c12);
+}
