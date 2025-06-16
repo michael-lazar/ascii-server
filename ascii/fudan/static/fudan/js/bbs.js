@@ -249,13 +249,14 @@ document.addEventListener("DOMContentLoaded", function () {
   function restoreNavigationPosition() {
     const navKey = `fudan_nav_${window.location.pathname}`;
     let targetIndex = 0;
+    let isNavigatingBack = false;
 
-    // First try to find the link that matches the referring page
+    // Check if we're navigating back from a child page
     const referrer = document.referrer;
     if (referrer) {
       const referrerPath = new URL(referrer).pathname;
 
-      // Check all links for matching referrer
+      // Check if referrer matches any of our links (navigating back from child)
       const allLinks = [...allLinksZh, ...allLinksEn];
       const matchingLinkIndex = allLinks.findIndex((link) => {
         const linkPath = new URL(link.href).pathname;
@@ -263,21 +264,34 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       if (matchingLinkIndex !== -1) {
-        // Convert to navigation index (links may be duplicated)
+        // We're navigating back - restore cursor to the link we came from
+        isNavigatingBack = true;
         targetIndex =
           matchingLinkIndex % Math.max(allLinksZh.length, allLinksEn.length);
+      } else {
+        // Check if current page is a child of the referrer (navigating forward)
+        // Look for referrer in our parent links
+        const isNavigatingForward = parentLinks.some((link) => {
+          const linkPath = new URL(link.href).pathname;
+          return linkPath === referrerPath;
+        });
+
+        if (isNavigatingForward) {
+          // Navigating forward to child - reset to first menu item
+          targetIndex = isMenuPage && parentLinks.length > 0 ? parentLinks.length : 0;
+        }
       }
     }
 
-    // If no referrer match, try session storage
-    if (targetIndex === 0) {
+    // If not navigating back and no forward navigation detected, try session storage
+    if (!isNavigatingBack && targetIndex === 0) {
       const savedIndex = sessionStorage.getItem(navKey);
       if (savedIndex !== null) {
         targetIndex = parseInt(savedIndex, 10);
       }
     }
 
-    // Default to first menu item if we have parent links (skip parents by default)
+    // Default to first menu item if we have parent links and no other positioning
     if (targetIndex === 0 && isMenuPage && parentLinks.length > 0) {
       targetIndex = parentLinks.length; // Start at first menu item
     }
