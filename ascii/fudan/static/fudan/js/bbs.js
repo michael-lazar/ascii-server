@@ -124,11 +124,117 @@ document.addEventListener('DOMContentLoaded', function() {
     langEn.addEventListener('click', showEnglish);
     langZh.addEventListener('click', showChinese);
 
-    // Bind the 't' key to toggle languages
+    // Menu navigation state
+    let currentMenuIndex = 0;
+    let menuLinks = [];
+    let isMenuPage = false;
+
+    // Initialize navigation
+    function initializeNavigation() {
+        const bbsMenu = document.querySelector('.bbs-menu');
+        if (bbsMenu) {
+            isMenuPage = true;
+            menuLinks = Array.from(bbsMenu.querySelectorAll('a'));
+            if (menuLinks.length > 0) {
+                highlightMenuLink(0);
+            }
+        }
+    }
+
+    // Highlight menu link for accessibility
+    function highlightMenuLink(index) {
+        menuLinks.forEach((link, i) => {
+            if (i === index) {
+                link.setAttribute('aria-selected', 'true');
+                link.style.backgroundColor = '#333';
+                link.style.color = '#fff';
+                link.focus();
+            } else {
+                link.setAttribute('aria-selected', 'false');
+                link.style.backgroundColor = '';
+                link.style.color = '';
+            }
+        });
+        currentMenuIndex = index;
+    }
+
+    // Navigate to parent page
+    function navigateToParent() {
+        const parentLink = document.querySelector('.bbs-nav a');
+        if (parentLink) {
+            window.location.href = parentLink.href;
+        }
+    }
+
+    // Navigate to previous sibling
+    function navigateToPrevious() {
+        const prevLink = document.querySelector('.bbs-controls a[href]:first-of-type');
+        if (prevLink && prevLink.textContent.trim() === '<') {
+            window.location.href = prevLink.href;
+        }
+    }
+
+    // Navigate to next sibling
+    function navigateToNext() {
+        const nextLink = document.querySelector('.bbs-controls a[href]');
+        if (nextLink && nextLink.textContent.trim() === '>') {
+            window.location.href = nextLink.href;
+        }
+    }
+
+    // Keyboard navigation
     document.addEventListener('keydown', function(event) {
+        // Toggle language with 't'
         if (event.key === 't') {
             toggleLanguage();
-            event.preventDefault(); // Prevent any default behavior triggered by 't'
+            event.preventDefault();
+            return;
+        }
+
+        // Handle arrow keys
+        switch(event.key) {
+            case 'ArrowUp':
+                if (isMenuPage) {
+                    // Menu page: move cursor up
+                    if (currentMenuIndex > 0) {
+                        highlightMenuLink(currentMenuIndex - 1);
+                    }
+                } else {
+                    // Document page: navigate to previous sibling
+                    navigateToPrevious();
+                }
+                event.preventDefault();
+                break;
+
+            case 'ArrowDown':
+                if (isMenuPage) {
+                    // Menu page: move cursor down
+                    if (currentMenuIndex < menuLinks.length - 1) {
+                        highlightMenuLink(currentMenuIndex + 1);
+                    }
+                } else {
+                    // Document page: navigate to next sibling
+                    navigateToNext();
+                }
+                event.preventDefault();
+                break;
+
+            case 'ArrowLeft':
+                // Both pages: navigate to parent
+                navigateToParent();
+                event.preventDefault();
+                break;
+
+            case 'ArrowRight':
+                if (isMenuPage && menuLinks.length > 0) {
+                    // Menu page: open selected link
+                    window.location.href = menuLinks[currentMenuIndex].href;
+                }
+                event.preventDefault();
+                break;
         }
     });
+
+    // Initialize navigation when page loads
+    initializeNavigation();
 });
