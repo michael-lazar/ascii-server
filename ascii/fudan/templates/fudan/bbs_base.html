@@ -3,7 +3,36 @@
 {% load static %}
 
 {% block extrahead %}
+  <meta name="google" content="notranslate">
   <link href='{% static "fudan/css/bbs.css" %}' rel='stylesheet' />
+  <script>
+    // Apply critical settings immediately to prevent flash
+    (function() {
+      try {
+        var savedFontSize = sessionStorage.getItem('fudan_font_size');
+        var savedWrapText = sessionStorage.getItem('fudan_wrap_text') === 'true';
+
+        var criticalCSS = '';
+
+        if (savedFontSize && savedFontSize !== '20') {
+          criticalCSS += '.bbs { font-size: ' + savedFontSize + 'px !important; }';
+        }
+
+        if (savedWrapText) {
+          criticalCSS += '.bbs-document, .bbs-menu > span { white-space: pre-line !important; }';
+        }
+
+        // Hide toolbar controls initially to prevent flash, but keep logo visible
+        criticalCSS += '.bbs-controls .control { visibility: hidden; }';
+
+        if (criticalCSS) {
+          document.write('<style>' + criticalCSS + '</style>');
+        }
+      } catch (e) {
+        // Silently fail if sessionStorage unavailable
+      }
+    })();
+  </script>
   <script src="{% static "fudan/js/bbs.js" %}"></script>
 {% endblock %}
 
@@ -17,41 +46,63 @@
 {% endblock %}
 
 {% block body %}
-  <div class="bbs">
+  <div class="bbs" translate="no">
     <div class="bbs-controls">
-      <div class="control">
-        {% if prev_link %}
-          <a class="control-item" href="{{ prev_link.target_public_url }}">&lt;</a>
-        {% else %}
-          <span class="control-item disabled">&lt;</span>
-        {% endif %}
-      </div>
-      <div class="control">
-        {% if next_link %}
-          <a class="control-item" href="{{ next_link.target_public_url }}">&gt;</a>
-        {% else %}
-          <span class="control-item disabled">&gt;</span>
-        {% endif %}
-      </div>
-      <div class="control">
-        <span class="control-item inverse" id="font-size-display">20px</span>
-        <span class="control-item" id="font-decrease">-</span>
-        <span class="control-item" id="font-increase">+</span>
-      </div>
-      <div class="control">
-        <span class="control-item" id="whitespace-toggle">wrap</span>
-      </div>
-      <div class="control">
-        <span class="control-item {% if lang == "zh" %}active{% endif %}" id="lang-zh">zh</span>
-        <span class="control-item {% if lang == "en" %}active{% endif %}" id="lang-en">en</span>
+      {% include 'core/fragments/home-icon.html' %}
+      <div class="control toggle" id="toggle-toolbar">
+        <script>
+          try {
+            var expanded = sessionStorage.getItem('fudan_toolbar_expanded') !== 'false';
+            document.currentScript.parentNode.textContent = expanded ? '-' : '+';
+          } catch (e) {
+            document.currentScript.parentNode.textContent = '-';
+          }
+        </script>
       </div>
       {% if user.is_staff %}
         <div class="control">
           <a class="control-item inverse" href="{{ obj.change_url }}" target="_blank">e</a>
         </div>
       {% endif %}
-      <div class="control toggle" id="toggle-toolbar">-</div>
-      {% include 'core/fragments/home-icon.html' %}
+      <div class="control collapsible">
+        <span class="control-item {% if lang == "zh" %}active{% endif %}" id="lang-zh">zh</span>
+        <span class="control-item {% if lang == "en" %}active{% endif %}" id="lang-en">en</span>
+      </div>
+      <div class="control collapsible">
+        <span class="control-item" id="cursor-toggle">cursor</span>
+      </div>
+      <div class="control collapsible">
+        <span class="control-item" id="nav-toggle">nav</span>
+      </div>
+      <div class="control collapsible">
+        <span class="control-item" id="whitespace-toggle">wrap</span>
+      </div>
+      <div class="control collapsible">
+        <span class="control-item inverse" id="font-size-display">20px</span>
+        <span class="control-item" id="font-decrease">-</span>
+        <span class="control-item" id="font-increase">+</span>
+      </div>
+      <div class="control nav-button">
+        {% if next_link %}
+          <a class="control-item" href="{{ next_link.target_public_url }}">&gt;</a>
+        {% else %}
+          <span class="control-item disabled">&gt;</span>
+        {% endif %}
+      </div>
+      <div class="control nav-button">
+        {% if prev_link %}
+          <a class="control-item" href="{{ prev_link.target_public_url }}">&lt;</a>
+        {% else %}
+          <span class="control-item disabled">&lt;</span>
+        {% endif %}
+      </div>
+      <div class="control nav-button">
+        {% if parents %}
+          <a class="control-item control-item-parent" href="{{ parents.0.menu.public_url }}">..</a>
+        {% else %}
+          <span class="control-item control-item-parent disabled">..</span>
+        {% endif %}
+      </div>
     </div>
     <div class="bbs-content">
       <div class="bbs-nav">
@@ -62,9 +113,7 @@
         {% endfor %}
       </div>
       {% block content %}{% endblock %}
-      <div class="bbs-footer">
-        <div>source: <a href="{{ obj.source_url }}">{{ obj.source_url }}</a></div>
-      </div>
+      <div class="bbs-footer"></div>
     </div>
   </div>
 {% endblock %}

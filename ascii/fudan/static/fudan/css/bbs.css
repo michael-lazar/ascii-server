@@ -28,6 +28,7 @@
 body {
     color: var(--c7);
     background-color: var(--c0);
+    overflow-y: scroll; /* Force vertical scrollbar to prevent horizontal jumping */
 }
 
 .hidden {
@@ -92,6 +93,7 @@ body {
 
 .bbs-controls {
     display: inline-flex;
+    flex-direction: row-reverse;
     gap: 0.5em;
     position: fixed;
     top: 1em;
@@ -99,6 +101,8 @@ body {
     background-color: transparent;
     z-index: 1000;
     font-size: 20px;
+    margin-left: 1em;
+    flex-wrap: wrap;
 }
 
 .bbs-controls img {
@@ -138,4 +142,22 @@ body {
 
 .control-item.disabled {
     cursor: not-allowed;
+}
+
+.control-item-parent {
+    padding-right: 1px !important;
+}
+
+a.keyboard-selected {
+    outline: 2px solid var(--c12);
+}
+
+/* Collapsible toolbar controls */
+.control.collapsible.hidden {
+    display: none;
+}
+
+/* Navigation buttons toggle */
+.control.nav-button.hidden {
+    display: none;
 }
