@@ -3,6 +3,7 @@
 {% load static %}
 
 {% block extrahead %}
+  <meta name="google" content="notranslate">
   <link href='{% static "fudan/css/bbs.css" %}' rel='stylesheet' />
   <script>
     // Apply critical settings immediately to prevent flash
@@ -43,7 +44,7 @@
 {% endblock %}
 
 {% block body %}
-  <div class="bbs">
+  <div class="bbs" translate="no">
     <div class="bbs-controls">
       {% include 'core/fragments/home-icon.html' %}
       <div class="control toggle" id="toggle-toolbar">
