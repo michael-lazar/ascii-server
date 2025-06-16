@@ -70,6 +70,12 @@ document.addEventListener("DOMContentLoaded", function () {
         element.classList.add("hidden");
       });
     }
+
+    // Show toolbar controls after all settings are applied
+    const controls = document.querySelectorAll(".bbs-controls .control");
+    controls.forEach((control) => {
+      control.style.visibility = "visible";
+    });
   }
 
   // Apply settings as soon as possible

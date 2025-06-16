@@ -22,7 +22,9 @@
           criticalCSS += '.bbs-document, .bbs-menu > span { white-space: pre-line !important; }';
         }
 
-        // Note: toolbar state will be handled by JavaScript to avoid conflicts
+        // Hide toolbar controls initially to prevent flash, but keep logo visible
+        criticalCSS += '.bbs-controls .control { visibility: hidden; }';
+
         if (criticalCSS) {
           document.write('<style>' + criticalCSS + '</style>');
         }
