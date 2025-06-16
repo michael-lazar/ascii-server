@@ -149,9 +149,55 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       if (menuLinksZh.length > 0 || menuLinksEn.length > 0) {
-        highlightMenuLink(0);
+        restoreMenuPosition();
       }
     }
+  }
+
+  // Save current menu position to session storage
+  function saveMenuPosition() {
+    if (isMenuPage) {
+      const menuKey = `fudan_menu_${window.location.pathname}`;
+      sessionStorage.setItem(menuKey, currentMenuIndex.toString());
+    }
+  }
+
+  // Restore menu position from session storage or find current page
+  function restoreMenuPosition() {
+    const menuKey = `fudan_menu_${window.location.pathname}`;
+    let targetIndex = 0;
+
+    // First try to find the link that matches the referring page
+    const referrer = document.referrer;
+    if (referrer) {
+      const referrerPath = new URL(referrer).pathname;
+
+      // Check both language menus for matching link
+      const allLinks = [...menuLinksZh, ...menuLinksEn];
+      const matchingLinkIndex = allLinks.findIndex(link => {
+        const linkPath = new URL(link.href).pathname;
+        return linkPath === referrerPath;
+      });
+
+      if (matchingLinkIndex !== -1) {
+        // Convert to menu index (links are duplicated in both languages)
+        targetIndex = matchingLinkIndex % Math.max(menuLinksZh.length, menuLinksEn.length);
+      }
+    }
+
+    // If no referrer match, try session storage
+    if (targetIndex === 0) {
+      const savedIndex = sessionStorage.getItem(menuKey);
+      if (savedIndex !== null) {
+        targetIndex = parseInt(savedIndex, 10);
+      }
+    }
+
+    // Ensure index is within bounds
+    const maxLinks = Math.max(menuLinksZh.length, menuLinksEn.length);
+    targetIndex = Math.max(0, Math.min(targetIndex, maxLinks - 1));
+
+    highlightMenuLink(targetIndex);
   }
 
   // Highlight menu link for accessibility
@@ -177,6 +223,8 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
     currentMenuIndex = index;
+    // Save position whenever it changes
+    saveMenuPosition();
   }
 
   // Navigate to parent page
