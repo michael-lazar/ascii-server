@@ -28,6 +28,7 @@
 body {
     color: var(--c7);
     background-color: var(--c0);
+    overflow-y: scroll; /* Force vertical scrollbar to prevent horizontal jumping */
 }
 
 .hidden {

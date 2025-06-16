@@ -19,15 +19,47 @@ document.addEventListener("DOMContentLoaded", function () {
     ".bbs-controls > div:not(#toggle-toolbar)",
   );
 
-  // Variables
-  let bbsFontSize = 20;
-  let bbsWrapText = false;
-  let isToolbarExpanded = true;
+  // Load saved settings immediately to prevent flashing
+  let bbsFontSize = parseInt(sessionStorage.getItem('fudan_font_size')) || 20;
+  let bbsWrapText = sessionStorage.getItem('fudan_wrap_text') === 'true';
+  let isToolbarExpanded = sessionStorage.getItem('fudan_toolbar_expanded') !== 'false'; // default true
   let bbsLanguage = langZh.classList.contains("active") ? "zh" : "en";
+
+  // Apply settings immediately to prevent flashing
+  function applySettingsImmediately() {
+    // Apply font size
+    if (bbsFontSize !== 20) {
+      document.querySelector(".bbs").style.fontSize = `${bbsFontSize}px`;
+    }
+
+    // Apply wrap setting
+    if (bbsWrapText) {
+      const newWhiteSpace = 'pre-line';
+      document.querySelectorAll('.bbs-document').forEach(span => {
+        span.style.whiteSpace = newWhiteSpace;
+      });
+      document.querySelectorAll('.bbs-menu > span').forEach(span => {
+        span.style.whiteSpace = newWhiteSpace;
+      });
+    }
+
+    // Apply toolbar collapsed state
+    if (!isToolbarExpanded) {
+      const toolbarElements = document.querySelectorAll('.bbs-controls > div:not(#toggle-toolbar)');
+      toolbarElements.forEach(element => {
+        element.classList.add("hidden");
+      });
+    }
+  }
+
+  // Apply settings as soon as possible
+  applySettingsImmediately();
 
   function refreshFontSize() {
     fontDisplay.textContent = `${bbsFontSize}px`;
     document.querySelector(".bbs").style.fontSize = `${bbsFontSize}px`;
+    // Save font size to session storage
+    sessionStorage.setItem('fudan_font_size', bbsFontSize.toString());
   }
 
   function showEnglish() {
@@ -96,6 +128,9 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       toggleToolbarButton.textContent = "+";
     }
+
+    // Save toolbar state to session storage
+    sessionStorage.setItem('fudan_toolbar_expanded', isToolbarExpanded.toString());
   });
 
   whitespaceToggle.addEventListener("click", function () {
@@ -111,6 +146,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     whitespaceToggle.classList.toggle("active");
     bbsWrapText = !bbsWrapText;
+
+    // Save wrap text state to session storage
+    sessionStorage.setItem('fudan_wrap_text', bbsWrapText.toString());
   });
 
   fontIncrease.addEventListener("click", function () {
@@ -125,6 +163,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
   langEn.addEventListener("click", showEnglish);
   langZh.addEventListener("click", showChinese);
+
+  // Initialize UI to reflect saved state
+  function initializeUIState() {
+    // Update font size display
+    fontDisplay.textContent = `${bbsFontSize}px`;
+
+    // Update wrap toggle state
+    if (bbsWrapText) {
+      whitespaceToggle.classList.add("active");
+    }
+
+    // Update toolbar toggle button
+    if (!isToolbarExpanded) {
+      toggleToolbarButton.textContent = "+";
+    }
+  }
+
+  // Initialize UI state
+  initializeUIState();
 
   // Navigation state
   let currentLinkIndex = 0;
