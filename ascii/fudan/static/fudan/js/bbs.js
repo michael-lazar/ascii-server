@@ -126,45 +126,61 @@ document.addEventListener("DOMContentLoaded", function () {
   langEn.addEventListener("click", showEnglish);
   langZh.addEventListener("click", showChinese);
 
-  // Menu navigation state
-  let currentMenuIndex = 0;
-  let menuLinksZh = [];
-  let menuLinksEn = [];
+  // Navigation state
+  let currentLinkIndex = 0;
+  let allLinksZh = [];
+  let allLinksEn = [];
+  let parentLinks = [];
   let isMenuPage = false;
+  let hasNavigation = false;
 
   // Initialize navigation
   function initializeNavigation() {
-    const bbsMenus = document.querySelectorAll(".bbs-menu");
-    if (bbsMenus.length > 0) {
-      isMenuPage = true;
-      // Get links from both language menus
-      const zhMenu = document.querySelector(".bbs-menu.content-zh");
-      const enMenu = document.querySelector(".bbs-menu.content-en");
+    const bbsContent = document.querySelector(".bbs-content");
+    if (bbsContent) {
+      hasNavigation = true;
 
-      if (zhMenu) {
-        menuLinksZh = Array.from(zhMenu.querySelectorAll("a"));
-      }
-      if (enMenu) {
-        menuLinksEn = Array.from(enMenu.querySelectorAll("a"));
+      // Check if this is a menu page
+      isMenuPage = bbsContent.querySelector(".bbs-menu") !== null;
+
+      // Get parent links (always present)
+      parentLinks = Array.from(bbsContent.querySelectorAll(".bbs-nav a"));
+
+      // Get all links from Chinese content
+      const zhContent = bbsContent.querySelector(".content-zh");
+      if (zhContent) {
+        const zhMenuLinks = Array.from(zhContent.querySelectorAll(".bbs-menu a"));
+        allLinksZh = [...parentLinks, ...zhMenuLinks];
+      } else {
+        allLinksZh = [...parentLinks];
       }
 
-      if (menuLinksZh.length > 0 || menuLinksEn.length > 0) {
-        restoreMenuPosition();
+      // Get all links from English content
+      const enContent = bbsContent.querySelector(".content-en");
+      if (enContent) {
+        const enMenuLinks = Array.from(enContent.querySelectorAll(".bbs-menu a"));
+        allLinksEn = [...parentLinks, ...enMenuLinks];
+      } else {
+        allLinksEn = [...parentLinks];
+      }
+
+      if (allLinksZh.length > 0 || allLinksEn.length > 0) {
+        restoreNavigationPosition();
       }
     }
   }
 
-  // Save current menu position to session storage
-  function saveMenuPosition() {
-    if (isMenuPage) {
-      const menuKey = `fudan_menu_${window.location.pathname}`;
-      sessionStorage.setItem(menuKey, currentMenuIndex.toString());
+  // Save current navigation position to session storage
+  function saveNavigationPosition() {
+    if (hasNavigation) {
+      const navKey = `fudan_nav_${window.location.pathname}`;
+      sessionStorage.setItem(navKey, currentLinkIndex.toString());
     }
   }
 
-  // Restore menu position from session storage or find current page
-  function restoreMenuPosition() {
-    const menuKey = `fudan_menu_${window.location.pathname}`;
+  // Restore navigation position from session storage or find current page
+  function restoreNavigationPosition() {
+    const navKey = `fudan_nav_${window.location.pathname}`;
     let targetIndex = 0;
 
     // First try to find the link that matches the referring page
@@ -172,48 +188,50 @@ document.addEventListener("DOMContentLoaded", function () {
     if (referrer) {
       const referrerPath = new URL(referrer).pathname;
 
-      // Check both language menus for matching link
-      const allLinks = [...menuLinksZh, ...menuLinksEn];
+      // Check all links for matching referrer
+      const allLinks = [...allLinksZh, ...allLinksEn];
       const matchingLinkIndex = allLinks.findIndex(link => {
         const linkPath = new URL(link.href).pathname;
         return linkPath === referrerPath;
       });
 
       if (matchingLinkIndex !== -1) {
-        // Convert to menu index (links are duplicated in both languages)
-        targetIndex = matchingLinkIndex % Math.max(menuLinksZh.length, menuLinksEn.length);
+        // Convert to navigation index (links may be duplicated)
+        targetIndex = matchingLinkIndex % Math.max(allLinksZh.length, allLinksEn.length);
       }
     }
 
     // If no referrer match, try session storage
     if (targetIndex === 0) {
-      const savedIndex = sessionStorage.getItem(menuKey);
+      const savedIndex = sessionStorage.getItem(navKey);
       if (savedIndex !== null) {
         targetIndex = parseInt(savedIndex, 10);
       }
     }
 
+    // Default to first menu item if we have parent links (skip parents by default)
+    if (targetIndex === 0 && isMenuPage && parentLinks.length > 0) {
+      targetIndex = parentLinks.length; // Start at first menu item
+    }
+
     // Ensure index is within bounds
-    const maxLinks = Math.max(menuLinksZh.length, menuLinksEn.length);
+    const maxLinks = Math.max(allLinksZh.length, allLinksEn.length);
     targetIndex = Math.max(0, Math.min(targetIndex, maxLinks - 1));
 
-    highlightMenuLink(targetIndex);
+    highlightNavigationLink(targetIndex);
   }
 
-  // Highlight menu link for accessibility
-  function highlightMenuLink(index) {
-    // Update both Chinese and English menus
-    [menuLinksZh, menuLinksEn].forEach((linkArray) => {
+  // Highlight navigation link for accessibility
+  function highlightNavigationLink(index) {
+    // Update all links (parent + menu/content links)
+    [allLinksZh, allLinksEn].forEach((linkArray) => {
       linkArray.forEach((link, i) => {
         if (i === index) {
           link.setAttribute("aria-selected", "true");
           link.classList.add("keyboard-selected");
-          // Only focus the visible link
-          if (
-            !link
-              .closest(".content-zh, .content-en")
-              .classList.contains("hidden")
-          ) {
+          // Only focus if link is visible (not in hidden language content)
+          const parentContent = link.closest(".content-zh, .content-en");
+          if (!parentContent || !parentContent.classList.contains("hidden")) {
             link.focus();
           }
         } else {
@@ -222,9 +240,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
     });
-    currentMenuIndex = index;
+    currentLinkIndex = index;
     // Save position whenever it changes
-    saveMenuPosition();
+    saveNavigationPosition();
   }
 
   // Navigate to parent page
@@ -265,47 +283,54 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle arrow keys
     switch (event.key) {
       case "ArrowUp":
-        if (isMenuPage) {
-          // Menu page: move cursor up
-          if (currentMenuIndex > 0) {
-            highlightMenuLink(currentMenuIndex - 1);
+        if (hasNavigation) {
+          // Move cursor up through all links (parent + menu/content)
+          if (currentLinkIndex > 0) {
+            highlightNavigationLink(currentLinkIndex - 1);
           }
         } else {
-          // Document page: navigate to previous sibling
+          // Fallback: navigate to previous sibling
           navigateToPrevious();
         }
         event.preventDefault();
         break;
 
       case "ArrowDown":
-        if (isMenuPage) {
-          // Menu page: move cursor down
-          const maxLinks = Math.max(menuLinksZh.length, menuLinksEn.length);
-          if (currentMenuIndex < maxLinks - 1) {
-            highlightMenuLink(currentMenuIndex + 1);
+        if (hasNavigation) {
+          // Move cursor down through all links (parent + menu/content)
+          const maxLinks = Math.max(allLinksZh.length, allLinksEn.length);
+          if (currentLinkIndex < maxLinks - 1) {
+            highlightNavigationLink(currentLinkIndex + 1);
           }
         } else {
-          // Document page: navigate to next sibling
+          // Fallback: navigate to next sibling
           navigateToNext();
         }
         event.preventDefault();
         break;
 
       case "ArrowLeft":
-        // Both pages: navigate to parent
-        navigateToParent();
+        if (hasNavigation) {
+          // Navigate to parent if we're highlighting a parent link
+          if (currentLinkIndex < parentLinks.length && parentLinks.length > 0) {
+            window.location.href = parentLinks[currentLinkIndex].href;
+          } else {
+            // Otherwise navigate to first parent
+            navigateToParent();
+          }
+        } else {
+          // Fallback: navigate to parent
+          navigateToParent();
+        }
         event.preventDefault();
         break;
 
       case "ArrowRight":
-        if (isMenuPage) {
-          // Menu page: open selected link from currently visible menu
-          const currentLinks = bbsLanguage === "en" ? menuLinksEn : menuLinksZh;
-          if (
-            currentLinks.length > 0 &&
-            currentMenuIndex < currentLinks.length
-          ) {
-            window.location.href = currentLinks[currentMenuIndex].href;
+        if (hasNavigation) {
+          // Open the currently selected link
+          const currentLinks = bbsLanguage === "en" ? allLinksEn : allLinksZh;
+          if (currentLinks.length > 0 && currentLinkIndex < currentLinks.length) {
+            window.location.href = currentLinks[currentLinkIndex].href;
           }
         }
         event.preventDefault();
