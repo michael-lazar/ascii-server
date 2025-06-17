@@ -8,7 +8,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const whitespaceToggle = document.getElementById("whitespace-toggle");
   const cursorToggle = document.getElementById("cursor-toggle");
-  const navToggle = document.getElementById("nav-toggle");
+  const helpToggle = document.getElementById("help-toggle");
+  const helpWindow = document.getElementById("help-window");
 
   const contentEn = document.querySelectorAll(".content-en");
   const contentZh = document.querySelectorAll(".content-zh");
@@ -23,7 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let bbsWrapText = sessionStorage.getItem("fudan_wrap_text") === "true";
   let isToolbarExpanded =
     sessionStorage.getItem("fudan_toolbar_expanded") !== "false"; // default true
-  let bbsNavVisible = sessionStorage.getItem("fudan_nav_visible") !== "false"; // default true
   let bbsLanguage = langZh.classList.contains("active") ? "zh" : "en";
 
   // Navigation state
@@ -63,13 +63,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    // Apply nav visibility state
-    if (!bbsNavVisible) {
-      const navElements = document.querySelectorAll(".control.nav-button");
-      navElements.forEach((element) => {
-        element.classList.add("hidden");
-      });
-    }
 
     // Show toolbar controls after all settings are applied
     const controls = document.querySelectorAll(".bbs-controls .control");
@@ -204,18 +197,37 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  navToggle.addEventListener("click", function () {
-    bbsNavVisible = !bbsNavVisible;
-    navToggle.classList.toggle("active");
 
-    // Save nav visibility state to session storage
-    sessionStorage.setItem("fudan_nav_visible", bbsNavVisible.toString());
+  // Position help window below controls
+  function positionHelpWindow() {
+    const controls = document.querySelector(".bbs-controls");
+    if (controls && helpWindow) {
+      const controlsRect = controls.getBoundingClientRect();
+      const topPosition = controlsRect.bottom + 10; // 10px gap below controls
+      helpWindow.style.top = `${topPosition}px`;
+    }
+  }
 
-    // Toggle visibility of navigation buttons
-    const navElements = document.querySelectorAll(".control.nav-button");
-    navElements.forEach((element) => {
-      element.classList.toggle("hidden");
-    });
+  helpToggle.addEventListener("click", function () {
+    const isHelpVisible = !helpWindow.classList.contains("hidden");
+
+    if (isHelpVisible) {
+      // Hide help window
+      helpWindow.classList.add("hidden");
+      helpToggle.classList.remove("inverse");
+    } else {
+      // Position and show help window
+      positionHelpWindow();
+      helpWindow.classList.remove("hidden");
+      helpToggle.classList.add("inverse");
+    }
+  });
+
+  // Reposition help window on window resize
+  window.addEventListener("resize", function() {
+    if (!helpWindow.classList.contains("hidden")) {
+      positionHelpWindow();
+    }
   });
 
   fontIncrease.addEventListener("click", function () {
@@ -246,10 +258,6 @@ document.addEventListener("DOMContentLoaded", function () {
       cursorToggle.classList.add("active");
     }
 
-    // Update nav toggle state
-    if (bbsNavVisible) {
-      navToggle.classList.add("active");
-    }
 
     // Update toolbar toggle button
     if (!isToolbarExpanded) {
@@ -458,6 +466,20 @@ document.addEventListener("DOMContentLoaded", function () {
     // Decrease font size with '-'
     if (event.key === "-") {
       fontDecrease.click();
+      event.preventDefault();
+      return;
+    }
+
+    // Navigate to next sibling with 'n'
+    if (event.key === "n") {
+      navigateToNext();
+      event.preventDefault();
+      return;
+    }
+
+    // Navigate to previous sibling with 'p'
+    if (event.key === "p") {
+      navigateToPrevious();
       event.preventDefault();
       return;
     }
