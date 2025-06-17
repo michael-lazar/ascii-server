@@ -84,16 +84,16 @@
       </div>
       <div class="control">
         {% if next_link %}
-          <a class="control-item" href="{{ next_link.target_public_url }}">&gt;</a>
+          <a class="control-item" id="next-button" href="{{ next_link.target_public_url }}">&gt;</a>
         {% else %}
-          <span class="control-item disabled">&gt;</span>
+          <span class="control-item disabled" id="next-button">&gt;</span>
         {% endif %}
       </div>
       <div class="control">
         {% if prev_link %}
-          <a class="control-item" href="{{ prev_link.target_public_url }}">&lt;</a>
+          <a class="control-item" id="prev-button" href="{{ prev_link.target_public_url }}">&lt;</a>
         {% else %}
-          <span class="control-item disabled">&lt;</span>
+          <span class="control-item disabled" id="prev-button">&lt;</span>
         {% endif %}
       </div>
       <div class="control">

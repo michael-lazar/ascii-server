@@ -424,78 +424,62 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Navigate to previous sibling
   function navigateToPrevious() {
-    const prevLink = document.querySelector(
-      ".bbs-controls a[href]:first-of-type",
-    );
-    if (prevLink && prevLink.textContent.trim() === "<") {
-      window.location.href = prevLink.href;
+    const prevButton = document.getElementById("prev-button");
+    if (prevButton && prevButton.href) {
+      window.location.href = prevButton.href;
     }
   }
 
   // Navigate to next sibling
   function navigateToNext() {
-    const nextLink = document.querySelector(".bbs-controls a[href]");
-    if (nextLink && nextLink.textContent.trim() === ">") {
-      window.location.href = nextLink.href;
+    const nextButton = document.getElementById("next-button");
+    if (nextButton && nextButton.href) {
+      window.location.href = nextButton.href;
     }
   }
 
   // Keyboard navigation
   document.addEventListener("keydown", function (event) {
-    // Toggle language with 't'
-    if (event.key === "t") {
-      toggleLanguage();
-      event.preventDefault();
-      return;
-    }
-
-    // Toggle text wrapping with 'w'
-    if (event.key === "w") {
-      whitespaceToggle.click();
-      event.preventDefault();
-      return;
-    }
-
-    // Increase font size with '+'
-    if (event.key === "+" || event.key === "=") {
-      fontIncrease.click();
-      event.preventDefault();
-      return;
-    }
-
-    // Decrease font size with '-'
-    if (event.key === "-") {
-      fontDecrease.click();
-      event.preventDefault();
-      return;
-    }
-
-    // Navigate to next sibling with 'n'
-    if (event.key === "n") {
-      navigateToNext();
-      event.preventDefault();
-      return;
-    }
-
-    // Navigate to previous sibling with 'p'
-    if (event.key === "p") {
-      navigateToPrevious();
-      event.preventDefault();
-      return;
-    }
-
-    // Handle arrow keys
     switch (event.key) {
+      case "t":
+        toggleLanguage();
+        event.preventDefault();
+        break;
+
+      case "w":
+        whitespaceToggle.click();
+        event.preventDefault();
+        break;
+
+      case "+":
+      case "=":
+        fontIncrease.click();
+        event.preventDefault();
+        break;
+
+      case "-":
+        fontDecrease.click();
+        event.preventDefault();
+        break;
+
+      case "n":
+        navigateToNext();
+        event.preventDefault();
+        break;
+
+      case "p":
+        navigateToPrevious();
+        event.preventDefault();
+        break;
+
       case "ArrowUp":
         if (!cursorVisible) {
-          enableCursor(); // Just show cursor on first arrow key
+          enableCursor();
         } else if (hasNavigation) {
-          // Move cursor up through all links (parent + menu/content)
           if (currentLinkIndex > 0) {
             highlightNavigationLink(currentLinkIndex - 1);
           }
         } else {
-          // Fallback: navigate to previous sibling
           navigateToPrevious();
         }
         event.preventDefault();
@@ -503,15 +487,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
       case "ArrowDown":
         if (!cursorVisible) {
-          enableCursor(); // Just show cursor on first arrow key
+          enableCursor();
         } else if (hasNavigation) {
-          // Move cursor down through all links (parent + menu/content)
           const maxLinks = Math.max(allLinksZh.length, allLinksEn.length);
           if (currentLinkIndex < maxLinks - 1) {
             highlightNavigationLink(currentLinkIndex + 1);
           }
         } else {
-          // Fallback: navigate to next sibling
           navigateToNext();
         }
         event.preventDefault();
@@ -519,17 +501,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
       case "ArrowLeft":
         if (!cursorVisible) {
-          enableCursor(); // Just show cursor on first arrow key
+          enableCursor();
         } else if (hasNavigation) {
-          // Navigate to parent if we're highlighting a parent link
           if (currentLinkIndex < parentLinks.length && parentLinks.length > 0) {
             window.location.href = parentLinks[currentLinkIndex].href;
           } else {
-            // Otherwise navigate to first parent
             navigateToParent();
           }
         } else {
-          // Fallback: navigate to parent
           navigateToParent();
         }
         event.preventDefault();
@@ -537,9 +516,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
       case "ArrowRight":
         if (!cursorVisible) {
-          enableCursor(); // Just show cursor on first arrow key
+          enableCursor();
         } else if (hasNavigation) {
-          // Open the currently selected link
           const currentLinks = bbsLanguage === "en" ? allLinksEn : allLinksZh;
           if (
             currentLinks.length > 0 &&
