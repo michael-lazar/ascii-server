@@ -49,6 +49,9 @@
   <div class="bbs" translate="no">
     <div class="bbs-controls">
       {% include 'core/fragments/home-icon.html' %}
+      <div class="control">
+        <span class="control-item" id="help-toggle">?</span>
+      </div>
       <div class="control toggle" id="toggle-toolbar">
         <script>
           try {
@@ -60,7 +63,7 @@
         </script>
       </div>
       {% if user.is_staff %}
-        <div class="control">
+        <div class="control collapsible">
           <a class="control-item inverse" href="{{ obj.change_url }}" target="_blank">e</a>
         </div>
       {% endif %}
@@ -69,39 +72,62 @@
         <span class="control-item {% if lang == "en" %}active{% endif %}" id="lang-en">en</span>
       </div>
       <div class="control collapsible">
-        <span class="control-item" id="cursor-toggle">cursor</span>
-      </div>
-      <div class="control collapsible">
-        <span class="control-item" id="nav-toggle">nav</span>
+        <span class="control-item inverse" id="font-size-display">20px</span>
+        <span class="control-item" id="font-decrease">-</span>
+        <span class="control-item" id="font-increase">+</span>
       </div>
       <div class="control collapsible">
         <span class="control-item" id="whitespace-toggle">wrap</span>
       </div>
       <div class="control collapsible">
-        <span class="control-item inverse" id="font-size-display">20px</span>
-        <span class="control-item" id="font-decrease">-</span>
-        <span class="control-item" id="font-increase">+</span>
+        <span class="control-item" id="cursor-toggle">cursor</span>
       </div>
-      <div class="control nav-button">
+      <div class="control">
         {% if next_link %}
           <a class="control-item" href="{{ next_link.target_public_url }}">&gt;</a>
         {% else %}
           <span class="control-item disabled">&gt;</span>
         {% endif %}
       </div>
-      <div class="control nav-button">
+      <div class="control">
         {% if prev_link %}
           <a class="control-item" href="{{ prev_link.target_public_url }}">&lt;</a>
         {% else %}
           <span class="control-item disabled">&lt;</span>
         {% endif %}
       </div>
-      <div class="control nav-button">
+      <div class="control">
         {% if parents %}
           <a class="control-item control-item-parent" href="{{ parents.0.menu.public_url }}">..</a>
         {% else %}
           <span class="control-item control-item-parent disabled">..</span>
         {% endif %}
+      </div>
+    </div>
+    <div class="bbs-help hidden" id="help-window">
+      <div class="help-content">
+        <h3>Keyboard Shortcuts & Controls</h3>
+        <div class="help-section">
+          <h4>Control Buttons:</h4>
+          <div class="help-item"><strong>..</strong> - Navigate to parent directory</div>
+          <div class="help-item"><strong>&lt;</strong> - Navigate to previous sibling page</div>
+          <div class="help-item"><strong>&gt;</strong> - Navigate to next sibling page</div>
+          <div class="help-item"><strong>zh/en</strong> - Toggle language (Chinese/English)</div>
+          <div class="help-item"><strong>20px - +</strong> - Adjust font size</div>
+          <div class="help-item"><strong>wrap</strong> - Toggle line wrapping</div>
+          <div class="help-item"><strong>cursor</strong> - Show/hide keyboard cursor</div>
+          <div class="help-item"><strong>-/+</strong> - Collapse/expand toolbar</div>
+        </div>
+        <div class="help-section">
+          <h4>Keyboard Shortcuts:</h4>
+          <div class="help-item"><strong>p</strong> - Navigate to previous sibling page</div>
+          <div class="help-item"><strong>n</strong> - Navigate to next sibling page</div>
+          <div class="help-item"><strong>t</strong> - Toggle language (Chinese/English)</div>
+          <div class="help-item"><strong>+ / =</strong> - Increase font size</div>
+          <div class="help-item"><strong>-</strong> - Decrease font size</div>
+          <div class="help-item"><strong>w</strong> - Toggle line wrapping</div>
+          <div class="help-item"><strong>Arrow keys</strong> - Navigate with cursor (first press enables cursor)</div>
+        </div>
       </div>
     </div>
     <div class="bbs-content">
