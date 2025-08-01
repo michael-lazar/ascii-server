@@ -36,7 +36,11 @@ class SixteenColorsPackImporter:
             _logger.warning(f"Skipping blacklisted pack: {self.name}")
             return None
 
-        data = self.client.get_pack(self.name)
+        try:
+            data = self.client.get_pack(self.name)
+        except Exception as e:
+            _logger.warning(f"Skipping pack with error: {e}")
+            return None
 
         if "fileid" not in data:
             _logger.warning(f"Skipping pack with missing fileid: {self.name}")
