@@ -30,7 +30,10 @@
         {% if artfile.image_x1 %}
           <div class="artfile-image-container">
             <a href="{{ artfile.image_x1.url }}">
-              <img src="{{ artfile.image_x1.url }}" alt="{{ artfile.name }}">
+              <img src="{{ artfile.image_x1.url }}"
+                   alt="{{ artfile.name }}"
+                   height="{{ artfile.image_x1.height }}"
+                   width="{{ artfile.image_x1.width }}">
             </a>
           </div>
         {% elif artfile.is_audio %}
