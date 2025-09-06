@@ -25,15 +25,20 @@ class SixteenColorsPackImporter:
     year: int
     pack: ArtPack
 
-    def __init__(self, name: str, skip_tags: bool = False):
+    def __init__(self, name: str, skip_tags: bool = False, skip_existing: bool = False):
         self.name = name
         self.client = SixteenColorsClient()
         self.skip_tags = skip_tags
+        self.skip_existing = skip_existing
 
     def process(self) -> ArtPack | None:
 
         if self.name in BLACKLIST:
-            _logger.warning(f"Skipping blacklisted pack: {self.name}")
+            _logger.info(f"Skipping blacklisted pack: {self.name}")
+            return None
+
+        if self.skip_existing and ArtPack.objects.filter(name=self.name).exists():
+            _logger.info(f"Skipping existing pack: {self.name}")
             return None
 
         try:
