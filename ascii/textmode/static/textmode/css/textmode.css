@@ -450,6 +450,8 @@ fieldset {
 
 .artfile-image-container a {
     display: inline-block;
+    width: var(--image-width);
+    height: var(--image-height);
     max-width: 100%;
     max-height: 100%;
 }
