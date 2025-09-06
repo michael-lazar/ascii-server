@@ -29,8 +29,7 @@
         {% include 'textmode/fragments/pack_paginator.html' %}
         {% if artfile.image_x1 %}
           <div class="artfile-image-container">
-            <a href="{{ artfile.image_x1.url }}"
-               style="--image-width: {{ artfile.image_x1.width }}px; --image-height: {{ artfile.image_x1.height }}px;">
+            <a href="{{ artfile.image_x1.url }}">
               <img src="{{ artfile.image_x1.url }}"
                    alt="{{ artfile.name }}"
                    height="{{ artfile.image_x1.height }}"
