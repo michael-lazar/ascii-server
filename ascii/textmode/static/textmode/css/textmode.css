@@ -448,6 +448,10 @@ fieldset {
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
+.artfile-image-container a {
+    display: inline-block;
+}
+
 .artfile-image-container img {
     height: auto;
     width: auto;
