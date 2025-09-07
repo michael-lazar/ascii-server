@@ -69,7 +69,12 @@
       </dl>
       <h3>Preview</h3>
       {% if artfile.image_tn %}
-        <img src="{{ artfile.image_tn.url }}" alt="{{ artfile.name }}">
+        <img class="sidebar-preview"
+          src="{{ artfile.image_tn.url }}"
+          alt="{{ artfile.name }}"
+          height="{{ artfile.image_tn.height }}"
+          width="{{ artfile.image_tn.width }}"
+        >
       {% else %}
         -
       {% endif %}
