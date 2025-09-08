@@ -38,7 +38,7 @@ class TextmodeIndexView(TemplateView):
     template_name = "textmode/index.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        packs = ArtPack.objects.prefetch_fileid().order_by("-year")[:8]
+        packs = ArtPack.objects.prefetch_fileid().order_by("-year", "-created_at")[:8]
 
         collections = ArtCollection.objects.visible().annotate_artfile_count()
         collections = collections.order_by("-artfile_count")[:16]
