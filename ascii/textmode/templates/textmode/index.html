@@ -9,14 +9,14 @@
   </h1>
   <div class="index-grid">
     <div class="index-grid-wide">
-      <h2>Search <a class="header-link" href="{% url 'textmode-search' %}">(options)</a></h2>
+      <h2>Search <a class="header-link" href="{% url 'textmode-search' %}">(advanced search)</a></h2>
       <form method="get" class="searchbar" action="{% url 'textmode-search' %}">
         {{ search_file_form.q }}
         <input type="submit" value="Go">
       </form>
     </div>
     <div class="index-grid-wide">
-      <h2>Featured Works</h2>
+      <h2>Featured</h2>
       <div class="collection-grid">
         {% for item in featured_collections %}
           {% include 'textmode/fragments/collection_card.html' %}
@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="index-grid-wide">
-      <h2>By Pack <a class="header-link" href="{% url 'textmode-pack-list' %}">(view all)</a></h2>
+      <h2>Newest Packs <a class="header-link" href="{% url 'textmode-pack-list' %}">(view all)</a></h2>
       <form method="get" class="searchbar" action="{% url 'textmode-pack-list' %}">
         {{ search_pack_form.q }}
         {{ search_pack_form.year }}
