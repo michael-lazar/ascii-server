@@ -2,11 +2,11 @@ from django.db import models
 
 
 class ArtPostFileType(models.TextChoices):
-    TEXT = "text", "Plain text"
-    ANS = "ans", "Ans"
-    ASC = "asc", "Asc"
-    XBIN = "xbin", "XBin"
-    OTHER = "other", "Other"
+    TEXT = "text", ".txt"
+    ANS = "ans", ".ans"
+    ASC = "asc", ".asc"
+    XBIN = "xbin", ".xbin"
+    OTHER = "other", "other"
 
 
 class ArtPostFontName(models.TextChoices):
