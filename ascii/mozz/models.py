@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from datetime import date
 
+from django.core.files.storage import storages
 from django.db import models
 from django.db.models import Manager, Q
 from imagekit.models import ImageSpecField
@@ -37,12 +38,13 @@ class ArtPost(BaseModel):
     title = models.CharField(max_length=128)
     description = models.TextField(blank=True)
 
-    file = models.FileField(upload_to=upload_to)
+    file = models.FileField(upload_to=upload_to, storage=storages["overwrite"])
     file_type = models.CharField(max_length=16, choices=ArtPostFileType.choices)
     font_name = models.CharField(max_length=16, choices=ArtPostFontName.choices, blank=True)
 
     image_x1 = models.ImageField(
         upload_to=upload_to,
+        storage=storages["overwrite"],
         verbose_name="Image (x1)",
         blank=True,
         null=True,
