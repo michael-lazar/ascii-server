@@ -99,12 +99,12 @@ class ArtPost(BaseModel):
         return qs.first()
 
     def save(self, *args, **kwargs) -> None:
-        # Bust the imagekit thumbnail cache when saving, in case
-        # a new image was uploaded with the same filename.
-        if self.pk and self.image_x1:
-            self.image_tn.delete(save=False)
-
         super().save(*args, **kwargs)
+
+        # Bust the imagekit thumbnail cache after saving, in case
+        # a new image was uploaded with the same filename.
+        if self.image_x1:
+            self.image_tn.generate(force=True)
 
 
 def upload_attachment_to(instance: ArtPostAttachment, filename: str) -> str:
