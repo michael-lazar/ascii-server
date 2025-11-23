@@ -53,6 +53,7 @@ class ArtPost(BaseModel):
         source="image_x1",
         processors=[ResizeToFit(height=300, width=400)],
         format="PNG",
+        cachefile_storage=storages["overwrite"],
     )
 
     objects = ArtPostManager()
