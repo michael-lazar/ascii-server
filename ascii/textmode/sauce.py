@@ -133,15 +133,21 @@ class Sauce:
         if self.datatype == DataType.BITMAP or self.filetype == FileType.RIPSCRIPT:
             return self.data.get("Tinfo1")
 
+        return None
+
     @property
     def pixel_height(self) -> int | None:
         if self.datatype == DataType.BITMAP or self.filetype == FileType.RIPSCRIPT:
             return self.data.get("Tinfo2")
 
+        return None
+
     @property
     def pixel_depth(self) -> int | None:
         if self.datatype == DataType.BITMAP:
             return self.data.get("Tinfo3")
+
+        return None
 
     @property
     def sample_rate(self) -> int | None:
@@ -152,6 +158,8 @@ class Sauce:
             FileType.SMP16S,
         ):
             return self.data.get("Tinfo1")
+
+        return None
 
     @property
     def character_width(self) -> int | None:
@@ -166,6 +174,8 @@ class Sauce:
         ):
             return self.data.get("Tinfo1")
 
+        return None
+
     @property
     def number_of_lines(self) -> int | None:
         if self.filetype in (
@@ -178,6 +188,8 @@ class Sauce:
             FileType.XBIN,
         ):
             return self.data.get("Tinfo2")
+
+        return None
 
     @property
     def font_name(self) -> str:
@@ -201,14 +213,20 @@ class Sauce:
         if ice_colors is not None:
             return bool(ice_colors)
 
+        return None
+
     @property
     def letter_spacing(self) -> LetterSpacing | None:
         ls = self.data.get("ansiflags", {}).get("ls", None)
         if ls is not None:
             return LetterSpacing(ls)
 
+        return None
+
     @property
     def aspect_ratio(self) -> AspectRatio | None:
         ar = self.data.get("ansiflags", {}).get("ar", None)
         if ar is not None:
             return AspectRatio(ar)
+
+        return None
