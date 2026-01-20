@@ -1,3 +1,5 @@
+[![build](https://github.com/michael-lazar/ascii-server/workflows/test/badge.svg)](https://github.com/michael-lazar/ascii-server/actions?query=workflow%3Atext)
+
 # ascii-server
 
 This repo hosts the codebase (python, django) powering [https://ascii.mozz.us](https://ascii.mozz.us).
