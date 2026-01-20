@@ -1,7 +1,5 @@
 from googletrans import Translator
 
-from ascii.translations.choices import TranslationLanguages
-
 
 class GoogleTranslateClient:
 
@@ -13,7 +11,7 @@ class GoogleTranslateClient:
         for i in range(0, len(lines), chunk_size):
             yield "\n".join(lines[i : i + chunk_size])
 
-    def translate(self, text: str, language: TranslationLanguages) -> str:
+    def translate(self, text: str, language: str) -> str:
         """Translates text to the specified language."""
         if text.isspace():
             return text

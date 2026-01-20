@@ -6,11 +6,11 @@ from datetime import date
 from django.core.files.storage import storages
 from django.db import models
 from django.db.models import Manager, Q
+from django.urls import reverse
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
 
 from ascii.core.models import BaseModel
-from ascii.core.utils import reverse
 from ascii.mozz.choices import ArtPostFileType, ArtPostFontName
 
 

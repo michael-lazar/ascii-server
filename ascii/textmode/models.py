@@ -3,16 +3,17 @@ from __future__ import annotations
 import itertools
 import mimetypes
 import os
+from typing import cast
 from urllib.parse import quote
 
 from django.db import models
 from django.db.models import Count, Exists, Manager, OuterRef, Prefetch
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.html import format_html
 
 from ascii.core.models import BaseModel
-from ascii.core.utils import reverse
 from ascii.textmode.choices import AspectRatio, DataType, FileType, LetterSpacing, TagCategory
 from ascii.textmode.constants import AUDIO_MIMETYPES, VIDEO_MIMETYPES
 
@@ -98,8 +99,8 @@ class ArtPackQuerySet(models.QuerySet):
     def group_by_year(self):
         return itertools.groupby(self, key=lambda obj: obj.year)
 
-    def list_years(self) -> ArtPackQuerySet:
-        return self.order_by("year").values_list("year", flat=True).distinct()
+    def list_years(self) -> list[int]:
+        return list(self.order_by("year").values_list("year", flat=True).distinct())
 
 
 ArtPackManager = Manager.from_queryset(ArtPackQuerySet)  # noqa
@@ -162,7 +163,7 @@ class ArtFileQuerySet(models.QuerySet):
         return list(qs)
 
     def font_names(self) -> list[str]:
-        return (
+        return list(
             self.order_by("font_name")
             .values_list("font_name", flat=True)
             .exclude(font_name="")
@@ -170,7 +171,7 @@ class ArtFileQuerySet(models.QuerySet):
         )
 
     def file_extensions(self) -> list[str]:
-        return (
+        return list(
             self.order_by("file_extension")
             .values_list("file_extension", flat=True)
             .exclude(file_extension="")
@@ -178,7 +179,7 @@ class ArtFileQuerySet(models.QuerySet):
         )
 
     def years(self) -> list[int]:
-        return self.order_by("pack__year").values_list("pack__year", flat=True).distinct()
+        return list(self.order_by("pack__year").values_list("pack__year", flat=True).distinct())
 
     def search(self, text: str) -> ArtFileQuerySet:
         if not text:
@@ -405,7 +406,7 @@ class ArtCollectionQuerySet(models.QuerySet):
     def annotate_artfile_count(self) -> ArtCollectionQuerySet:
         return self.annotate(artfile_count=Count("artfiles"))
 
-    def featured(self) -> ArtFileTagQuerySet:
+    def featured(self) -> ArtCollectionQuerySet:
         qs = self.filter(is_featured=True).order_by("order")
         qs = qs.prefetch_related(
             Prefetch(
@@ -428,7 +429,7 @@ class ArtCollection(BaseModel):
     slug = models.SlugField(unique=True, default=gen_slug, db_index=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    artfiles = models.ManyToManyField(
+    artfiles = models.ManyToManyField(  # type: ignore
         ArtFile,
         blank=True,
         related_name="collections",
@@ -456,7 +457,7 @@ class ArtCollection(BaseModel):
 
     @property
     def ordered_artfiles(self) -> ArtFileQuerySet:
-        return self.artfiles.all().order_by("artcollectionmapping__order")
+        return cast(ArtFileQuerySet, self.artfiles.all().order_by("artcollectionmapping__order"))
 
 
 class ArtCollectionMapping(BaseModel):

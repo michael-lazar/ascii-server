@@ -3,10 +3,10 @@ from typing import cast
 from django.contrib import admin
 from django.db import models
 from django.http import HttpRequest
+from django.urls import reverse
 from django.utils.html import format_html
 
 from ascii.core.admin import ReadOnlyTabularInline, linkify
-from ascii.core.utils import reverse
 from ascii.core.widgets import FormattedJSONWidget, ImagePreviewWidget
 from ascii.textmode.models import (
     ArtCollection,
@@ -84,7 +84,7 @@ class ArtPackAdmin(admin.ModelAdmin):
 
     @admin.display(description="Files", ordering="artfile_count")
     def get_artfile_count(self, obj: ArtPack) -> str:
-        link_url = reverse("admin:textmode_artfile_changelist", qs={"pack": obj.pk})
+        link_url = reverse("admin:textmode_artfile_changelist", query={"pack": obj.pk})
         return format_html('<a href="{}">{}</a>', link_url, obj.artfile_count)
 
     @admin.display(description="View")
@@ -149,7 +149,7 @@ class ArtFileTagAdmin(admin.ModelAdmin):
 
     @admin.display(description="Files", ordering="artfile_count")
     def get_artfile_count(self, obj: ArtFileTag) -> str:
-        link_url = reverse("admin:textmode_artfile_changelist", qs={"tags": obj.pk})
+        link_url = reverse("admin:textmode_artfile_changelist", query={"tags": obj.pk})
         return format_html('<a href="{}">{}</a>', link_url, obj.artfile_count)
 
     @admin.display(description="View")
@@ -180,7 +180,7 @@ class ArtCollectionAdmin(admin.ModelAdmin):
 
     @admin.display(description="Files", ordering="artfile_count")
     def get_artfile_count(self, obj: ArtCollection) -> str:
-        link_url = reverse("admin:textmode_artfile_changelist", qs={"collections": obj.pk})
+        link_url = reverse("admin:textmode_artfile_changelist", query={"collections": obj.pk})
         return format_html('<a href="{}">{}</a>', link_url, obj.artfile_count)
 
     @admin.display(description="View")

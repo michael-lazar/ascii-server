@@ -45,7 +45,7 @@ class PackYearChoiceField(forms.ChoiceField):
     def __init__(self, **kwargs):
         choices = [("", "all years")]
         for year in ArtPack.objects.list_years():
-            choices.append((year, year))
+            choices.append((str(year), str(year)))
         super().__init__(choices=choices, **kwargs)
 
 

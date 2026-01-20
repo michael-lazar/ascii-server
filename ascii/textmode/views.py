@@ -4,9 +4,9 @@ from dal import autocomplete
 from django.core.paginator import Paginator
 from django.http import Http404, HttpRequest
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.views.generic import TemplateView
 
-from ascii.core.utils import reverse
 from ascii.textmode.choices import TagCategory
 from ascii.textmode.forms import (
     AdvancedSearchForm,
@@ -27,7 +27,8 @@ PAGE_SIZE = 200
 
 def get_page_number(request: HttpRequest) -> int:
     try:
-        page = int(request.GET.get("page"))  # noqa
+        page_str = request.GET.get("page")
+        page = int(page_str) if page_str else 1
     except (TypeError, ValueError):
         page = 1
 
@@ -106,7 +107,7 @@ class TextmodePackView(TemplateView):
                 elif collab == "joint":
                     artfiles = artfiles.filter(is_joint=True)
 
-        search_url = reverse("textmode-search", qs={"pack": pack.name})
+        search_url = reverse("textmode-search", query={"pack": pack.name})
 
         is_filtered = any(form.cleaned_data.values())
 
@@ -205,11 +206,11 @@ class TextmodeTagView(TemplateView):
 
         match tag.category:
             case TagCategory.GROUP:
-                search_url = reverse("textmode-search", qs={"group": tag.name})
+                search_url = reverse("textmode-search", query={"group": tag.name})
             case TagCategory.ARTIST:
-                search_url = reverse("textmode-search", qs={"artist": tag.name})
+                search_url = reverse("textmode-search", query={"artist": tag.name})
             case TagCategory.CONTENT:
-                search_url = reverse("textmode-search", qs={"content": tag.name})
+                search_url = reverse("textmode-search", query={"content": tag.name})
             case _:
                 raise ValueError
 
@@ -253,6 +254,7 @@ class TextmodeTagCategoryListView(TemplateView):
 
         tags = ArtFileTag.objects.for_tag_list(category)
 
+        form: SearchArtistForm | SearchGroupForm | SearchContentForm
         match category:
             case TagCategory.ARTIST:
                 form = SearchArtistForm(data=self.request.GET)

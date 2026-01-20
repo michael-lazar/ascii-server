@@ -136,7 +136,8 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "overwrite": {
-        "BACKEND": "ascii.core.backends.storage.OverwriteFileSystemStorage",
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {"allow_overwrite": True},
     },
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",

@@ -1,6 +1,5 @@
 from django.db import models
-
-from ascii.core.utils import reverse
+from django.urls import reverse
 
 
 class BaseModel(models.Model):

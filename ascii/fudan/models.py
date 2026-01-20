@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from django.db import models
+from django.urls import reverse
 
 from ascii.core.fields import NonStrippingCharField, NonStrippingTextField
 from ascii.core.models import BaseModel
-from ascii.core.utils import reverse
 from ascii.fudan.ansi import ANSIParser
 from ascii.fudan.choices import MenuLinkType
 from ascii.translations.choices import TranslationLanguages

@@ -1,6 +1,6 @@
 import glob
 import os
-from datetime import datetime
+from datetime import UTC, datetime
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -62,7 +62,7 @@ class Command(BaseCommand):
         for order, ent in enumerate(root.findall(".//ent"), start=1):
             ent_path = os.path.normpath(bbs_path + ent.get("path"))
             ent_time = datetime.fromisoformat(ent.get("time"))
-            ent_time = timezone.make_aware(ent_time, timezone.utc)
+            ent_time = timezone.make_aware(ent_time, UTC)
             ent_type = ent.get("t")
             ent_organizer = ent.get("id") or ""
             ent_text = unescape_xml_text(ent.text or "")

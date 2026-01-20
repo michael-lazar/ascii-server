@@ -115,7 +115,8 @@ class DocumentAdmin(admin.ModelAdmin):
 
     @admin.display(description="Data")
     def get_data(self, obj: Document) -> str:
-        text = obj.data.decode("gb18030", errors="backslashreplace")
+        data = bytes(obj.data) if isinstance(obj.data, memoryview) else obj.data
+        text = data.decode("gb18030", errors="backslashreplace")
 
         lines: list[str] = []
         for n, line in enumerate(text.splitlines(), start=1):

@@ -1,9 +1,8 @@
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.forms.utils import pretty_name
+from django.urls import reverse
 from django.utils.html import format_html
-
-from ascii.core.utils import reverse
 
 
 # https://stackoverflow.com/a/53092940
