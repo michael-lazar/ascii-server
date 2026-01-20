@@ -43,7 +43,9 @@ class ANSIParser:
         plaintext = self.to_plaintext()
 
         buffer: list[str] = []
-        for text_line, plaintext_line in zip(text.splitlines(), plaintext.splitlines()):
+        for text_line, plaintext_line in zip(
+            text.splitlines(), plaintext.splitlines(), strict=False
+        ):
             offset = 0
             for ch in plaintext_line:
                 if ch == " ":
@@ -73,7 +75,6 @@ class ANSIParser:
 
         for instruction in self.ansi.instructions():
             if isinstance(instruction, str):
-
                 classes: list[str] = []
                 style_props: list[str] = []
                 attributes: dict[str, str] = {}
@@ -112,7 +113,6 @@ class ANSIParser:
                 buffer += self.build_span(inner, attributes)
 
             elif isinstance(instruction, SetColor):
-
                 code = cast(int, instruction.color.code)  # noqa
                 if code < 8:
                     match instruction.role:
@@ -126,7 +126,6 @@ class ANSIParser:
                     _logger.warning(f"Unhandled ANSI: {instruction}")
 
             elif isinstance(instruction, SetAttribute):
-
                 match instruction.attribute:
                     case Attribute.NORMAL:
                         state = self.State()

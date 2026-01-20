@@ -4,4 +4,5 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-pre-commit run --all-files "$@"
+source venv/bin/activate
+ruff "$@"

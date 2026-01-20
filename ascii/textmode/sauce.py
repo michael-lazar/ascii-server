@@ -26,7 +26,6 @@ _logger = logging.getLogger(__name__)
 
 
 class ANSIFileInspector:
-
     def __init__(self, artfile: ArtFile):
         self.artfile = artfile
 

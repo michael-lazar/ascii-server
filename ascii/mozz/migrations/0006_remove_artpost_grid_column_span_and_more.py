@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("mozz", "0005_rename_grid_columns_artpost_grid_column_span_and_more"),
     ]

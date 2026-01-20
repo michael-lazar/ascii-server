@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("fudan", "0007_alter_document_text_alter_menulink_text"),
     ]

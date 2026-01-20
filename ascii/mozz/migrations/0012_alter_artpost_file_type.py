@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("mozz", "0011_scrollfile_alter_artpostattachment_options"),
     ]

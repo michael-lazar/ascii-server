@@ -81,7 +81,6 @@ class TextmodeIndexView(TemplateView):
 
 
 class TextmodePackView(TemplateView):
-
     def get_template_names(self) -> list[str]:
         if self.request.headers.get("Hx-Request"):
             return ["textmode/fragments/artfile_grid_partial.html"]
@@ -186,7 +185,6 @@ class TextmodeArtFileView(TemplateView):
 
 
 class TextmodeTagView(TemplateView):
-
     def get_template_names(self) -> list[str]:
         if self.request.headers.get("Hx-Request"):
             return ["textmode/fragments/artfile_grid_partial.html"]
@@ -277,7 +275,6 @@ class TextmodeTagCategoryListView(TemplateView):
 
 
 class TextModeSearchView(TemplateView):
-
     def get_template_names(self) -> list[str]:
         if self.request.headers.get("Hx-Request"):
             return ["textmode/fragments/artfile_grid_partial.html"]
@@ -340,7 +337,6 @@ class TextModeSearchView(TemplateView):
 
 
 class TextModeArtCollectionView(TemplateView):
-
     def get_template_names(self) -> list[str]:
         if self.request.headers.get("Hx-Request"):
             return ["textmode/fragments/artfile_grid_partial.html"]

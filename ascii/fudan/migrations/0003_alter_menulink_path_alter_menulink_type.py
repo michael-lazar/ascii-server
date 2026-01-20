@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("fudan", "0002_remove_document_html_menulink_target_document_and_more"),
     ]

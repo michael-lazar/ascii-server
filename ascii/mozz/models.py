@@ -15,7 +15,6 @@ from ascii.mozz.choices import ArtPostFileType, ArtPostFontName
 
 
 class ArtPostQuerySet(models.QuerySet):
-
     def visible(self) -> ArtPostQuerySet:
         return self.filter(visible=True)
 

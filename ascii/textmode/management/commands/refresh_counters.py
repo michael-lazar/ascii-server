@@ -4,9 +4,7 @@ from ascii.textmode.models import ArtFile, ArtFileTag
 
 
 class Command(BaseCommand):
-
     def handle(self, *args, **options):
-
         self.stdout.write("Refreshing ArtFileTag.artfile_count ...")
         for tag in ArtFileTag.objects.all():
             tag.artfile_count = tag.artfiles.count()

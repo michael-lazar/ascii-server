@@ -10,7 +10,6 @@ from ascii.fudan.models import AssetFile, Document, Menu, ScratchFile
 
 
 class FudanScratchFileView(TemplateView):
-
     template_name = "fudan/scratch_file.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
@@ -19,14 +18,12 @@ class FudanScratchFileView(TemplateView):
 
 
 class FudanAssetFileView(View):
-
     def get(self, request: HttpRequest, slug: str) -> HttpResponse:
         obj = get_object_or_404(AssetFile, slug=slug)
         return redirect(obj.file.url)
 
 
 class FudanBBSMenuView(TemplateView):
-
     template_name = "fudan/bbs_menu.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
@@ -52,7 +49,6 @@ class FudanBBSMenuView(TemplateView):
 
 
 class FudanBBSDocumentView(TemplateView):
-
     template_name = "fudan/bbs_document.html"
 
     def get_template_names(self) -> list[str]:

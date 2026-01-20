@@ -33,7 +33,6 @@ class SixteenColorsPackImporter:
         self.skip_existing = skip_existing
 
     def process(self) -> ArtPack | None:
-
         if self.name in BLACKLIST:
             _logger.info(f"Skipping blacklisted pack: {self.name}")
             return None

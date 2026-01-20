@@ -60,7 +60,7 @@ class TelnetServer:
                     if char == b" ":
                         # Print a new line when the space bar is pressed
                         break
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     pass
 
         writer.close()

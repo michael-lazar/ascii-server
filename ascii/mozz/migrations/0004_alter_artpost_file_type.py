@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("mozz", "0003_artpost_grid_columns_artpost_grid_rows"),
     ]

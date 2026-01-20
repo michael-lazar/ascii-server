@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("textmode", "0030_alter_artcollectionmapping_options"),
     ]

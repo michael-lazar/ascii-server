@@ -51,7 +51,6 @@ class MozzArtPostView(TemplateView):
 
 
 class MozzScrollFileView(View):
-
     def get(self, *args, **kwargs) -> HttpResponse:
         scrollfile = get_object_or_404(ScrollFile, slug=kwargs["slug"])
         return HttpResponse(scrollfile.text.strip(), content_type="text/plain")

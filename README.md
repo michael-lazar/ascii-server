@@ -32,7 +32,8 @@ pre-commit install
 # Run the tests, linters, etc.
 tools/pytest
 tools/mypy
-tools/lint
+tools/ruff check --fix
+tools/ruff format
 
 # Rebuild requirements
 tools/pip-compile

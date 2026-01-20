@@ -14,6 +14,6 @@ def _media_storage(settings, tmpdir) -> None:
 
 @pytest.fixture(autouse=True)
 def _static_storage(settings) -> None:
-    settings.STORAGES["staticfiles"][
-        "BACKEND"
-    ] = "django.contrib.staticfiles.storage.StaticFilesStorage"
+    settings.STORAGES["staticfiles"]["BACKEND"] = (
+        "django.contrib.staticfiles.storage.StaticFilesStorage"
+    )

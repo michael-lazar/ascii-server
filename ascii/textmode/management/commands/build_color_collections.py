@@ -6,7 +6,6 @@ from ascii.textmode.sauce import ANSIFileInspector
 
 
 class Command(BaseCommand):
-
     def handle(self, *args, **options):
         for artfile in ArtFile.objects.ansi():
             inspector = ANSIFileInspector(artfile)

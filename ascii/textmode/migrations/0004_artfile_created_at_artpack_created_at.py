@@ -5,7 +5,6 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("textmode", "0003_alter_artfile_options_artfile_file_extension_and_more"),
     ]

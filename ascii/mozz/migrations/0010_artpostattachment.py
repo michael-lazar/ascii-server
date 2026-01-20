@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("mozz", "0009_alter_artpost_file_type_alter_artpost_font_name"),
     ]

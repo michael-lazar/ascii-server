@@ -28,7 +28,6 @@ def linkify(field_name):
 
 
 class ReadOnlyModelAdmin(admin.ModelAdmin):
-
     def has_change_permission(self, request, obj=None):
         return False
 
@@ -40,7 +39,6 @@ class ReadOnlyModelAdmin(admin.ModelAdmin):
 
 
 class ReadOnlyTabularInline(admin.TabularInline):
-
     extra = 0
 
     def has_change_permission(self, request, obj=None):

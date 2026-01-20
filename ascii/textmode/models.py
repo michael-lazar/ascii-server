@@ -22,7 +22,6 @@ ALT_SLASH = "%2F"
 
 
 class ArtFileTagQuerySet(models.QuerySet):
-
     def visible(self) -> ArtFileTagQuerySet:
         return self.filter(artfile_count__gt=0)
 
@@ -83,7 +82,6 @@ class ArtFileTag(BaseModel):
 
 
 class ArtPackQuerySet(models.QuerySet):
-
     def annotate_artfile_count(self) -> ArtPackQuerySet:
         return self.annotate(artfile_count=Count("artfiles"))
 
@@ -135,7 +133,6 @@ class ArtPack(BaseModel):
 
 
 class ArtFileQuerySet(models.QuerySet):
-
     def not_tagged(self, category: TagCategory) -> ArtFileQuerySet:
         """
         Return files that do not contain a tag within the given category.
@@ -399,7 +396,6 @@ class ArtFile(BaseModel):
 
 
 class ArtCollectionQuerySet(models.QuerySet):
-
     def visible(self) -> ArtCollectionQuerySet:
         return self.filter(visible=True)
 

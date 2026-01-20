@@ -7,7 +7,6 @@ from ascii.textmode.models import ArtFileQuerySet, ArtFileTag, ArtPack
 
 
 class ArtFileTagChoiceField(forms.ModelChoiceField):
-
     def __init__(self, category: TagCategory, artfiles: ArtFileQuerySet, **kwargs):
         queryset = ArtFileTag.objects.filter(category=category, artfiles__in=artfiles)
         queryset = queryset.annotate(tag_count=Count("name")).order_by("-tag_count")
@@ -19,7 +18,6 @@ class ArtFileTagChoiceField(forms.ModelChoiceField):
 
 
 class PackChoiceField(forms.ModelChoiceField):
-
     def __init__(self, artfiles: ArtFileQuerySet, **kwargs):
         queryset = ArtPack.objects.filter(artfiles__in=artfiles)
         queryset = queryset.annotate(artfile_count=Count("name")).order_by("-artfile_count")
@@ -31,7 +29,6 @@ class PackChoiceField(forms.ModelChoiceField):
 
 
 class FileExtensionChoiceField(forms.ChoiceField):
-
     def __init__(self, artfiles: ArtFileQuerySet, **kwargs):
         choices = []
         for ext, count in artfiles.count_file_extensions():
@@ -41,7 +38,6 @@ class FileExtensionChoiceField(forms.ChoiceField):
 
 
 class PackYearChoiceField(forms.ChoiceField):
-
     def __init__(self, **kwargs):
         choices = [("", "all years")]
         for year in ArtPack.objects.list_years():
@@ -50,7 +46,6 @@ class PackYearChoiceField(forms.ChoiceField):
 
 
 class CollabChoiceField(forms.ChoiceField):
-
     def __init__(self, artfiles: ArtFileQuerySet, **kwargs):
         choices = []
         for is_joint, count in artfiles.count_is_joint():
@@ -63,7 +58,6 @@ class CollabChoiceField(forms.ChoiceField):
 
 
 class PackFilterForm(forms.Form):
-
     def __init__(self, artfiles: ArtFileQuerySet, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

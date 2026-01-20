@@ -16,7 +16,6 @@ class Command(BaseCommand):
     help = "Import fudan crawl data into the database"
 
     def handle(self, *args, **options):
-
         Menu.objects.all().delete()
 
         pattern = os.path.join(DATA_PATH, "**", ".index.xml")

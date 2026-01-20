@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("fudan", "0003_alter_menulink_path_alter_menulink_type"),
     ]

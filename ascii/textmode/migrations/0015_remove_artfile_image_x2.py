@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("textmode", "0014_alter_artfile_filetype"),
     ]

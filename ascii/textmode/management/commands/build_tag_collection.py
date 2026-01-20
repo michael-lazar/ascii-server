@@ -4,7 +4,6 @@ from ascii.textmode.models import ArtCollection, ArtFileTag
 
 
 class Command(BaseCommand):
-
     def add_arguments(self, parser):
         parser.add_argument("name", type=str, help="The name of the collection")
         parser.add_argument("tags", nargs="*")

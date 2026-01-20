@@ -1,9 +1,6 @@
 [project]
 requires-python = "==3.11"
 
-[tool.black]
-line-length = 100
-
 [tool.mypy]
 python_version = "3.11"
 check_untyped_defs = true
@@ -26,21 +23,20 @@ line-length = 100
 
 [tool.ruff.lint]
 select = [
-    "E",    # pycodestyle
-    "F",    # pyflakes
-    "I",    # isort
-    "B",    # flake8-bugbear
-    "DJ",   # flake8-django
-    "G",    # flake8-logging-format
-    "PT",   # flake8-pytest-style
-    "C4",   # flake8-comprehensions
-    "ISC",  # flake8-implicit-str-concat
-    "UP",   # pyupgrade
+    "E", # pycodestyle
+    "F", # pyflakes
+    "I", # isort
+    "B", # flake8-bugbear
+    "DJ", # flake8-django
+    "G", # flake8-logging-format
+    "PT", # flake8-pytest-style
+    "C4", # flake8-comprehensions
+    "ISC", # flake8-implicit-str-concat
+    "UP", # pyupgrade
 ]
 
 ignore = [
-    "E501",  # Line length is enforced by black
-    "G004",  # Allow f-string logging statements
+    "G004", # Allow f-string logging statements
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -49,6 +45,3 @@ ignore = [
 
 [tool.ruff.lint.isort]
 known-first-party = ['ascii']
-
-[tool.isort]
-known_first_party = ['ascii']
