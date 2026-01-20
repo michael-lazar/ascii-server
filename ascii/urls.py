@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, register_converter
 from django.views.generic.base import RedirectView
+from rest_framework import routers
 
 from ascii.core.converters import DateConverter
 from ascii.core.views import IndexView
@@ -13,6 +14,7 @@ from ascii.fudan.views import (
     FudanBBSMenuView,
     FudanScratchFileView,
 )
+from ascii.mozz.api import MozzArtPostModelViewSet
 from ascii.mozz.views import MozzArtPostView, MozzIndexView, MozzScrollFileView
 from ascii.textmode.views import (
     TextModeArtCollectionListView,
@@ -33,6 +35,10 @@ from ascii.textmode.views import (
 )
 
 register_converter(DateConverter, "date")
+
+
+router = routers.DefaultRouter()
+router.register("mozz-art-posts", MozzArtPostModelViewSet, basename="mozz-art-post")
 
 
 urlpatterns = [
@@ -159,6 +165,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
     path("__debug__/", include("debug_toolbar.urls")),
+    path("api/v1/", include(router.urls)),
+    path("api/auth/", include("rest_framework.urls")),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
     *staticfiles_urlpatterns(),
 ]
