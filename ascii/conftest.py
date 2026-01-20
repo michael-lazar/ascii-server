@@ -10,10 +10,3 @@ def pytest_collection_modifyitems(items):
 @pytest.fixture(autouse=True)
 def _media_storage(settings, tmpdir) -> None:
     settings.MEDIA_ROOT = tmpdir.strpath
-
-
-@pytest.fixture(autouse=True)
-def _static_storage(settings) -> None:
-    settings.STORAGES["staticfiles"]["BACKEND"] = (
-        "django.contrib.staticfiles.storage.StaticFilesStorage"
-    )

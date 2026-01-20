@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(__file__)
 
 DATA_ROOT = os.path.normpath(os.path.join(BASE_DIR, "..", "data"))
 
-TESTING = "test" in sys.argv
+IS_RUNNING_TESTS = ("test" in sys.argv) or "PYTEST_VERSION" in os.environ
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", True)
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "ascii.translations",
     "ascii.textmode",
     "ascii.mozz",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -58,17 +59,18 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 
 def show_toolbar_callback(request):
+    if IS_RUNNING_TESTS:
+        return False
+
     return request.user and request.user.is_superuser
 
 
-if not TESTING:
-    INSTALLED_APPS = [*INSTALLED_APPS, "debug_toolbar"]
-    MIDDLEWARE = [*MIDDLEWARE, "debug_toolbar.middleware.DebugToolbarMiddleware"]
-    DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": show_toolbar_callback}
+DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": show_toolbar_callback}
 
 ROOT_URLCONF = "ascii.urls"
 
@@ -139,10 +141,13 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
         "OPTIONS": {"allow_overwrite": True},
     },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
-    },
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"},
 }
+
+if IS_RUNNING_TESTS:
+    staticfiles = STORAGES["staticfiles"]["BACKEND"] = (
+        "django.contrib.staticfiles.storage.StaticFilesStorage"
+    )
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
