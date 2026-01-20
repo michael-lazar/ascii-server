@@ -133,6 +133,11 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 )
 
+if IS_RUNNING_TESTS:
+    staticfiles_backend = "django.contrib.staticfiles.storage.StaticFilesStorage"
+else:
+    staticfiles_backend = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -141,13 +146,9 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
         "OPTIONS": {"allow_overwrite": True},
     },
-    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"},
+    "staticfiles": {"BACKEND": staticfiles_backend},
 }
 
-if IS_RUNNING_TESTS:
-    staticfiles = STORAGES["staticfiles"]["BACKEND"] = (
-        "django.contrib.staticfiles.storage.StaticFilesStorage"
-    )
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
