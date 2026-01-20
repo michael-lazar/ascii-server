@@ -26,6 +26,6 @@ jobs:
       - name: Run mypy
         run: mypy ascii
       - name: Check migrations
-        run: python maange.py makemigrations --check
+        run: python manage.py makemigrations --check
       - name: Run pytest
         run: pytest
