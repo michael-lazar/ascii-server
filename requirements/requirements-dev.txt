@@ -126,7 +126,7 @@ gevent==25.9.1
     # via -r requirements/requirements.txt
 googletrans==4.0.2
     # via -r requirements/requirements.txt
-greenlet==3.3.0
+greenlet==3.2.4
     # via
     #   -r requirements/requirements.txt
     #   gevent

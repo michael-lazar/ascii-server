@@ -11,6 +11,7 @@ django-imagekit
 djangorestframework
 gevent
 googletrans
+greenlet<3.3.0  # Last version with avaiable binaries for my target platform
 gunicorn
 gunicorn
 lxml
