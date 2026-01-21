@@ -26,13 +26,15 @@ else:
 
 ALLOWED_HOSTS = ["*"]
 
-# Application definition
-INSTALLED_APPS = [
-    "admin_interface",  # These must come before django.contrib.admin
+# These must come before django.contrib.admin
+PRIORITY_APPS = [
+    "admin_interface",
     "colorfield",
     "dal",
     "dal_select2",
-    "imagekit",
+]
+
+DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -40,16 +42,27 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+]
+
+THIRD_PARTY_APPS = [
+    "debug_toolbar",
     "django_browser_reload",
     "django_extensions",
     "django_cleanup.apps.CleanupConfig",
+    "imagekit",
+    "rest_framework",
+]
+
+LOCAL_APPS = [
     "ascii.core",
     "ascii.fudan",
     "ascii.translations",
     "ascii.textmode",
+    "ascii.users",
     "ascii.mozz",
-    "debug_toolbar",
 ]
+
+INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -196,3 +209,21 @@ LOGGING = {
 
 MEDIA_ROOT = os.path.join(DATA_ROOT, "media")
 MEDIA_URL = "/media/"
+
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 100,
+    "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S%z",
+    "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAdminUser",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "ascii.users.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+}

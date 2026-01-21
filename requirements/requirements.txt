@@ -48,6 +48,7 @@ django==5.2.10
     #   django-browser-reload
     #   django-debug-toolbar
     #   django-extensions
+    #   djangorestframework
 django-admin-interface==0.32.0
     # via -r requirements/requirements.in
 django-appconf==1.2.0
@@ -67,6 +68,8 @@ django-environ==0.12.0
 django-extensions==4.1
     # via -r requirements/requirements.in
 django-imagekit==6.0.0
+    # via -r requirements/requirements.in
+djangorestframework==3.16.1
     # via -r requirements/requirements.in
 filelock==3.20.3
     # via tldextract
