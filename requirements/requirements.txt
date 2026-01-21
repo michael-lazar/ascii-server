@@ -69,10 +69,8 @@ django-extensions==4.1
     # via -r requirements/requirements.in
 django-imagekit==6.0.0
     # via -r requirements/requirements.in
-django-rest-framework==0.1.0
-    # via -r requirements/requirements.in
 djangorestframework==3.16.1
-    # via django-rest-framework
+    # via -r requirements/requirements.in
 filelock==3.20.3
     # via tldextract
 gevent==25.9.1

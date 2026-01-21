@@ -8,7 +8,7 @@ django-debug-toolbar
 django-environ
 django-extensions
 django-imagekit
-django-rest-framework
+djangorestframework
 gevent
 googletrans
 gunicorn
