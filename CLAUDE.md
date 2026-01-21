@@ -4,7 +4,6 @@
 - Test coverage should focus on broad, integration style tests.
     - Use class-based tests for views (from django.test import TestCase).
     - Use pytest-style functional tests for methods & classes.
-- Always run mypy and linters when making changes.
 - Do not make large, sweeping changes that cannot be easily verified.
 - DO NOT USE broad try..catch.. blocks to hide bugs. ALLOW UNHANDLED ERRORS TO PROPAGATE.
 - AVOID _hacky_ patches that mock out functions or have other unintuitive side effects.

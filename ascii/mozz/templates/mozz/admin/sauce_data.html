@@ -1,0 +1,6 @@
+<dl>
+{% for field in fields %}
+  <dt>{{ field.label }}</dt>
+  <dd>{% if field.value %}{{ field.value }}{% else %}<i>-</i>{% endif %}</dd>
+{% endfor %}
+</dl>

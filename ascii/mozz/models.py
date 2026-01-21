@@ -11,6 +11,7 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
 
 from ascii.core.models import BaseModel
+from ascii.core.sauce import get_sauce
 from ascii.mozz.choices import ArtPostFileType, ArtPostFontName
 
 
@@ -55,6 +56,8 @@ class ArtPost(BaseModel):
         cachefile_storage=storages["overwrite"],
     )
 
+    sauce_data = models.JSONField(blank=True, default=dict)
+
     objects = ArtPostManager()
 
     class Meta:
@@ -98,13 +101,28 @@ class ArtPost(BaseModel):
         )
         return qs.first()
 
+    def refresh_sauce(self) -> None:
+        """
+        Read the file and extract SAUCE metadata, storing it in sauce_data.
+        """
+        if not self.file:
+            self.sauce_data = {}
+            return
+
+        with self.file.open("rb") as f:
+            file_bytes = f.read()
+
+        self.sauce_data = get_sauce(file_bytes) or {}
+
     def save(self, *args, **kwargs) -> None:
+        self.refresh_sauce()
+
         super().save(*args, **kwargs)
 
         # Bust the imagekit thumbnail cache after saving, in case
         # a new image was uploaded with the same filename.
         if self.image_x1:
-            self.image_tn.generate(force=True)
+            self.image_tn.generate(force=True)  # noqa
 
 
 def upload_attachment_to(instance: ArtPostAttachment, filename: str) -> str:
