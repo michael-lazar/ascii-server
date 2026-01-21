@@ -4,5 +4,5 @@ from ascii.users.models import AuthToken
 
 
 class TokenAuthentication(_TokenAuthentication):
-    token = "Bearer"
+    keyword = "Bearer"
     model = AuthToken

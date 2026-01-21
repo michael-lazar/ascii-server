@@ -1,5 +1,4 @@
 import factory
-from django.conf import settings
 from django.contrib.auth.models import User
 from factory import Faker
 from factory.django import DjangoModelFactory
@@ -21,13 +20,13 @@ class UserFactory(DjangoModelFactory):
     last_name = Faker("last_name")
 
     class Meta:
-        model = settings.AUTH_USER_MODEL
+        model = User
         django_get_or_create = ["username"]
         skip_postgeneration_save = True
 
 
 class AuthTokenFactory(DjangoModelFactory):
-    user = UserFactory
+    user = factory.SubFactory(UserFactory)
 
     class Meta:
         model = AuthToken

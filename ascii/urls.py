@@ -163,10 +163,9 @@ urlpatterns = [
         name="mozz-scroll-file",
     ),
     path("admin/", admin.site.urls),
+    path("api/v1/", include((router.urls, "api"), namespace="api")),
     path("__reload__/", include("django_browser_reload.urls")),
     path("__debug__/", include("debug_toolbar.urls")),
-    path("api/v1/", include(router.urls)),
-    path("api/auth/", include("rest_framework.urls")),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
     *staticfiles_urlpatterns(),
 ]

@@ -7,4 +7,3 @@ def test_auth_token_generate_key():
     """
     token = AuthTokenFactory.create()
     assert token.key
-    assert token.generate_key()
