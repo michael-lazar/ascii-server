@@ -30,6 +30,9 @@ def upload_to(instance: ArtPost, filename: str) -> str:
 
 
 class ArtPost(BaseModel):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     slug = models.SlugField(db_index=True)
     date = models.DateField(default=date.today, db_index=True)
     visible = models.BooleanField(default=True)
@@ -115,9 +118,12 @@ class ArtPost(BaseModel):
         self.sauce_data = get_sauce(file_bytes) or {}
 
     def save(self, *args, **kwargs) -> None:
-        self.refresh_sauce()
-
         super().save(*args, **kwargs)
+
+        self.refresh_sauce()
+        if self.sauce_data:
+            # Save again to update sauce_data without triggering another refresh
+            super().save(update_fields=["sauce_data"])
 
         # Bust the imagekit thumbnail cache after saving, in case
         # a new image was uploaded with the same filename.

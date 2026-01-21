@@ -1,0 +1,110 @@
+#!/usr/bin/env -S uv run --script
+#
+# /// script
+# requires-python = ">=3.12"
+# dependencies = ["requests"]
+# ///
+
+import argparse
+import os
+import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
+from urllib.parse import urljoin
+
+import requests
+
+parser = argparse.ArgumentParser(description="Edit a mozz art post")
+parser.add_argument("slug", help="Slug of the art post to edit")
+args = parser.parse_args()
+
+# Get API token from environment
+token = os.environ.get("ASCII_SERVER_API_TOKEN")
+if not token:
+    print("Error: ASCII_SERVER_API_TOKEN environment variable not set")
+    sys.exit(1)
+
+# Get base URL from environment or use default
+base_url = os.environ.get("ASCII_SERVER_BASE_URL", "http://localhost:8000")
+
+# Fetch art post by slug
+print(f"Fetching art post with slug '{args.slug}'...")
+headers = {"Authorization": f"Bearer {token}"}
+detail_url = urljoin(base_url, f"/api/v1/mozz-art-posts/{args.slug}/")
+response = requests.get(detail_url, headers=headers)
+response.raise_for_status()
+art_post = response.json()
+file_url = art_post["file"]
+
+print(f"Found art post: {art_post['title']}")
+
+# Download file directly to backup folder with timestamp
+backup_dir = Path.home() / "Desktop" / "backup"
+backup_dir.mkdir(parents=True, exist_ok=True)
+timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+filename = Path(file_url).name
+file_path = backup_dir / f"{timestamp}_{filename}"
+
+print(f"Downloading file to {file_path}...")
+response = requests.get(file_url, headers=headers)
+response.raise_for_status()
+file_size = len(response.content)
+with open(file_path, "wb") as f:
+    f.write(response.content)
+
+# Display file size
+if file_size < 1024:
+    size_str = f"{file_size} bytes"
+elif file_size < 1024 * 1024:
+    size_str = f"{file_size / 1024:.1f} KB"
+else:
+    size_str = f"{file_size / (1024 * 1024):.1f} MB"
+print(f"Downloaded: {file_path} ({size_str})")
+
+# Open in Moebius Beyond
+print("Opening file in Moebius Beyond...")
+subprocess.run(
+    [
+        "open",
+        str(file_path),
+        "-b",
+        "org.michaellazar.moebius-beyond",
+    ],
+    check=True,
+)
+
+# Wait for user to save
+try:
+    input("Press Enter when you've saved the file in Moebius to continue...")
+except KeyboardInterrupt:
+    sys.exit(1)
+
+# Generate 2x retina image
+print("Generating 2x retina image...")
+subprocess.run(["ansilove", str(file_path), "-r"], check=True)
+png_filepath = Path(str(file_path) + ".png")
+if not png_filepath.exists():
+    print(f"Error: Expected PNG file not found at {png_filepath}")
+    sys.exit(1)
+print(f"Generated: {png_filepath}")
+
+# Confirm upload
+response = input("Upload changes to server? (y/N): ").strip().lower()
+if response != "y":
+    print("Aborted.")
+    sys.exit(0)
+
+# Upload updated files
+print("Uploading updated files to API...")
+detail_url = urljoin(base_url, f"/api/v1/mozz-art-posts/{args.slug}/")
+with open(file_path, "rb") as file_f, open(png_filepath, "rb") as image_f:
+    files = {
+        "file": (file_path.name, file_f),
+        "image_x1": (png_filepath.name, image_f),
+    }
+    response = requests.patch(detail_url, headers=headers, files=files)
+    response.raise_for_status()
+
+print(f"Successfully updated art post '{args.slug}'")
+print("Done!")

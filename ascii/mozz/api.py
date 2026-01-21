@@ -9,3 +9,4 @@ class MozzArtPostModelViewSet(ModelViewSet):
     queryset = ArtPost.objects.all()
     serializer_class = MozzArtPostSerializer
     permission_classes = [IsAdminUser]
+    lookup_field = "slug"
