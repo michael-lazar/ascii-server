@@ -20,7 +20,7 @@ class TestMozzArtPostViewSet(APITestCase):
         """Should be able to retrieve a single art post."""
         art_post = ArtPostFactory.create()
 
-        resp = self.auth_client.get(reverse("api:mozz-art-post-detail", args=[art_post.pk]))
+        resp = self.auth_client.get(reverse("api:mozz-art-post-detail", args=[art_post.slug]))
         assert resp.status_code == 200
         assert resp.data
 
@@ -47,7 +47,7 @@ class TestMozzArtPostViewSet(APITestCase):
         art_post = ArtPostFactory.create()
 
         resp = self.auth_client.patch(
-            reverse("api:mozz-art-post-detail", args=[art_post.pk]),
+            reverse("api:mozz-art-post-detail", args=[art_post.slug]),
             data={"title": "Foobar"},
         )
         assert resp.status_code == 200
@@ -59,7 +59,7 @@ class TestMozzArtPostViewSet(APITestCase):
         """Should be able to delete an art post."""
         art_post = ArtPostFactory.create()
 
-        resp = self.auth_client.delete(reverse("api:mozz-art-post-detail", args=[art_post.pk]))
+        resp = self.auth_client.delete(reverse("api:mozz-art-post-detail", args=[art_post.slug]))
         assert resp.status_code == 204
 
         assert not ArtPost.objects.filter(pk=art_post.pk).exists()
