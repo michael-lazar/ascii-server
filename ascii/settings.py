@@ -23,6 +23,7 @@ if DEBUG:
 else:
     SECRET_KEY = env.str("SECRET_KEY")
     CSRF_TRUSTED_ORIGINS = [env.str("TRUSTED_ORIGIN")]
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 ALLOWED_HOSTS = ["*"]
 
