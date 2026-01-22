@@ -99,17 +99,8 @@ class ArtPostAdmin(admin.ModelAdmin):
         if not obj.sauce_data:
             return "-"
 
-        field_names = [
-            ("title", "Title"),
-            ("author", "Author"),
-            ("group", "Group"),
-            ("date", "Date"),
-            ("comments", "Comments"),
-        ]
-
-        fields = []
-        for key, label in field_names:
-            fields.append({"label": label, "value": obj.sauce_data[key]})
+        field_names = ["Title", "Author", "Group", "Date", "Comments"]
+        fields = [{"label": name, "value": obj.sauce_data[name]} for name in field_names]
 
         if not fields:
             return "-"

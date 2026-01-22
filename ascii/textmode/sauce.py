@@ -7,6 +7,7 @@ from datetime import date, datetime
 from django.utils.functional import cached_property
 from stransi import Ansi, SetColor
 
+from ascii.core.sauce import SauceData
 from ascii.textmode.choices import (
     ARCHIVE_FILETYPES,
     AUDIO_FILETYPES,
@@ -50,7 +51,7 @@ class Sauce:
     https://www.acid.org/info/sauce/sauce.htm
     """
 
-    def __init__(self, data: dict):
+    def __init__(self, data: dict | SauceData):
         self.data = data
 
     @property

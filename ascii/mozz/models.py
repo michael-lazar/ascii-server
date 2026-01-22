@@ -11,7 +11,7 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
 
 from ascii.core.models import BaseModel
-from ascii.core.sauce import get_sauce
+from ascii.core.sauce import get_sauce_data
 from ascii.mozz.choices import ArtPostFileType, ArtPostFontName
 
 
@@ -112,10 +112,10 @@ class ArtPost(BaseModel):
             self.sauce_data = {}
             return
 
-        with self.file.open("rb") as f:
-            file_bytes = f.read()
+        with self.file.open("rb") as fp:
+            file_bytes = fp.read()
 
-        self.sauce_data = get_sauce(file_bytes) or {}
+        self.sauce_data = get_sauce_data(file_bytes) or {}
 
     def save(self, *args, **kwargs) -> None:
         super().save(*args, **kwargs)

@@ -1,3 +1,5 @@
+from ascii.core.sauce import get_sauce_data
+from ascii.core.utils import get_project_file
 from ascii.textmode.choices import AspectRatio, DataType, FileType, LetterSpacing
 from ascii.textmode.sauce import Sauce
 
@@ -47,3 +49,23 @@ def test_build_sauce():
     assert sauce.ice_colors is False
     assert sauce.letter_spacing == LetterSpacing.NINE
     assert sauce.aspect_ratio == AspectRatio.SQUARE
+
+
+def test_sauce_from_file():
+    """Test that sauce data from get_sauce_data() is compatible with Sauce() class."""
+    with open(get_project_file("core/tests/data/clouds.xb"), "rb") as fp:
+        file_bytes = fp.read()
+
+    sauce_data = get_sauce_data(file_bytes)
+    assert sauce_data is not None
+
+    sauce = Sauce(sauce_data)
+
+    assert sauce.title == "clouds"
+    assert sauce.author == "mozz"
+    assert sauce.group == "mistigris"
+    assert sauce.date.isoformat() == "2026-01-18"
+    assert sauce.comments == "blah\nblah\nblah"
+    assert sauce.datatype == DataType.XBIN
+    assert sauce.filetype == FileType.XBIN
+    assert sauce.font_name == ""
