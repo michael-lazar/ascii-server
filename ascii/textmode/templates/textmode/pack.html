@@ -30,7 +30,9 @@
   <div class="artfile-body">
     <div class="artfile-content-wrapper">
       <h1>Packs / {{ pack.year }} / {{ pack.name }}
-        <a class="header-link" href="{{ pack.zip_file.url }}">(.zip)</a>
+        {% if pack.zip_file %}
+          <a class="header-link" href="{{ pack.zip_file.url }}">(.zip)</a>
+        {% endif %}
       </h1>
       {% include 'textmode/fragments/artfile_grid.html' with show_fileid=1 %}
     </div>

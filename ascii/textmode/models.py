@@ -14,7 +14,13 @@ from django.utils.crypto import get_random_string
 from django.utils.html import format_html
 
 from ascii.core.models import BaseModel
-from ascii.textmode.choices import AspectRatio, DataType, FileType, LetterSpacing, TagCategory
+from ascii.textmode.choices import (
+    AspectRatio,
+    DataType,
+    FileType,
+    LetterSpacing,
+    TagCategory,
+)
 from ascii.textmode.constants import AUDIO_MIMETYPES, VIDEO_MIMETYPES
 
 # https://stackoverflow.com/a/67857443
@@ -113,7 +119,11 @@ class ArtPack(BaseModel):
 
     name = models.CharField(max_length=100, unique=True)
     year = models.IntegerField()
-    zip_file = models.FileField(upload_to=upload_to_zip)
+    zip_file = models.FileField(
+        upload_to=upload_to_zip,
+        null=True,
+        blank=True,
+    )
 
     objects = ArtPackManager()
 
