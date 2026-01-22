@@ -13,6 +13,8 @@ from imagekit.processors import ResizeToFit
 from ascii.core.models import BaseModel
 from ascii.core.sauce import get_sauce_data
 from ascii.mozz.choices import ArtPostFileType, ArtPostFontName
+from ascii.textmode.models import ArtFile
+from ascii.textmode.sauce import Sauce
 
 
 class ArtPostQuerySet(models.QuerySet):
@@ -60,6 +62,20 @@ class ArtPost(BaseModel):
     )
 
     sauce_data = models.JSONField(blank=True, default=dict)
+
+    pack = models.ForeignKey(
+        "textmode.ArtPack",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    artfile_name = models.CharField(max_length=130, blank=True)
+    artfile = models.ForeignKey(
+        "textmode.ArtFile",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
 
     objects = ArtPostManager()
 
@@ -117,18 +133,47 @@ class ArtPost(BaseModel):
 
         self.sauce_data = get_sauce_data(file_bytes) or {}
 
+    def refresh_textmode_artfile(self) -> None:
+        """
+        Create a pseudo artfile object based on the art post.
+        """
+        if not self.pack:
+            if self.artfile:
+                self.artfile.delete()
+                self.artfile = None
+            return
+
+        if not self.artfile:
+            self.artfile = ArtFile(pack=self.pack, is_internal=True)
+
+        filename = os.path.basename(self.file.name)
+        _, file_extension = os.path.splitext(filename)
+
+        self.artfile.name = self.artfile_name or filename
+        self.artfile.file_extension = file_extension
+        self.artfile.raw_file = self.file.name
+        self.artfile.image_x1 = self.image_x1.name
+        self.artfile.image_tn = self.image_tn.name  # noqa
+
+        sauce = Sauce(self.sauce_data)
+        for name, value in sauce.as_artfile_fields().items():
+            setattr(self.artfile, name, value)
+
+        self.artfile.save()
+
     def save(self, *args, **kwargs) -> None:
         super().save(*args, **kwargs)
-
-        self.refresh_sauce()
-        if self.sauce_data:
-            # Save again to update sauce_data without triggering another refresh
-            super().save(update_fields=["sauce_data"])
 
         # Bust the imagekit thumbnail cache after saving, in case
         # a new image was uploaded with the same filename.
         if self.image_x1:
             self.image_tn.generate(force=True)  # noqa
+
+        self.refresh_sauce()
+        super().save(update_fields=["sauce_data"])  # noqa
+
+        self.refresh_textmode_artfile()
+        super().save(update_fields=["artfile"])  # noqa
 
 
 def upload_attachment_to(instance: ArtPostAttachment, filename: str) -> str:

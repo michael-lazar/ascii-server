@@ -100,6 +100,9 @@ class ArtPackQuerySet(models.QuerySet):
             )
         )
 
+    def visible(self) -> ArtPackQuerySet:
+        return self.filter(visible=True)
+
     def group_by_year(self):
         return itertools.groupby(self, key=lambda obj: obj.year)
 
@@ -119,6 +122,7 @@ class ArtPack(BaseModel):
 
     name = models.CharField(max_length=100, unique=True)
     year = models.IntegerField()
+    visible = models.BooleanField(default=True, db_index=True)
     zip_file = models.FileField(
         upload_to=upload_to_zip,
         null=True,
@@ -200,6 +204,9 @@ class ArtFileQuerySet(models.QuerySet):
     def for_preview(self) -> ArtFileQuerySet:
         return self.filter(image_tn__isnull=False).distinct()[:4]
 
+    def visible(self) -> ArtFileQuerySet:
+        return self.filter(pack__visible=True)
+
 
 ArtFileManager = Manager.from_queryset(ArtFileQuerySet)  # noqa
 
@@ -218,6 +225,7 @@ def upload_to_x1(instance: ArtFile, filename: str) -> str:
 
 class ArtFile(BaseModel):
     created_at = models.DateTimeField(default=timezone.now)
+    is_internal = models.BooleanField(default=False)
 
     name = models.CharField(max_length=130, db_index=True)
     pack = models.ForeignKey(ArtPack, on_delete=models.CASCADE, related_name="artfiles")
@@ -305,8 +313,11 @@ class ArtFile(BaseModel):
         super().save(*args, **kwargs)
 
     @property
-    def sixteencolors_url(self) -> str:
-        return f"https://16colo.rs/pack/{quote(self.pack.name)}/{quote(self.name)}"
+    def sixteencolors_url(self) -> str | None:
+        if self.is_internal:
+            return None
+        else:
+            return f"https://16colo.rs/pack/{quote(self.pack.name)}/{quote(self.name)}"
 
     @property
     def public_url(self) -> str:

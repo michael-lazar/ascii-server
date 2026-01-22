@@ -39,7 +39,7 @@ class TextmodeIndexView(TemplateView):
     template_name = "textmode/index.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        packs = ArtPack.objects.prefetch_fileid().order_by("-year", "-created_at")[:8]
+        packs = ArtPack.objects.prefetch_fileid().visible().order_by("-year", "-created_at")[:8]
 
         collections = ArtCollection.objects.visible().annotate_artfile_count()
         collections = collections.order_by("-artfile_count")[:16]
@@ -126,7 +126,7 @@ class TextmodePackListView(TemplateView):
     template_name = "textmode/pack_list.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        packs = ArtPack.objects.prefetch_fileid().order_by("-year", "-created_at")
+        packs = ArtPack.objects.prefetch_fileid().visible().order_by("-year", "-created_at")
 
         form = SearchPackForm(data=self.request.GET)
         if form.is_valid():
@@ -151,7 +151,9 @@ class TextmodePackYearListView(TemplateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         year = kwargs["year"]
 
-        packs = ArtPack.objects.prefetch_fileid().filter(year=year).order_by("-created_at")
+        packs = (
+            ArtPack.objects.prefetch_fileid().visible().filter(year=year).order_by("-created_at")
+        )
 
         form = SearchPackYearForm(data=self.request.GET)
         if form.is_valid():
@@ -282,7 +284,7 @@ class TextModeSearchView(TemplateView):
             return ["textmode/search.html"]
 
     def get_context_data(self, **kwargs):
-        artfiles = ArtFile.objects.select_related("pack").all()
+        artfiles = ArtFile.objects.select_related("pack").visible()
         form = AdvancedSearchForm(artfiles, data=self.request.GET)
 
         if form.is_valid():
@@ -392,7 +394,7 @@ class TextModeContentAutocomplete(autocomplete.Select2QuerySetView):
 
 
 class TextModePackAutocomplete(autocomplete.Select2QuerySetView):
-    queryset = ArtPack.objects.all()
+    queryset = ArtPack.objects.visible()
     paginate_by = 100
 
     def get_result_label(self, obj: ArtPack):

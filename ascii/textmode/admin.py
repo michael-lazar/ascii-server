@@ -70,9 +70,9 @@ class ArtFileInline(ReadOnlyTabularInline):
 
 @admin.register(ArtPack)
 class ArtPackAdmin(admin.ModelAdmin):
-    list_display = ["name", "year", "get_artfile_count", "get_public_link"]
+    list_display = ["name", "year", "visible", "get_artfile_count", "get_public_link"]
     search_fields = ["name"]
-    list_filter = ["year"]
+    list_filter = ["year", "visible"]
     readonly_fields = ["get_artfile_count", "created_at", "get_public_link"]
     inlines = [ArtFileInline]
 
@@ -84,11 +84,17 @@ class ArtPackAdmin(admin.ModelAdmin):
 
     @admin.display(description="Files", ordering="artfile_count")
     def get_artfile_count(self, obj: ArtPack) -> str:
+        if not obj.pk:
+            return "-"
+
         link_url = reverse("admin:textmode_artfile_changelist", query={"pack": obj.pk})
         return format_html('<a href="{}">{}</a>', link_url, obj.artfile_count)
 
     @admin.display(description="View")
     def get_public_link(self, obj: ArtPack) -> str:
+        if not obj.pk:
+            return "-"
+
         return format_html("<a href={} >{}</a>", obj.public_url, obj.public_url)
 
 
@@ -99,11 +105,13 @@ class ArtFileAdmin(admin.ModelAdmin):
         "is_fileid",
         "name",
         linkify("pack"),
+        "is_internal",
         "get_public_link",
     ]
     list_filter = [
         "pack",
         "is_fileid",
+        "is_internal",
         "file_extension",
         "filetype",
         "datatype",
@@ -130,6 +138,9 @@ class ArtFileAdmin(admin.ModelAdmin):
 
     @admin.display(description="Source")
     def get_sixteencolors_link(self, obj: ArtFile) -> str:
+        if not obj.sixteencolors_url:
+            return "-"
+
         return format_html("<a href={} >{}</a>", obj.sixteencolors_url, obj.sixteencolors_url)
 
     def get_queryset(self, request: HttpRequest) -> ArtFileQuerySet:
@@ -140,7 +151,13 @@ class ArtFileAdmin(admin.ModelAdmin):
 
 @admin.register(ArtFileTag)
 class ArtFileTagAdmin(admin.ModelAdmin):
-    list_display = ["name", "category", "is_featured", "get_artfile_count", "get_public_link"]
+    list_display = [
+        "name",
+        "category",
+        "is_featured",
+        "get_artfile_count",
+        "get_public_link",
+    ]
     search_fields = ["name"]
     readonly_fields = ["get_artfile_count", "get_public_link"]
     list_filter = ["category", "is_featured"]

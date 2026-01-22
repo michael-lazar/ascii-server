@@ -95,22 +95,7 @@ class SixteenColorsPackImporter:
         defaults = {
             "is_fileid": name == self.fileid,
             "is_joint": is_joint,
-            "sauce_data": sauce.data,
-            "title": sauce.title,
-            "author": sauce.author,
-            "group": sauce.group,
-            "date": sauce.date,
-            "comments": sauce.comments,
-            "datatype": sauce.datatype,
-            "filetype": sauce.filetype,
-            "pixel_width": sauce.pixel_width,
-            "pixel_height": sauce.pixel_height,
-            "character_width": sauce.character_width,
-            "number_of_lines": sauce.number_of_lines,
-            "ice_colors": sauce.ice_colors,
-            "letter_spacing": sauce.letter_spacing,
-            "font_name": sauce.font_name,
-            "aspect_ratio": sauce.aspect_ratio,
+            **sauce.as_artfile_fields(),
         }
 
         def get_raw_file():

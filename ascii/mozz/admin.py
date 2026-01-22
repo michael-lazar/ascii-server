@@ -51,17 +51,24 @@ class ArtPostAdmin(admin.ModelAdmin):
         "title",
         "file_type",
         "font_name",
+        linkify("pack"),
         "get_public_link",
     ]
-    search_fields = ["slug", "title"]
+    search_fields = ["slug", "title", "pack__name"]
     list_editable = ["visible", "favorite"]
-    list_filter = ["visible", "favorite"]
+    list_filter = [
+        "visible",
+        "favorite",
+        ("pack", admin.RelatedOnlyFieldListFilter),
+    ]
+    autocomplete_fields = ["pack"]
     readonly_fields = [
         "get_public_link",
         "image_tn",
         "get_sauce_data_html",
         "created_at",
         "updated_at",
+        "artfile",
     ]
     fields = [
         "created_at",
@@ -80,6 +87,9 @@ class ArtPostAdmin(admin.ModelAdmin):
         "image_tn",
         "get_sauce_data_html",
         "sauce_data",
+        "pack",
+        "artfile_name",
+        "artfile",
     ]
     inlines = [ArtPostAttachmentAdminInline]
     formfield_overrides = {
@@ -99,10 +109,7 @@ class ArtPostAdmin(admin.ModelAdmin):
         if not obj.sauce_data:
             return "-"
 
-        field_names = ["Title", "Author", "Group", "Date", "Comments"]
-        fields = [{"label": name, "value": obj.sauce_data[name]} for name in field_names]
-
-        if not fields:
-            return "-"
+        keys = ["Title", "Author", "Group", "Date", "Comments"]
+        fields = [{"label": key, "value": obj.sauce_data.get(key)} for key in keys]
 
         return render_to_string("mozz/admin/sauce_data.html", {"fields": fields})

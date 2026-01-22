@@ -230,3 +230,23 @@ class Sauce:
             return AspectRatio(ar)
 
         return None
+
+    def as_artfile_fields(self) -> dict:
+        return {
+            "sauce_data": self.data,
+            "title": self.title,
+            "author": self.author,
+            "group": self.group,
+            "date": self.date,
+            "comments": self.comments,
+            "datatype": self.datatype,
+            "filetype": self.filetype,
+            "pixel_width": self.pixel_width,
+            "pixel_height": self.pixel_height,
+            "character_width": self.character_width,
+            "number_of_lines": self.number_of_lines,
+            "ice_colors": self.ice_colors,
+            "letter_spacing": self.letter_spacing,
+            "font_name": self.font_name,
+            "aspect_ratio": self.aspect_ratio,
+        }
