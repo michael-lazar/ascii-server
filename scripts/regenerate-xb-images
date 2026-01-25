@@ -1,0 +1,102 @@
+#!/usr/bin/env -S uv run --script
+#
+# /// script
+# requires-python = ">=3.12"
+# dependencies = ["requests"]
+# ///
+
+import os
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+from urllib.parse import urljoin
+
+import requests
+
+# Get API token from environment
+token = os.environ.get("ASCII_SERVER_API_TOKEN")
+if not token:
+    print("Error: ASCII_SERVER_API_TOKEN environment variable not set")
+    sys.exit(1)
+
+# Get base URL from environment or use default
+base_url = os.environ.get("ASCII_SERVER_BASE_URL", "http://localhost:8000")
+headers = {"Authorization": f"Bearer {token}"}
+
+# Fetch all art posts with .xb files
+print("Fetching all art posts with .xb files...")
+list_url = urljoin(base_url, "/api/v1/mozz-art-posts/")
+all_xb_posts = []
+page = 1
+
+while True:
+    response = requests.get(list_url, headers=headers, params={"page": page})
+    response.raise_for_status()
+    data = response.json()
+
+    # Filter for .xb files
+    for post in data["results"]:
+        if post["file"] and post["file"].endswith(".xb"):
+            all_xb_posts.append(post)
+
+    # Check if there's a next page
+    if not data["next"]:
+        break
+    page += 1
+
+print(f"Found {len(all_xb_posts)} art posts with .xb files")
+
+if not all_xb_posts:
+    print("No .xb files found. Exiting.")
+    sys.exit(0)
+
+# Process each .xb file
+for i, post in enumerate(all_xb_posts, 1):
+    slug = post["slug"]
+    title = post["title"]
+    file_url = post["file"]
+
+    print(f"\n[{i}/{len(all_xb_posts)}] Processing: {title} ({slug})")
+
+    # Create a temporary directory for processing
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_path = Path(tmpdir)
+
+        # Download the .xb file
+        print(f"  Downloading {file_url}...")
+        response = requests.get(file_url, headers=headers)
+        response.raise_for_status()
+
+        filename = Path(file_url).name
+        file_path = tmp_path / filename
+        with open(file_path, "wb") as f:
+            f.write(response.content)
+
+        # Generate 2x retina image with ansilove
+        print("  Generating 2x PNG with ansilove...")
+        try:
+            subprocess.run(["ansilove", "-r", str(file_path)], check=True, capture_output=True)
+        except subprocess.CalledProcessError as e:
+            print(f"  Error: ansilove failed for {slug}")
+            print(f"  {e.stderr.decode()}")
+            continue
+
+        png_filepath = Path(str(file_path) + ".png")
+        if not png_filepath.exists():
+            print(f"  Error: Expected PNG file not found at {png_filepath}")
+            continue
+
+        # Upload the updated image
+        print("  Uploading 2x PNG to API...")
+        detail_url = urljoin(base_url, f"/api/v1/mozz-art-posts/{slug}/")
+        with open(png_filepath, "rb") as image_f:
+            files = {
+                "image_x1": (png_filepath.name, image_f),
+            }
+            response = requests.patch(detail_url, headers=headers, files=files)
+            response.raise_for_status()
+
+        print(f"  ✓ Successfully updated {slug}")
+
+print("\nDone! All .xb files have been processed.")

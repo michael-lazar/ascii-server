@@ -35,7 +35,7 @@ class ArtPost(BaseModel):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    slug = models.SlugField(db_index=True)
+    slug = models.SlugField(unique=True)
     date = models.DateField(default=date.today, db_index=True)
     visible = models.BooleanField(default=True)
     favorite = models.BooleanField(default=False)

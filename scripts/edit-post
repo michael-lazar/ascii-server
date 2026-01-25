@@ -82,7 +82,7 @@ except KeyboardInterrupt:
 
 # Generate 2x retina image
 print("Generating 2x retina image...")
-subprocess.run(["ansilove", str(file_path), "-r"], check=True)
+subprocess.run(["ansilove", "-r", str(file_path)], check=True)
 png_filepath = Path(str(file_path) + ".png")
 if not png_filepath.exists():
     print(f"Error: Expected PNG file not found at {png_filepath}")
