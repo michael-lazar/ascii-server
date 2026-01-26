@@ -45,16 +45,15 @@ class ArtPostAttachmentAdmin(admin.ModelAdmin):
 class ArtPostAdmin(admin.ModelAdmin):
     list_display = [
         "slug",
+        "image_tn",
         "date",
         "visible",
         "favorite",
-        "title",
-        "file_type",
-        "font_name",
         linkify("pack"),
+        "artfile_name",
         "get_public_link",
     ]
-    search_fields = ["slug", "title", "pack__name"]
+    search_fields = ["slug", "title", "pack__name", "artfile_name"]
     list_editable = ["visible", "favorite"]
     list_filter = [
         "visible",
@@ -96,7 +95,10 @@ class ArtPostAdmin(admin.ModelAdmin):
         models.JSONField: {"widget": FormattedJSONWidget},
     }
 
-    image_tn = AdminThumbnail(image_field="image_tn")
+    image_tn = AdminThumbnail(
+        image_field="image_tn",
+        template="core/fragments/admin_thumbnail.html",
+    )
 
     @admin.display(description="View")
     def get_public_link(self, obj: ArtPost) -> str:
