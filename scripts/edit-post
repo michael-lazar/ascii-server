@@ -17,6 +17,16 @@ import requests
 
 parser = argparse.ArgumentParser(description="Edit a mozz art post")
 parser.add_argument("slug", help="Slug of the art post to edit")
+parser.add_argument(
+    "--edit-only",
+    action="store_true",
+    help="Exit after opening the file in Moebius without uploading changes",
+)
+parser.add_argument(
+    "--regenerate",
+    action="store_true",
+    help="Regenerate and upload the image without opening Moebius",
+)
 args = parser.parse_args()
 
 # Get API token from environment
@@ -62,23 +72,29 @@ else:
     size_str = f"{file_size / (1024 * 1024):.1f} MB"
 print(f"Downloaded: {file_path} ({size_str})")
 
-# Open in Moebius Beyond
-print("Opening file in Moebius Beyond...")
-subprocess.run(
-    [
-        "open",
-        str(file_path),
-        "-b",
-        "org.michaellazar.moebius-beyond",
-    ],
-    check=True,
-)
+# Open in Moebius Beyond (skip if regenerating)
+if not args.regenerate:
+    print("Opening file in Moebius Beyond...")
+    subprocess.run(
+        [
+            "open",
+            str(file_path),
+            "-b",
+            "org.michaellazar.moebius-beyond",
+        ],
+        check=True,
+    )
 
-# Wait for user to save
-try:
-    input("Press Enter when you've saved the file in Moebius to continue...")
-except KeyboardInterrupt:
-    sys.exit(1)
+    # Exit early if edit-only mode
+    if args.edit_only:
+        print(f"File opened in Moebius. Exiting without uploading changes.")
+        sys.exit(0)
+
+    # Wait for user to save
+    try:
+        input("Press Enter when you've saved the file in Moebius to continue...")
+    except KeyboardInterrupt:
+        sys.exit(1)
 
 # Generate 2x retina image
 print("Generating 2x retina image...")
@@ -89,11 +105,12 @@ if not png_filepath.exists():
     sys.exit(1)
 print(f"Generated: {png_filepath}")
 
-# Confirm upload
-response = input("Upload changes to server? (y/N): ").strip().lower()
-if response != "y":
-    print("Aborted.")
-    sys.exit(0)
+# Confirm upload (skip if regenerating)
+if not args.regenerate:
+    response = input("Upload changes to server? (y/N): ").strip().lower()
+    if response != "y":
+        print("Aborted.")
+        sys.exit(0)
 
 # Upload updated files
 print("Uploading updated files to API...")
