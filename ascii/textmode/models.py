@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.html import format_html
+from django_cleanup import cleanup
 
 from ascii.core.models import BaseModel
 from ascii.textmode.choices import (
@@ -223,6 +224,7 @@ def upload_to_x1(instance: ArtFile, filename: str) -> str:
     return f"pack/{instance.pack.year}/{instance.pack.name}/x1/{filename}"
 
 
+@cleanup.ignore
 class ArtFile(BaseModel):
     created_at = models.DateTimeField(default=timezone.now)
     is_internal = models.BooleanField(default=False)
