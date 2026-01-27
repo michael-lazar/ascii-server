@@ -5,6 +5,7 @@
 # dependencies = ["requests"]
 # ///
 
+import argparse
 import os
 import subprocess
 import sys
@@ -13,6 +14,16 @@ from pathlib import Path
 from urllib.parse import urljoin
 
 import requests
+
+parser = argparse.ArgumentParser(
+    description="Regenerate images for all art posts with .xb files"
+)
+parser.add_argument(
+    "--retina",
+    action="store_true",
+    help="Generate 2x retina image using ansilove -r flag",
+)
+args = parser.parse_args()
 
 # Get API token from environment
 token = os.environ.get("ASCII_SERVER_API_TOKEN")
@@ -73,10 +84,14 @@ for i, post in enumerate(all_xb_posts, 1):
         with open(file_path, "wb") as f:
             f.write(response.content)
 
-        # Generate 2x retina image with ansilove
-        print("  Generating 2x PNG with ansilove...")
+        # Generate image with ansilove
+        print("  Generating PNG with ansilove...")
         try:
-            subprocess.run(["ansilove", "-r", str(file_path)], check=True, capture_output=True)
+            if args.retina:
+                cmd = ["ansilove", "-r", str(file_path)]
+            else:
+                cmd = ["ansilove", str(file_path)]
+            subprocess.run(cmd, check=True, capture_output=True)
         except subprocess.CalledProcessError as e:
             print(f"  Error: ansilove failed for {slug}")
             print(f"  {e.stderr.decode()}")

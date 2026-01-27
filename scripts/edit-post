@@ -27,6 +27,11 @@ parser.add_argument(
     action="store_true",
     help="Regenerate and upload the image without opening Moebius",
 )
+parser.add_argument(
+    "--retina",
+    action="store_true",
+    help="Generate 2x retina image using ansilove -r flag",
+)
 args = parser.parse_args()
 
 # Get API token from environment
@@ -96,9 +101,13 @@ if not args.regenerate:
     except KeyboardInterrupt:
         sys.exit(1)
 
-# Generate 2x retina image
-print("Generating 2x retina image...")
-subprocess.run(["ansilove", "-r", str(file_path)], check=True)
+# Generate image
+print("Generating image...")
+if args.retina:
+    cmd = ["ansilove", "-r", str(file_path)]
+else:
+    cmd = ["ansilove", str(file_path)]
+subprocess.run(cmd, check=True)
 png_filepath = Path(str(file_path) + ".png")
 if not png_filepath.exists():
     print(f"Error: Expected PNG file not found at {png_filepath}")
