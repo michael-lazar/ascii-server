@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from datetime import date
 
+from django.core.files.base import ContentFile
 from django.core.files.storage import storages
 from django.db import models
 from django.db.models import Manager, Q
@@ -10,8 +11,8 @@ from django.urls import reverse
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
 
-from ascii.core.models import BaseModel
-from ascii.core.sauce import get_sauce_data
+from ascii.core.models import BaseModel, DirtyFieldsMixin
+from ascii.core.sauce import get_sauce_data, write_sauce_data
 from ascii.mozz.choices import ArtPostFileType, ArtPostFontName
 from ascii.textmode.models import ArtFile
 from ascii.textmode.sauce import Sauce
@@ -31,7 +32,7 @@ def upload_to(instance: ArtPost, filename: str) -> str:
     return f"mozz/{instance.date.year}/{instance.slug}/{instance.slug}{ext}"
 
 
-class ArtPost(BaseModel):
+class ArtPost(DirtyFieldsMixin, BaseModel):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -162,6 +163,15 @@ class ArtPost(BaseModel):
         self.artfile.save()
 
     def save(self, *args, **kwargs) -> None:
+        # If sauce_data was edited, write it back to the file
+        dirty_fields = self.get_dirty_fields()
+        if "sauce_data" in dirty_fields and self.file:
+            with self.file.open("rb") as fp:
+                file_bytes = fp.read()
+
+            updated_bytes = write_sauce_data(file_bytes, self.sauce_data)
+            self.file.save(self.file.name, ContentFile(updated_bytes), save=False)
+
         super().save(*args, **kwargs)
 
         # Bust the imagekit thumbnail cache after saving, in case
@@ -174,6 +184,9 @@ class ArtPost(BaseModel):
 
         self.refresh_textmode_artfile()
         super().save(update_fields=["artfile"])  # noqa
+
+        # Reset dirty fields tracking
+        self._original_state = self._as_dict()
 
 
 def upload_attachment_to(instance: ArtPostAttachment, filename: str) -> str:
