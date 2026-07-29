@@ -9,8 +9,8 @@
 - AVOID _hacky_ patches that mock out functions or have other unintuitive side effects.
 - Add comments when it makes sense to do so, but do not comment trivial behavior.
 - When committing changes, the commit message should be a single sentence.
-- The tools/ directory contains bash aliases to commands and will activate the correct
-  virtual environment before running.
+- The tools/ directory contains bash aliases that run commands through `uv run`
+  in the project's virtual environment.
 
 ## Development tools
 
@@ -24,7 +24,7 @@ tools/mypy
 tools/ruff check --fix
 tools/ruff format
 
-# Rebuild requirements
-tools/pip-compile
-tools/pip-install
+# Rebuild the lockfile / re-sync the virtual environment
+tools/uv-compile
+tools/uv-install
 ```

@@ -1,8 +1,54 @@
 [project]
-requires-python = "==3.11"
+name = "ascii-server"
+version = "1.0.0"
+description = "The code powering https://ascii.mozz.us"
+readme = "README.md"
+requires-python = "==3.14.*"
+dependencies = [
+    "django>=5.2,<6",
+    "ansi2html",
+    "django-admin-interface",
+    "django-autocomplete-light",
+    "django-cleanup",
+    "django-environ",
+    "django-imagekit",
+    "djangorestframework",
+    "gevent",
+    "googletrans",
+    "gunicorn",
+    "lxml",
+    "pillow",
+    "requests",
+    "scrapy",
+    "stransi",
+    "telnetlib3",
+]
+
+[project.urls]
+Homepage = "https://github.com/michael-lazar/ascii-server"
+
+[dependency-groups]
+dev = [
+    "django-browser-reload",
+    "django-debug-toolbar",
+    "django-extensions",
+    "django-stubs[compatible-mypy]",
+    "factory-boy",
+    "mypy",
+    "pre-commit",
+    "pytest",
+    "pytest-django",
+    "ruff",
+    "selenium",
+    "types-requests",
+    "webdriver-manager",
+]
+
+[tool.uv]
+package = false
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.14"
 check_untyped_defs = true
 ignore_missing_imports = true
 warn_unused_ignores = true
@@ -17,22 +63,23 @@ django_settings_module = "ascii.settings"
 [tool.pytest.ini_options]
 addopts = "--ds=ascii.settings --reuse-db -v"
 python_files = ["tests.py", "test_*.py"]
+testpaths = ["ascii"]
 
 [tool.ruff]
 line-length = 100
 
 [tool.ruff.lint]
 select = [
-    "E", # pycodestyle
-    "F", # pyflakes
-    "I", # isort
-    "B", # flake8-bugbear
-    "DJ", # flake8-django
-    "G", # flake8-logging-format
-    "PT", # flake8-pytest-style
-    "C4", # flake8-comprehensions
+    "E",   # pycodestyle
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "DJ",  # flake8-django
+    "G",   # flake8-logging-format
+    "PT",  # flake8-pytest-style
+    "C4",  # flake8-comprehensions
     "ISC", # flake8-implicit-str-concat
-    "UP", # pyupgrade
+    "UP",  # pyupgrade
 ]
 
 ignore = [
@@ -44,4 +91,4 @@ ignore = [
 "*/migrations/*" = ["I"]
 
 [tool.ruff.lint.isort]
-known-first-party = ['ascii']
+known-first-party = ["ascii"]

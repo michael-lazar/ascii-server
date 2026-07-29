@@ -12,7 +12,11 @@ class NonStrippingCharField(models.CharField):
         **kwargs: Any,
     ) -> Field | None:
         kwargs["strip"] = False
-        return super().formfield(form_class, choices_form_class, **kwargs)
+        return super().formfield(
+            form_class=form_class,
+            choices_form_class=choices_form_class,
+            **kwargs,
+        )
 
 
 class NonStrippingTextField(models.TextField):
@@ -23,4 +27,8 @@ class NonStrippingTextField(models.TextField):
         **kwargs: Any,
     ) -> Field | None:
         kwargs["strip"] = False
-        return super().formfield(form_class, choices_form_class, **kwargs)
+        return super().formfield(
+            form_class=form_class,
+            choices_form_class=choices_form_class,
+            **kwargs,
+        )

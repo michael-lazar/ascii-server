@@ -29,7 +29,7 @@ def get_page_number(request: HttpRequest) -> int:
     try:
         page_str = request.GET.get("page")
         page = int(page_str) if page_str else 1
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         page = 1
 
     return page

@@ -9,7 +9,10 @@ from ascii.textmode.models import ArtFileQuerySet, ArtFileTag, ArtPack
 class ArtFileTagChoiceField(forms.ModelChoiceField):
     def __init__(self, category: TagCategory, artfiles: ArtFileQuerySet, **kwargs):
         queryset = ArtFileTag.objects.filter(category=category, artfiles__in=artfiles)
-        queryset = queryset.annotate(tag_count=Count("name")).order_by("-tag_count")
+        # The annotation intentionally shadows the `tag_count: int` declared
+        # on the model, which django-stubs flags as a redefinition.
+        queryset = queryset.annotate(tag_count=Count("name"))  # type: ignore[no-redef]
+        queryset = queryset.order_by("-tag_count")  # type: ignore[misc]
         initial = queryset.values_list("id", flat=True)
         super().__init__(queryset=queryset, initial=initial, **kwargs)
 
@@ -20,7 +23,10 @@ class ArtFileTagChoiceField(forms.ModelChoiceField):
 class PackChoiceField(forms.ModelChoiceField):
     def __init__(self, artfiles: ArtFileQuerySet, **kwargs):
         queryset = ArtPack.objects.filter(artfiles__in=artfiles)
-        queryset = queryset.annotate(artfile_count=Count("name")).order_by("-artfile_count")
+        # The annotation intentionally shadows the `artfile_count: int` declared
+        # on the model, which django-stubs flags as a redefinition.
+        queryset = queryset.annotate(artfile_count=Count("name"))  # type: ignore[no-redef]
+        queryset = queryset.order_by("-artfile_count")  # type: ignore[misc]
         initial = queryset.values_list("id", flat=True)
         super().__init__(queryset=queryset, initial=initial, **kwargs)
 

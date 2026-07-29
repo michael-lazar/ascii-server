@@ -8,28 +8,25 @@ Even though the code is public, this is mostly a personal project and I'm not lo
 
 However, small issues for things like bugs & typos are welcome and very much appreciated!
 
-## Requirements
-
-- python3.11
-
-## Quickstart
+## Development
 
 ```bash
 # Download the source
 git clone https://github.com/michael-lazar/ascii-server
 cd ascii-server/
 
-# Initialize a virtual environment and install pip dependencies, etc.
-tools/boostrap
+# Initialize a virtual environment and install dependencies, etc.
+# (requires uv, https://docs.astral.sh/uv/)
+tools/bootstrap
 
 # Create a user account for the admin dashboard
 tools/manage createsuperuser
 
+# Initialize pre-commit hooks
+uv run pre-commit install
+
 # Launch a local server
 tools/start
-
-# Initialize pre-commit hooks
-pre-commit install
 
 # Run the tests, linters, etc.
 tools/pytest
@@ -37,9 +34,9 @@ tools/mypy
 tools/ruff check --fix
 tools/ruff format
 
-# Rebuild requirements
-tools/pip-compile
-tools/pip-install
+# Rebuild the lockfile / re-sync the virtual environment
+tools/uv-compile
+tools/uv-install
 
 # Find your house
 telnet mapscii.me

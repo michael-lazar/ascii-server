@@ -164,8 +164,15 @@ urlpatterns = [
     ),
     path("admin/", admin.site.urls),
     path("api/v1/", include((router.urls, "api"), namespace="api")),
-    path("__reload__/", include("django_browser_reload.urls")),
-    path("__debug__/", include("debug_toolbar.urls")),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
     *staticfiles_urlpatterns(),
 ]
+
+if settings.DEBUG:
+    # The django_browser_reload + debug_toolbar packages are only installed
+    # in the dev dependency group, so their URL includes must be gated on
+    # DEBUG to avoid an ImportError under `uv run --no-dev`.
+    urlpatterns += [
+        path("__reload__/", include("django_browser_reload.urls")),
+        path("__debug__/", include("debug_toolbar.urls")),
+    ]

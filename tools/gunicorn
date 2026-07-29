@@ -4,6 +4,8 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-source venv/bin/activate
-python manage.py migrate
-python -m gunicorn -k gevent ascii.wsgi "$@"
+export PYTHONUNBUFFERED=1
+
+uv run --no-dev python manage.py collectstatic --noinput
+uv run --no-dev python manage.py migrate
+exec uv run --no-dev gunicorn -k gevent ascii.wsgi "$@"

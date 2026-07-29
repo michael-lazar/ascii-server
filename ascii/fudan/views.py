@@ -68,7 +68,7 @@ class FudanBBSDocumentView(TemplateView):
                     start = int(parts[0])
                 if parts[1]:
                     end = int(parts[1])
-            except (IndexError, ValueError):
+            except IndexError, ValueError:
                 pass
 
         content_zh = obj.get_html(start=start, end=end)

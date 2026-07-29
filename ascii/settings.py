@@ -10,7 +10,7 @@ env.smart_cast = False
 
 BASE_DIR = os.path.dirname(__file__)
 
-DATA_ROOT = os.path.normpath(os.path.join(BASE_DIR, "..", "data"))
+DATA_ROOT = env.str("DATA_ROOT", os.path.normpath(os.path.join(BASE_DIR, "..", "data")))
 
 IS_RUNNING_TESTS = ("test" in sys.argv) or "PYTEST_VERSION" in os.environ
 
@@ -24,8 +24,11 @@ else:
     SECRET_KEY = env.str("SECRET_KEY")
     CSRF_TRUSTED_ORIGINS = [env.str("TRUSTED_ORIGIN")]
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
 # These must come before django.contrib.admin
 PRIORITY_APPS = [
@@ -45,10 +48,19 @@ DJANGO_APPS = [
     "django.contrib.humanize",
 ]
 
-THIRD_PARTY_APPS = [
-    "debug_toolbar",
-    "django_browser_reload",
-    "django_extensions",
+# Dev-only tooling; these packages live in the dev dependency group and only
+# get wired in when DEBUG=True.
+DEBUG_APPS = (
+    [
+        "debug_toolbar",
+        "django_browser_reload",
+        "django_extensions",
+    ]
+    if DEBUG
+    else []
+)
+
+THIRD_PARTY_APPS = DEBUG_APPS + [
     "django_cleanup.apps.CleanupConfig",
     "imagekit",
     "rest_framework",
@@ -72,9 +84,13 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_browser_reload.middleware.BrowserReloadMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
+
+if DEBUG:
+    MIDDLEWARE += [
+        "django_browser_reload.middleware.BrowserReloadMiddleware",
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    ]
 
 
 def show_toolbar_callback(request):

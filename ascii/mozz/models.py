@@ -98,7 +98,7 @@ class ArtPost(DirtyFieldsMixin, BaseModel):
 
     @property
     def file_extension(self) -> str:
-        _, ext = os.path.splitext(self.file.name)
+        _, ext = os.path.splitext(self.file.name or "")
         return ext.lower() if ext else "unknown"
 
     @property
@@ -106,7 +106,7 @@ class ArtPost(DirtyFieldsMixin, BaseModel):
         if not self.image_x1:
             return ""
 
-        _, ext = os.path.splitext(self.image_x1.name)
+        _, ext = os.path.splitext(self.image_x1.name or "")
         return ext.lower() if ext else ""
 
     def get_prev(self) -> ArtPost | None:
@@ -147,7 +147,7 @@ class ArtPost(DirtyFieldsMixin, BaseModel):
         if not self.artfile:
             self.artfile = ArtFile(pack=self.pack, is_internal=True)
 
-        filename = os.path.basename(self.file.name)
+        filename = os.path.basename(self.file.name or "")
         _, file_extension = os.path.splitext(filename)
 
         self.artfile.name = self.artfile_name or filename
@@ -170,7 +170,7 @@ class ArtPost(DirtyFieldsMixin, BaseModel):
                 file_bytes = fp.read()
 
             updated_bytes = write_sauce_data(file_bytes, self.sauce_data)
-            self.file.save(self.file.name, ContentFile(updated_bytes), save=False)
+            self.file.save(self.file.name or "", ContentFile(updated_bytes), save=False)
 
         super().save(*args, **kwargs)
 
@@ -210,7 +210,7 @@ class ArtPostAttachment(BaseModel):
 
     @property
     def file_extension(self) -> str:
-        _, ext = os.path.splitext(self.file.name)
+        _, ext = os.path.splitext(self.file.name or "")
         return ext.lower() if ext else "unknown"
 
 
