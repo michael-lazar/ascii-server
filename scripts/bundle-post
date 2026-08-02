@@ -1,0 +1,518 @@
+#!/usr/bin/env -S uv run --script
+#
+# /// script
+# requires-python = ">=3.12"
+# dependencies = ["requests"]
+# ///
+"""
+Bundle a mozz art post for release.
+
+Downloads the raw .xb file and reference image(s) for an art post, rewrites
+the SAUCE metadata (author/group/title/comments), verifies the XBIN file is
+not corrupted, renders a PNG with ansilove, and stages both files using the
+MOZZ-TITLE.XB naming convention.
+
+Subcommands:
+    search TERM      List art posts matching a title or slug substring
+    fetch SLUG       Download the .xb + reference images to the work dir
+    finalize SLUG    Write SAUCE, verify, render PNG, move to staging
+    verify FILE      Validate the XBIN + SAUCE data of any local .xb file
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import re
+import struct
+import subprocess
+import sys
+from dataclasses import dataclass
+from datetime import date
+from pathlib import Path
+from urllib.parse import quote, urljoin
+
+import requests
+
+# Allow importing ascii.core.sauce (pure python, no django required)
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from ascii.core.sauce import SauceData, get_sauce_data, strip_sauce, write_sauce_data  # noqa: E402
+
+DEFAULT_AUTHOR = "mozz"
+DEFAULT_GROUP = "mistigris"
+DEFAULT_STAGING_DIR = Path.home() / "Desktop" / "staging"
+
+SAUCE_TITLE_MAX = 35
+SAUCE_COMMENT_LINE_MAX = 64
+
+
+class ValidationError(Exception):
+    pass
+
+
+@dataclass
+class XBinInfo:
+    width: int
+    height: int
+    fontsize: int
+    has_palette: bool
+    has_font: bool
+    compressed: bool
+    nonblink: bool
+    chars512: bool
+
+    def describe(self) -> str:
+        features = [
+            f"{self.width}x{self.height}",
+            f"font={self.fontsize}px" if self.has_font else "font=default",
+            "palette" if self.has_palette else "default palette",
+            "compressed" if self.compressed else "uncompressed",
+            "non-blink" if self.nonblink else "blink",
+        ]
+        if self.chars512:
+            features.append("512 chars")
+        return ", ".join(features)
+
+
+def validate_xbin(file_bytes: bytes) -> XBinInfo:
+    """
+    Validate the XBIN header and walk the entire file to verify that the
+    palette, font, and image data are complete and not corrupted or truncated.
+
+    Reference: reference/XBIN.TXT
+    """
+    body = strip_sauce(file_bytes)
+
+    if len(body) < 11:
+        raise ValidationError(f"File is too small to contain an XBIN header ({len(body)} bytes)")
+    if body[:4] != b"XBIN":
+        raise ValidationError(f"Bad magic bytes, expected b'XBIN' but found {body[:4]!r}")
+    if body[4] != 26:
+        raise ValidationError(f"Missing EOF char (26) at header offset 4, found {body[4]}")
+
+    width, height = struct.unpack_from("<HH", body, 5)
+    fontsize = body[9]
+    flags = body[10]
+
+    info = XBinInfo(
+        width=width,
+        height=height,
+        fontsize=fontsize,
+        has_palette=bool(flags & 0b00001),
+        has_font=bool(flags & 0b00010),
+        compressed=bool(flags & 0b00100),
+        nonblink=bool(flags & 0b01000),
+        chars512=bool(flags & 0b10000),
+    )
+
+    if flags & 0b11100000:
+        raise ValidationError(f"Unused XBIN flag bits are set (flags={flags:#010b})")
+    if info.chars512 and not info.has_font:
+        raise ValidationError("512Chars flag requires the Font flag to be set")
+    if width == 0 or height == 0:
+        raise ValidationError(f"Image has a zero dimension ({width}x{height})")
+
+    offset = 11
+
+    if info.has_palette:
+        if len(body) < offset + 48:
+            raise ValidationError("File is truncated inside the palette data")
+        palette = body[offset : offset + 48]
+        if any(value > 63 for value in palette):
+            raise ValidationError("Palette contains values outside the 0-63 range")
+        offset += 48
+
+    if info.has_font:
+        if not 1 <= fontsize <= 32:
+            raise ValidationError(f"Font size must be 1-32 scanlines, found {fontsize}")
+        font_length = fontsize * (512 if info.chars512 else 256)
+        if len(body) < offset + font_length:
+            raise ValidationError("File is truncated inside the font data")
+        offset += font_length
+
+    if info.compressed:
+        # Walk the RLE stream row by row. Compression may not carry through
+        # to the next row, and a run that overflows its row indicates a
+        # corrupted file (or a buggy encoder).
+        for row in range(height):
+            cells = 0
+            while cells < width:
+                if offset >= len(body):
+                    raise ValidationError(f"Image data is truncated at row {row + 1}/{height}")
+                counter = body[offset]
+                offset += 1
+                repeat = (counter & 0b00111111) + 1
+                match counter >> 6:
+                    case 0:  # no compression: char+attr pairs
+                        length = repeat * 2
+                    case 1 | 2:  # char or attr compression: one fixed byte + repeats
+                        length = 1 + repeat
+                    case _:  # char/attr compression: one char + one attr
+                        length = 2
+                if offset + length > len(body):
+                    raise ValidationError(f"Image data is truncated at row {row + 1}/{height}")
+                offset += length
+                cells += repeat
+            if cells != width:
+                raise ValidationError(
+                    f"RLE run crosses the row boundary at row {row + 1}/{height} "
+                    f"({cells} > {width} columns)"
+                )
+    else:
+        if len(body) < offset + width * height * 2:
+            raise ValidationError(
+                f"Uncompressed image data is truncated "
+                f"({len(body) - offset} of {width * height * 2} bytes)"
+            )
+        offset += width * height * 2
+
+    if offset != len(body):
+        raise ValidationError(f"Found {len(body) - offset} unexpected trailing bytes")
+
+    return info
+
+
+def check_sauce(file_bytes: bytes, info: XBinInfo) -> SauceData:
+    """Verify the SAUCE record exists and is consistent with the XBIN header."""
+    sauce = get_sauce_data(file_bytes)
+    if sauce is None:
+        raise ValidationError("File does not contain a SAUCE record")
+
+    body_size = len(strip_sauce(file_bytes))
+    if sauce["Filesize"] != body_size:
+        raise ValidationError(f"SAUCE Filesize is {sauce['Filesize']}, expected {body_size}")
+    if sauce["Datatype"] != 6:
+        raise ValidationError(f"SAUCE Datatype is {sauce['Datatype']}, expected 6 (XBin)")
+    if sauce["Filetype"] != 0:
+        raise ValidationError(f"SAUCE Filetype is {sauce['Filetype']}, expected 0")
+    if (sauce["Tinfo1"], sauce["Tinfo2"]) != (info.width, info.height):
+        raise ValidationError(
+            f"SAUCE dimensions {sauce['Tinfo1']}x{sauce['Tinfo2']} do not match "
+            f"the XBIN header ({info.width}x{info.height})"
+        )
+
+    return sauce
+
+
+def print_sauce(sauce: SauceData) -> None:
+    for field in ("Title", "Author", "Group", "Date"):
+        print(f"    {field}: {sauce[field] or '(empty)'}")
+    for line in sauce["Comments"].splitlines():
+        print(f"    Comment: {line}")
+
+
+def read_png_size(png_path: Path) -> tuple[int, int]:
+    with open(png_path, "rb") as f:
+        header = f.read(24)
+    if header[:8] != b"\x89PNG\r\n\x1a\n" or header[12:16] != b"IHDR":
+        raise ValidationError(f"{png_path.name} is not a valid PNG file")
+    width, height = struct.unpack(">II", header[16:24])
+    return width, height
+
+
+def suggest_filename(title: str) -> str:
+    name = re.sub(r"[^A-Z0-9]+", "_", title.upper()).strip("_")
+    return f"MOZZ-{name}"
+
+
+def normalize_filename(filename: str) -> str:
+    """Normalize a filename or stem into the MOZZ-TITLE convention."""
+    name = filename.strip()
+    name = re.sub(r"\.(xb|png)$", "", name, flags=re.IGNORECASE)
+    name = re.sub(r"^mozz-", "", name, flags=re.IGNORECASE)
+    name = re.sub(r"[\s]+", "_", name.upper())
+    if not re.fullmatch(r"[A-Z0-9_-]+", name):
+        raise SystemExit(f"Error: invalid filename {filename!r}, use letters/numbers/underscores")
+    return f"MOZZ-{name}"
+
+
+class ApiClient:
+    def __init__(self, base_url: str, token: str):
+        self.base_url = base_url
+        self.session = requests.Session()
+        self.session.headers["Authorization"] = f"Bearer {token}"
+
+    @classmethod
+    def build(cls, args: argparse.Namespace) -> ApiClient:
+        if not args.token:
+            raise SystemExit("Error: ASCII_SERVER_API_TOKEN environment variable not set")
+        return cls(args.base_url, args.token)
+
+    def iter_posts(self):
+        url = urljoin(self.base_url, "/api/v1/mozz-art-posts/")
+        while url:
+            response = self.session.get(url)
+            response.raise_for_status()
+            data = response.json()
+            yield from data["results"]
+            url = data["next"]
+
+    def find_posts(self, term: str) -> list[dict]:
+        term = term.lower()
+        return [
+            post
+            for post in self.iter_posts()
+            if term in post["title"].lower() or term in post["slug"].lower()
+        ]
+
+    def get_post(self, slug_or_title: str) -> dict:
+        """Look up a post by slug, falling back to a title search."""
+        url = urljoin(self.base_url, f"/api/v1/mozz-art-posts/{slug_or_title}/")
+        response = self.session.get(url)
+        if response.status_code != 404:
+            response.raise_for_status()
+            return response.json()
+
+        matches = self.find_posts(slug_or_title)
+        if not matches:
+            raise SystemExit(f"Error: no art post found matching {slug_or_title!r}")
+        if len(matches) > 1:
+            print(f"Multiple art posts match {slug_or_title!r}:")
+            for post in matches:
+                print(f"  {post['slug']}  ({post['title']}, {post['date']})")
+            raise SystemExit("Error: give an exact slug")
+        return matches[0]
+
+    def get_attachment_urls(self, post: dict) -> list[str]:
+        """
+        Return the download URLs for the post's attachments (e.g. the
+        reference image). Falls back to scraping the public art post page
+        when the API does not expose attachments.
+        """
+        if "attachments" in post:
+            return [attachment["file"] for attachment in post["attachments"]]
+
+        url = urljoin(self.base_url, f"/mozz/posts/{post['date']}/{post['slug']}/")
+        # The page is public, but the server's bot protection rejects the
+        # default python-requests user agent (curl is allowed through).
+        response = requests.get(url, headers={"User-Agent": "curl/8"})
+        response.raise_for_status()
+        hrefs = re.findall(r'href="([^"]+/attachments/[^"]+)"', response.text)
+        return [urljoin(self.base_url, href) for href in hrefs]
+
+    def download(self, url: str, dest: Path) -> None:
+        response = self.session.get(url)
+        response.raise_for_status()
+        dest.write_bytes(response.content)
+        print(f"  Downloaded {dest} ({len(response.content)} bytes)")
+
+
+def get_work_dir(args: argparse.Namespace, slug: str) -> Path:
+    return args.staging_dir / ".work" / slug
+
+
+def find_work_xb(work_dir: Path) -> Path:
+    xb_files = sorted(work_dir.glob("*.xb"))
+    if not xb_files:
+        raise SystemExit(f"Error: no .xb file in {work_dir}, run `bundle-post fetch` first")
+    if len(xb_files) > 1:
+        raise SystemExit(f"Error: multiple .xb files in {work_dir}: {xb_files}")
+    return xb_files[0]
+
+
+def cmd_search(args: argparse.Namespace) -> None:
+    client = ApiClient.build(args)
+    posts = client.find_posts(args.term)
+    if not posts:
+        raise SystemExit(f"No art posts found matching {args.term!r}")
+    for post in posts:
+        extension = Path(post["file"]).suffix if post["file"] else "?"
+        print(f"{post['slug']:<24} {post['date']}  {post['title']} ({extension})")
+
+
+def cmd_fetch(args: argparse.Namespace) -> None:
+    client = ApiClient.build(args)
+    post = client.get_post(args.slug)
+
+    print(f"Found art post: {post['title']} ({post['slug']}, {post['date']})")
+
+    if not post["file"] or not post["file"].endswith(".xb"):
+        raise SystemExit(f"Error: art post file is not an XBIN: {post['file']}")
+
+    work_dir = get_work_dir(args, post["slug"])
+    work_dir.mkdir(parents=True, exist_ok=True)
+
+    xb_path = work_dir / Path(post["file"]).name
+    client.download(post["file"], xb_path)
+
+    attachment_urls = client.get_attachment_urls(post)
+    for url in attachment_urls:
+        client.download(url, work_dir / Path(url).name)
+
+    file_bytes = xb_path.read_bytes()
+    info = validate_xbin(file_bytes)
+    print(f"\nXBIN is valid: {info.describe()}")
+
+    if sauce := get_sauce_data(file_bytes):
+        print("Existing SAUCE:")
+        print_sauce(sauce)
+    else:
+        print("No existing SAUCE record.")
+
+    print(f"\nSuggested filename: {suggest_filename(post['title'])}.XB")
+
+    if attachment_urls:
+        print("\nReverse image search:")
+        for url in attachment_urls:
+            print(f"  https://lens.google.com/uploadbyurl?url={quote(url, safe='')}")
+    else:
+        print("\nNo reference images attached to this post.")
+
+
+def cmd_finalize(args: argparse.Namespace) -> None:
+    work_dir = get_work_dir(args, args.slug)
+    xb_path = find_work_xb(work_dir)
+    original_bytes = xb_path.read_bytes()
+
+    title = args.title.strip()
+    if len(title.encode("utf-8")) > SAUCE_TITLE_MAX:
+        raise SystemExit(f"Error: title exceeds the {SAUCE_TITLE_MAX} byte SAUCE limit: {title!r}")
+
+    comments = "\n".join(args.comment or [])
+    for line in comments.splitlines():
+        if len(line.encode("utf-8")) > SAUCE_COMMENT_LINE_MAX:
+            raise SystemExit(
+                f"Error: comment line exceeds {SAUCE_COMMENT_LINE_MAX} bytes,"
+                f" split it manually: {line!r}"
+            )
+
+    filename = normalize_filename(args.filename or suggest_filename(title))
+
+    info = validate_xbin(original_bytes)
+    print(f"XBIN is valid: {info.describe()}")
+
+    sauce = get_sauce_data(original_bytes) or {}
+    sauce.update(
+        Title=title,
+        Author=args.author,
+        Group=args.group,
+        Date=args.date,
+        Comments=comments,
+        Datatype=6,
+        Filetype=0,
+        Tinfo1=info.width,
+        Tinfo2=info.height,
+    )
+    sauce.setdefault("Tinfo3", 0)
+    sauce.setdefault("Tinfo4", 0)
+    sauce.setdefault("Tinfos", "")
+    sauce.setdefault("ansiflags", {"blink": 0, "ls": 0, "ar": 0, "ice": 0})
+
+    final_bytes = write_sauce_data(original_bytes, sauce)
+
+    # Verify the new file from scratch: the XBIN must still be valid, the
+    # artwork bytes must be untouched, and the SAUCE must read back exactly
+    # as it was written.
+    final_info = validate_xbin(final_bytes)
+    if strip_sauce(final_bytes) != strip_sauce(original_bytes):
+        raise ValidationError("Artwork bytes changed while rewriting SAUCE")
+
+    final_sauce = check_sauce(final_bytes, final_info)
+    for field in ("Title", "Author", "Group", "Date", "Comments"):
+        if final_sauce[field] != sauce[field]:
+            raise ValidationError(
+                f"SAUCE {field} did not round-trip: "
+                f"wrote {sauce[field]!r}, read back {final_sauce[field]!r}"
+            )
+
+    print("Verified: artwork bytes unchanged, SAUCE record round-trips")
+
+    args.staging_dir.mkdir(parents=True, exist_ok=True)
+    final_xb = args.staging_dir / f"{filename}.XB"
+    final_png = args.staging_dir / f"{filename}.png"
+    for path in (final_xb, final_png):
+        if path.exists() and not args.force:
+            raise SystemExit(f"Error: {path} already exists, pass --force to overwrite")
+
+    final_xb.write_bytes(final_bytes)
+    print(f"Wrote {final_xb}")
+
+    # ansilove names its output <input>.png, same convention as edit-post
+    subprocess.run(["ansilove", str(final_xb)], check=True, capture_output=True)
+    rendered = Path(f"{final_xb}.png")
+    if not rendered.exists():
+        raise SystemExit(f"Error: expected PNG file not found at {rendered}")
+    rendered.replace(final_png)
+
+    png_width, png_height = read_png_size(final_png)
+    expected_height = info.height * (info.fontsize if info.has_font else 16)
+    if (png_width, png_height) != (info.width * 8, expected_height):
+        raise ValidationError(
+            f"Rendered PNG is {png_width}x{png_height}px, expected "
+            f"{info.width * 8}x{expected_height}px for a {info.width}x{info.height} image"
+        )
+    print(f"Wrote {final_png} ({png_width}x{png_height}px)")
+
+    print("\nFinal SAUCE (via ansilove):")
+    result = subprocess.run(
+        ["ansilove", "-s", str(final_xb)], check=True, capture_output=True, text=True
+    )
+    print("\n".join(f"    {line}" for line in result.stdout.splitlines() if ":" in line))
+
+    if not args.no_open:
+        subprocess.run(["open", "-a", "Preview", str(final_png)], check=True)
+
+
+def cmd_verify(args: argparse.Namespace) -> None:
+    file_bytes = Path(args.file).read_bytes()
+    info = validate_xbin(file_bytes)
+    print(f"XBIN is valid: {info.describe()}")
+    sauce = check_sauce(file_bytes, info)
+    print("SAUCE is valid:")
+    print_sauce(sauce)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--base-url", default=None, help=argparse.SUPPRESS)
+    parser.add_argument("--staging-dir", type=Path, default=DEFAULT_STAGING_DIR)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    parser_search = subparsers.add_parser("search", help="List art posts matching a term")
+    parser_search.add_argument("term", help="Title or slug substring")
+
+    parser_fetch = subparsers.add_parser("fetch", help="Download files to the work dir")
+    parser_fetch.add_argument("slug", help="Slug (or title) of the art post")
+
+    parser_finalize = subparsers.add_parser("finalize", help="Write SAUCE, verify, and stage")
+    parser_finalize.add_argument("slug", help="Slug of a previously fetched art post")
+    parser_finalize.add_argument("--title", required=True, help="SAUCE title")
+    parser_finalize.add_argument("--filename", help="Staged filename, e.g. MOZZ-AFTER_RAIN")
+    parser_finalize.add_argument(
+        "--comment",
+        action="append",
+        help="SAUCE comment line, e.g. 'Based on \"...\" by ... (1944)' (repeatable)",
+    )
+    parser_finalize.add_argument("--author", default=DEFAULT_AUTHOR)
+    parser_finalize.add_argument("--group", default=DEFAULT_GROUP)
+    parser_finalize.add_argument("--date", default=date.today().strftime("%Y%m%d"))
+    parser_finalize.add_argument("--force", action="store_true", help="Overwrite staged files")
+    parser_finalize.add_argument("--no-open", action="store_true", help="Skip opening Preview")
+
+    parser_verify = subparsers.add_parser("verify", help="Validate a local .xb file")
+    parser_verify.add_argument("file", help="Path to the .xb file")
+
+    args = parser.parse_args()
+
+    args.token = os.environ.get("ASCII_SERVER_API_TOKEN")
+    args.base_url = args.base_url or os.environ.get(
+        "ASCII_SERVER_BASE_URL", "http://localhost:8000"
+    )
+
+    try:
+        match args.command:
+            case "search":
+                cmd_search(args)
+            case "fetch":
+                cmd_fetch(args)
+            case "finalize":
+                cmd_finalize(args)
+            case "verify":
+                cmd_verify(args)
+    except ValidationError as error:
+        raise SystemExit(f"Validation failed: {error}") from error
+
+
+if __name__ == "__main__":
+    main()
