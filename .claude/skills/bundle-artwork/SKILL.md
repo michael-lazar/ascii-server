@@ -33,6 +33,12 @@ prints the existing SAUCE record, and prints a Google Lens URL for each
 reference image. If the lookup is ambiguous, it lists the matches; run
 `scripts/bundle-post search "<term>"` to explore, then fetch an exact slug.
 
+Moebius Beyond has a bug where it writes a fontsize of 0 in the XBIN header
+even though a 16-scanline font is embedded; fetch repairs this automatically
+(it prints a "Repaired XBIN header" line) and the staged file gets the
+corrected header. Any other validation failure means the source file is
+genuinely corrupt — stop and show the user the error.
+
 ### 2. Reverse image search
 
 If the post has a reference image, open the printed Google Lens URL in Brave
@@ -41,6 +47,10 @@ so the user can identify the source artwork:
 ```
 open -a "Brave Browser" "https://lens.google.com/uploadbyurl?url=..."
 ```
+
+Do NOT open or analyze the reference image yourself — identifying the
+source artwork (artist, title, year) is the user's job via the Lens
+results. After opening the URL, ask the user what the search turned up.
 
 If there is no reference attachment, skip this step and the SAUCE comment.
 
@@ -91,4 +101,5 @@ list up front). If something looks wrong, the original download is still in
   (XBIN structure, SAUCE consistency) if the user asks for an audit.
 - The `.work/` directory is scratch space; it is safe to delete after the
   bundle ships.
-- Never edit the artwork bytes; this workflow only touches SAUCE metadata.
+- Never edit the artwork bytes; this workflow only touches SAUCE metadata
+  (plus the fontsize header repair described in step 1).

@@ -37,7 +37,12 @@ import requests
 # Allow importing ascii.core.sauce (pure python, no django required)
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from ascii.core.sauce import SauceData, get_sauce_data, strip_sauce, write_sauce_data  # noqa: E402
+from ascii.core.sauce import (
+    SauceData,
+    get_sauce_data,
+    strip_sauce,
+    write_sauce_data,
+)  # noqa: E402
 
 DEFAULT_AUTHOR = "mozz"
 DEFAULT_GROUP = "mistigris"
@@ -171,6 +176,28 @@ def validate_xbin(file_bytes: bytes) -> XBinInfo:
         raise ValidationError(f"Found {len(body) - offset} unexpected trailing bytes")
 
     return info
+
+
+def repair_xbin_fontsize(file_bytes: bytes) -> bytes | None:
+    """
+    Moebius Beyond has a bug where it writes fontsize=0 in the header even
+    though the Font flag is set and a 16-scanline font is embedded. Patch
+    the fontsize to 16 and return the repaired file if it validates;
+    otherwise return None and let the original error stand.
+    """
+    body = strip_sauce(file_bytes)
+    if len(body) < 11 or body[:4] != b"XBIN":
+        return None
+    if body[9] != 0 or not body[10] & 0b00010:
+        return None
+
+    patched = bytearray(file_bytes)
+    patched[9] = 16
+    try:
+        validate_xbin(bytes(patched))
+    except ValidationError:
+        return None
+    return bytes(patched)
 
 
 def check_sauce(file_bytes: bytes, info: XBinInfo) -> SauceData:
@@ -341,6 +368,10 @@ def cmd_fetch(args: argparse.Namespace) -> None:
         client.download(url, work_dir / Path(url).name)
 
     file_bytes = xb_path.read_bytes()
+    if repaired := repair_xbin_fontsize(file_bytes):
+        xb_path.write_bytes(repaired)
+        file_bytes = repaired
+        print(f"\nRepaired XBIN header: fontsize 0 -> {repaired[9]} (font data was intact)")
     info = validate_xbin(file_bytes)
     print(f"\nXBIN is valid: {info.describe()}")
 
