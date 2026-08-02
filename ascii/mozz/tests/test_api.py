@@ -4,7 +4,7 @@ from django.urls import reverse
 from ascii.core.tests.utils import APITestCase
 from ascii.mozz.choices import ArtPostFileType
 from ascii.mozz.models import ArtPost
-from ascii.mozz.tests.factories import ArtPostFactory
+from ascii.mozz.tests.factories import ArtPostAttachmentFactory, ArtPostFactory
 
 
 class TestMozzArtPostViewSet(APITestCase):
@@ -23,6 +23,17 @@ class TestMozzArtPostViewSet(APITestCase):
         resp = self.auth_client.get(reverse("api:mozz-art-post-detail", args=[art_post.slug]))
         assert resp.status_code == 200
         assert resp.data
+
+    def test_detail_attachments(self):
+        """Should include attachment download URLs in the response."""
+        attachment = ArtPostAttachmentFactory.create(name="reference")
+
+        resp = self.auth_client.get(
+            reverse("api:mozz-art-post-detail", args=[attachment.post.slug])
+        )
+        assert resp.status_code == 200
+        assert resp.data["attachments"][0]["name"] == "reference"
+        assert resp.data["attachments"][0]["file"]
 
     def test_create(self):
         """Should be able to create a new art post."""

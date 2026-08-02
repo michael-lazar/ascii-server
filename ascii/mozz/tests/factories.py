@@ -3,7 +3,7 @@ from factory.django import DjangoModelFactory, FileField, ImageField
 
 from ascii.core.tests.factories import UniqueFaker
 from ascii.mozz.choices import ArtPostFileType
-from ascii.mozz.models import ArtPost
+from ascii.mozz.models import ArtPost, ArtPostAttachment
 
 
 class ArtPostFactory(DjangoModelFactory):
@@ -16,3 +16,12 @@ class ArtPostFactory(DjangoModelFactory):
 
     class Meta:
         model = ArtPost
+
+
+class ArtPostAttachmentFactory(DjangoModelFactory):
+    name = factory.Faker("word")
+    post = factory.SubFactory(ArtPostFactory)
+    file = FileField()
+
+    class Meta:
+        model = ArtPostAttachment
