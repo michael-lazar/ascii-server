@@ -65,12 +65,10 @@ class Document(BaseModel):
         parser = ANSIParser(self.text)
         original = parser.to_stripped_text()
 
-        translation, created = Translation.objects.get_or_create(
+        translation = Translation.get_or_translate(
             original=original,
             language=TranslationLanguages.CHINESE_SIMPLIFIED,
         )
-        if created:
-            translation.populate_translation()
 
         translated_text = translation.translated
         translated_text = parser.apply_line_indents(translated_text)
@@ -184,12 +182,10 @@ class MenuLink(BaseModel):
         parser = ANSIParser(self.text)
         original = parser.to_stripped_text()
 
-        translation, created = Translation.objects.get_or_create(
+        translation = Translation.get_or_translate(
             original=original,
             language=TranslationLanguages.CHINESE_SIMPLIFIED,
         )
-        if created:
-            translation.populate_translation()
 
         translated_text = translation.translated or "-"
         # translated_text = parser.apply_line_indents(translated_text)
