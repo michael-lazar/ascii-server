@@ -1,10 +1,9 @@
+import asyncio
+
 from googletrans import Translator
 
 
 class GoogleTranslateClient:
-    def __init__(self):
-        self.translator = Translator()
-
     def split_text(self, text: str, chunk_size: int = 200):
         lines = text.split("\n")
         for i in range(0, len(lines), chunk_size):
@@ -15,15 +14,16 @@ class GoogleTranslateClient:
         if text.isspace():
             return text
 
-        translated_segments = []
-        for segment in self.split_text(text):
-            try:
-                translated = self.translator.translate(segment, src=language).text
-                translated_segments.append(translated)
-            except TypeError:
-                # The client is buggy, this is raised when the API fails to
-                # translate the string for whatever reason.
-                #   ``TypeError: 'NoneType' object is not iterable``
-                translated_segments.append(segment)
+        return asyncio.run(self._translate(text, language))
+
+    async def _translate(self, text: str, language: str) -> str:
+        # googletrans 4.x is async-only, and its Translator must be used as a
+        # context manager so the underlying httpx client is closed with the
+        # event loop it was created on.
+        async with Translator() as translator:
+            translated_segments = []
+            for segment in self.split_text(text):
+                translated = await translator.translate(segment, src=language)
+                translated_segments.append(translated.text)
 
         return "\n".join(translated_segments)
