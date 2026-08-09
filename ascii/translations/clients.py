@@ -1,33 +1,57 @@
-import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
-from googletrans import Translator
+import requests
 
 
 class GoogleTranslateClient:
+    """
+    Translates text using the free Google Translate web endpoint (the same
+    "gtx" API used by Chrome's translate feature).
+
+    Requests are made with plain blocking sockets so the client behaves the
+    same under gevent-patched gunicorn workers as it does everywhere else.
+    """
+
+    api_url = "https://translate.googleapis.com/translate_a/single"
+
+    def __init__(self, pool_size: int = 10, timeout: float = 10):
+        self.pool_size = pool_size
+        self.timeout = timeout
+
     def translate(self, text: str, language: str) -> str:
-        """Translates text to the specified language."""
+        """Translates text from the specified language to English."""
         if not text.strip():
             return text
 
-        return asyncio.run(self._translate(text, language))
-
-    async def _translate(self, text: str, language: str) -> str:
         lines = text.split("\n")
 
-        # Downstream rendering pairs translated lines 1:1 with source lines,
-        # but Google mangles the line structure of multi-line input (blank
-        # lines are dropped and adjacent short lines get merged). Translate
+        # The API mangles the line structure of multi-line input (blank lines
+        # are dropped and adjacent short lines get merged), but downstream
+        # rendering pairs translated lines 1:1 with source lines. Translate
         # line-by-line so the structure never leaves the process.
         unique = list(dict.fromkeys(line for line in lines if line.strip()))
 
-        # googletrans 4.x is async-only, and its Translator must be used as a
-        # context manager so the underlying httpx client is closed with the
-        # event loop it was created on.
-        async with Translator(list_operation_max_concurrency=10) as translator:
-            results = await translator.translate(unique, src=language)
+        with requests.Session() as session, ThreadPoolExecutor(self.pool_size) as pool:
+            results = pool.map(lambda line: self.translate_line(session, line, language), unique)
+            translated = dict(zip(unique, results, strict=True))
 
-        translated = {
-            line: result.text.replace("\n", " ")
-            for line, result in zip(unique, results, strict=True)
-        }
         return "\n".join(translated.get(line, line) for line in lines)
+
+    def translate_line(self, session: requests.Session, line: str, language: str) -> str:
+        params = {
+            "client": "gtx",
+            "sl": language,
+            "tl": "en",
+            "dt": "t",
+            "ie": "UTF-8",
+            "oe": "UTF-8",
+            "q": line,
+        }
+        response = session.get(self.api_url, params=params, timeout=self.timeout)
+        response.raise_for_status()
+
+        # The response is a bare JSON array; index 0 holds the translated
+        # sentence segments as [translated, original, ...] pairs.
+        segments = response.json()[0] or []
+        translated = "".join(segment[0] for segment in segments if segment[0])
+        return translated.replace("\n", " ")

@@ -14,7 +14,6 @@ dependencies = [
     "django-imagekit",
     "djangorestframework",
     "gevent",
-    "googletrans",
     "gunicorn",
     "lxml",
     "pillow",
