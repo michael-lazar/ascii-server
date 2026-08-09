@@ -113,6 +113,17 @@ class ANSIParser:
                 buffer += self.build_span(inner, attributes)
 
             elif isinstance(instruction, SetColor):
+                if instruction.color is None:
+                    # SGR 39/49: reset to the default foreground/background.
+                    match instruction.role:
+                        case ColorRole.FOREGROUND:
+                            state.fg = self.State.fg
+                        case ColorRole.BACKGROUND:
+                            state.bg = self.State.bg
+                        case _:
+                            raise ValueError
+                    continue
+
                 code = cast(int, instruction.color.code)  # noqa
                 if code < 8:
                     match instruction.role:
