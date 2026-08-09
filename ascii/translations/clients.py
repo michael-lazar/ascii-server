@@ -14,7 +14,7 @@ class GoogleTranslateClient:
 
     api_url = "https://translate.googleapis.com/translate_a/single"
 
-    def __init__(self, pool_size: int = 10, timeout: float = 10):
+    def __init__(self, pool_size: int = 20, timeout: float = 10):
         self.pool_size = pool_size
         self.timeout = timeout
 
@@ -32,6 +32,10 @@ class GoogleTranslateClient:
         unique = list(dict.fromkeys(line for line in lines if line.strip()))
 
         with requests.Session() as session, ThreadPoolExecutor(self.pool_size) as pool:
+            # Size the HTTP connection pool to match the thread pool, so
+            # threads aren't blocked waiting for a free connection.
+            adapter = requests.adapters.HTTPAdapter(pool_maxsize=self.pool_size)
+            session.mount("https://", adapter)
             results = pool.map(lambda line: self.translate_line(session, line, language), unique)
             translated = dict(zip(unique, results, strict=True))
 
