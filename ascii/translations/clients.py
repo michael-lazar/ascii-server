@@ -1,6 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 
 import requests
+from urllib3.util.retry import Retry
 
 
 class GoogleTranslateClient:
@@ -32,9 +33,19 @@ class GoogleTranslateClient:
         unique = list(dict.fromkeys(line for line in lines if line.strip()))
 
         with requests.Session() as session, ThreadPoolExecutor(self.pool_size) as pool:
+            # Retry transient connection drops and rate-limit responses with
+            # exponential backoff (0.5s, 1s, 2s), honoring Retry-After on 429.
+            retry = Retry(
+                total=3,
+                backoff_factor=0.5,
+                status_forcelist=[429, 500, 502, 503, 504],
+            )
             # Size the HTTP connection pool to match the thread pool, so
             # threads aren't blocked waiting for a free connection.
-            adapter = requests.adapters.HTTPAdapter(pool_maxsize=self.pool_size)
+            adapter = requests.adapters.HTTPAdapter(
+                pool_maxsize=self.pool_size,
+                max_retries=retry,
+            )
             session.mount("https://", adapter)
             results = pool.map(lambda line: self.translate_line(session, line, language), unique)
             translated = dict(zip(unique, results, strict=True))
