@@ -88,19 +88,19 @@ class SixteenColorsPackImporter:
             zip_data = self.client.get_file(f"/archive/{self.year}/{quote(zip_name)}")
             return build_content_file(zip_data, zip_name)
 
-        try:
-            self.pack, _ = ArtPack.objects.get_or_create(
-                name=self.name,
-                defaults={
-                    "year": self.year,
-                    # Some packs (e.g. ansipics) have no zip archive on the server
-                    "zip_file": get_zip_file if "archive" in data else None,
-                },
-            )
-        except requests.RequestException as e:
-            # See https://16colo.rs/pack/fuel27/, returns 403 FORBIDDEN
-            _logger.warning(f"Failed to download pack: {self.name=}, {data=}, {e=}")
-            return None
+        # Download the zip before calling get_or_create(), so that the sqlite
+        # write lock isn't held during the network request. Some packs (e.g.
+        # ansipics) have no zip archive on the server.
+        pack_defaults: dict = {"year": self.year, "zip_file": None}
+        if "archive" in data and not ArtPack.objects.filter(name=self.name).exists():
+            try:
+                pack_defaults["zip_file"] = get_zip_file()
+            except requests.RequestException as e:
+                # See https://16colo.rs/pack/fuel27/, returns 403 FORBIDDEN
+                _logger.warning(f"Failed to download pack: {self.name=}, {data=}, {e=}")
+                return None
+
+        self.pack, _ = ArtPack.objects.get_or_create(name=self.name, defaults=pack_defaults)
 
         for artfile_name, artfile_data in data["files"].items():
             try:
@@ -143,12 +143,13 @@ class SixteenColorsPackImporter:
             image_x1_data = self.client.get_file(f"/pack/{self.name}/x1/{quote(image_x1_name)}")
             return build_content_file(image_x1_data, image_x1_name)
 
-        create_defaults = {
-            **defaults,
-            "raw_file": get_raw_file,
-            "image_tn": get_image_tn,
-            "image_x1": get_image_x1,
-        }
+        # Download the files before calling update_or_create(), so that the
+        # sqlite write lock isn't held during the network requests.
+        create_defaults = dict(defaults)
+        if not ArtFile.objects.filter(pack=self.pack, name=name).exists():
+            create_defaults["raw_file"] = get_raw_file()
+            create_defaults["image_tn"] = get_image_tn()
+            create_defaults["image_x1"] = get_image_x1()
 
         artfile, created = ArtFile.objects.update_or_create(
             defaults=defaults,
