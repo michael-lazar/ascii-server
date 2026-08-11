@@ -91,7 +91,11 @@ class Sauce:
         if datatype is None:
             return None
 
-        return DataType(datatype)
+        try:
+            return DataType(datatype)
+        except ValueError:
+            _logger.warning(f"Invalid datatype: {datatype}")
+            return None
 
     @cached_property
     def filetype(self) -> FileType | None:
