@@ -2,7 +2,13 @@
   {% for pack in packs %}
     <div class="pack-card">
       <a href="{{ pack.public_url }}">
-        <img loading="lazy" alt="{{ pack.name }}" src="{{ pack.fileid.0.image_tn.url }}">
+        {% if pack.fileid.0.image_tn %}
+          <img loading="lazy" alt="{{ pack.name }}" src="{{ pack.fileid.0.image_tn.url }}">
+        {% else %}
+          <div class="pack-card-placeholder">
+            FILE_ID.DIZ<br>not found
+          </div>
+        {% endif %}
         <div class="pack-title">
           {{ pack.name }}
         </div>

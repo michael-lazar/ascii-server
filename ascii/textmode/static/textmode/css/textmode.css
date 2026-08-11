@@ -192,6 +192,18 @@ input[type="radio"] {
     flex-grow: 1;
 }
 
+.pack-card-placeholder {
+    height: 180px;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ccc;
+    font-family: monospace;
+    text-align: center;
+    overflow: hidden;
+}
+
 .collection-card {
     background: black;
     padding: 5px;
@@ -704,6 +716,10 @@ fieldset {
     }
 
     .pack-card img {
+        height: 140px;
+    }
+
+    .pack-card-placeholder {
         height: 140px;
     }
 
