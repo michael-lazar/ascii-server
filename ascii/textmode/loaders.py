@@ -1,7 +1,10 @@
 import logging
 from urllib.parse import quote
 
+import requests
+from django.core.exceptions import SuspiciousFileOperation
 from django.core.files.base import ContentFile
+from django.utils.text import get_valid_filename
 
 from ascii.textmode.choices import TagCategory
 from ascii.textmode.clients import SixteenColorsClient
@@ -16,13 +19,36 @@ BLACKLIST = [
     "yoda16",  # Empty, broken pack
 ]
 
+# Packs where the zip filename on the server doesn't match the archive name
+# returned by the API.
+ZIP_RENAMES = {
+    "cn!202101.zip": "cn202101.zip",  # https://github.com/16colo-rs/16c/issues/94
+    "ace-r#2.zip": "ace-r2.zip",  # The server strips "#" from archive filenames
+    "ace-r#3.zip": "ace-r3.zip",
+}
+
+
+def build_content_file(data: bytes, name: str) -> ContentFile:
+    """
+    Some historical filenames (e.g. "────────.───") have no characters that
+    survive django's filename sanitization, and FileField will refuse to store
+    them. Fall back to a percent-encoded ASCII filename; the original name is
+    still preserved on the ArtFile.name field.
+    """
+    try:
+        get_valid_filename(name)
+    except SuspiciousFileOperation:
+        name = quote(name, safe="")
+
+    return ContentFile(data, name=name)
+
 
 class SixteenColorsPackImporter:
     """
     Import a single art pack and all associated metadata from 16colo.rs.
     """
 
-    fileid: str
+    fileid: str | None
     year: int
     pack: ArtPack
 
@@ -43,27 +69,24 @@ class SixteenColorsPackImporter:
 
         try:
             data = self.client.get_pack(self.name)
-        except Exception as e:
+        except requests.RequestException as e:
             _logger.warning(f"Skipping pack with error: {e}")
             return None
 
-        if "fileid" not in data:
-            _logger.warning(f"Skipping pack with missing fileid: {self.name}")
-            return None
-
         self.year = data["year"]
-        self.fileid = data["fileid"]
+
+        # Some packs (particularly pre-1994) have no FILE_ID.DIZ, and the API
+        # omits the "fileid" key for them. They are otherwise importable.
+        self.fileid = data.get("fileid")
 
         def get_zip_file():
             zip_name = data["archive"]
-            if zip_name == "cn!202101.zip":
-                # https://github.com/16colo-rs/16c/issues/94
-                zip_name = "cn202101.zip"
-            elif zip_name.startswith("mist1019"):
+            zip_name = ZIP_RENAMES.get(zip_name, zip_name)
+            if zip_name.startswith("mist1019"):
                 zip_name = "mist1019.zip"
 
             zip_data = self.client.get_file(f"/archive/{self.year}/{quote(zip_name)}")
-            return ContentFile(zip_data, name=zip_name)
+            return build_content_file(zip_data, zip_name)
 
         try:
             self.pack, _ = ArtPack.objects.get_or_create(
@@ -73,7 +96,7 @@ class SixteenColorsPackImporter:
                     "zip_file": get_zip_file,
                 },
             )
-        except Exception as e:
+        except requests.RequestException as e:
             # See https://16colo.rs/pack/fuel27/, returns 403 FORBIDDEN
             _logger.warning(f"Failed to download pack: {self.name=}, {data=}, {e=}")
             return None
@@ -101,7 +124,7 @@ class SixteenColorsPackImporter:
         def get_raw_file():
             raw_name = data["file"]["raw"]
             raw_data = self.client.get_file(f"/pack/{self.name}/raw/{quote(raw_name)}")
-            return ContentFile(raw_data, name=raw_name)
+            return build_content_file(raw_data, raw_name)
 
         def get_image_tn():
             if "tn" not in data["file"]:
@@ -109,7 +132,7 @@ class SixteenColorsPackImporter:
 
             image_tn_name = data["file"]["tn"]["file"]
             image_tn_data = self.client.get_file(f"/pack/{self.name}/tn/{quote(image_tn_name)}")
-            return ContentFile(image_tn_data, name=image_tn_name)
+            return build_content_file(image_tn_data, image_tn_name)
 
         def get_image_x1():
             if "x1" not in data["file"]:
@@ -117,7 +140,7 @@ class SixteenColorsPackImporter:
 
             image_x1_name = data["file"]["x1"]["file"]
             image_x1_data = self.client.get_file(f"/pack/{self.name}/x1/{quote(image_x1_name)}")
-            return ContentFile(image_x1_data, name=image_x1_name)
+            return build_content_file(image_x1_data, image_x1_name)
 
         create_defaults = {
             **defaults,

@@ -308,9 +308,9 @@ class ArtFile(BaseModel):
         self.file_extension = os.path.splitext(self.name)[1].lower()
 
         if self.raw_file:
-            self.file_size = self.raw_file.size
+            self.filesize = self.raw_file.size
         else:
-            self.file_size = 0
+            self.filesize = 0
 
         super().save(*args, **kwargs)
 
