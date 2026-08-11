@@ -93,7 +93,8 @@ class SixteenColorsPackImporter:
                 name=self.name,
                 defaults={
                     "year": self.year,
-                    "zip_file": get_zip_file,
+                    # Some packs (e.g. ansipics) have no zip archive on the server
+                    "zip_file": get_zip_file if "archive" in data else None,
                 },
             )
         except requests.RequestException as e:
