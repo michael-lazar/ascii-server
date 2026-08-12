@@ -7,7 +7,7 @@ from django.core.files.base import ContentFile
 from django.utils.text import get_valid_filename
 
 from ascii.textmode.choices import TagCategory
-from ascii.textmode.clients import SixteenColorsClient
+from ascii.textmode.clients import PackNotFoundError, SixteenColorsClient
 from ascii.textmode.models import ArtFile, ArtFileTag, ArtPack
 from ascii.textmode.sauce import Sauce
 
@@ -69,7 +69,7 @@ class SixteenColorsPackImporter:
 
         try:
             data = self.client.get_pack(self.name)
-        except requests.RequestException as e:
+        except (PackNotFoundError, requests.RequestException) as e:
             _logger.warning(f"Skipping pack with error: {e}")
             return None
 

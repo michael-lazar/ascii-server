@@ -1,6 +1,12 @@
 from ascii.core.clients import BaseSession
 
 
+class PackNotFoundError(Exception):
+    """
+    The pack endpoint returned an empty result set for the pack name.
+    """
+
+
 class SixteenColorsClient:
     """
     Slim client for https://16colo.rs/api.php.
@@ -28,7 +34,13 @@ class SixteenColorsClient:
             params.pop("sauce")
             resp = self.session.get(f"{self.BASE_API}/pack/{name}", params=params)
 
-        return resp.json()["results"][0]
+        results = resp.json()["results"]
+        if not results:
+            # Some packs (e.g. id-1194) appear in the year listing but return
+            # nothing from the pack endpoint.
+            raise PackNotFoundError(f"No results for pack: {name}")
+
+        return results[0]
 
     def get_year(self, year: int) -> list[dict]:
         resp = self.session.get(
