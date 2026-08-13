@@ -154,6 +154,9 @@ class MenuLinkAdmin(admin.ModelAdmin):
         "get_translation_link",
         "text",
     ]
+    readonly_fields = [
+        "get_translation_link",
+    ]
     formfield_overrides = {
         models.CharField: {"strip": False},
     }
