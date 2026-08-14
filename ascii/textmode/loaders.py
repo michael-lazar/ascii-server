@@ -73,6 +73,13 @@ class SixteenColorsPackImporter:
             _logger.warning(f"Skipping pack with error: {e}")
             return None
 
+        # Some packs (e.g. fuel14v1) are listed for the year but contain no art
+        # files and no zip archive. The API serializes their empty "files" map
+        # as an empty JSON array, so it can't be iterated as a dict either.
+        if not data.get("files"):
+            _logger.info(f"Skipping pack with no files: {self.name}")
+            return None
+
         self.year = data["year"]
 
         # Some packs (particularly pre-1994) have no FILE_ID.DIZ, and the API
