@@ -2,7 +2,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.templatetags.static import static as static_url
 from django.urls import include, path, register_converter
 from django.views.generic.base import RedirectView
 from rest_framework import routers
@@ -16,7 +15,7 @@ from ascii.fudan.views import (
     FudanScratchFileView,
 )
 from ascii.mozz.api import MozzArtPostAttachmentModelViewSet, MozzArtPostModelViewSet
-from ascii.mozz.views import MozzArtPostView, MozzIndexView
+from ascii.mozz.views import MozzArtPostView, MozzIndexView, MozzScrollFileView
 from ascii.textmode.views import (
     TextModeArtCollectionListView,
     TextModeArtCollectionView,
@@ -167,10 +166,9 @@ urlpatterns = [
         MozzArtPostView.as_view(),
         name="mozz-art-post",
     ),
-    # Historical URL for the scrollfile, which is now served as a static file
     path(
         "mozz/scroll/scrollfile.txt",
-        RedirectView.as_view(url=static_url("mozz/scrollfile.txt")),
+        MozzScrollFileView.as_view(),
         name="mozz-scroll-file",
     ),
     path("admin/", admin.site.urls),

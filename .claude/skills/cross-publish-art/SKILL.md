@@ -38,9 +38,9 @@ reports up to three groups:
 - **New entries to publish** — no art post exists on the new site yet.
 - **Modified entries to republish** — the post exists but the entry's
   text changed since the last sync (compared against the snapshot in
-  `ascii/mozz/static/mozz/scrollfile.txt`).
+  `ascii/mozz/assets/scrollfile.txt`).
 - **Published entries missing from the scrollfile** — the post exists
-  but `ascii/mozz/static/mozz/scrollfile.txt` hasn't been synced since it was published;
+  but `ascii/mozz/assets/scrollfile.txt` hasn't been synced since it was published;
   fixed by sync-scrollfile in step 3.
 
 If an entry is flagged `MISSING TXT`, the legacy build is stale — stop
@@ -96,7 +96,7 @@ After all approved entries are published (even if some were skipped):
 scripts/cross-publish-art sync-scrollfile
 ```
 
-This copies the legacy `ascii-art.txt` to `ascii/mozz/static/mozz/scrollfile.txt`, the
+This copies the legacy `ascii-art.txt` to `ascii/mozz/assets/scrollfile.txt`, the
 git-tracked file that is served at
 https://ascii.mozz.us/mozz/scroll/scrollfile.txt and that the diff uses
 to detect modified entries.
@@ -105,7 +105,7 @@ to detect modified entries.
 
 Run `scripts/cross-publish-art diff` again — pending work should be
 gone (skipped entries and the two renamed slugs below will still be
-listed). Then commit `ascii/mozz/static/mozz/scrollfile.txt`, and ask the user to confirm
+listed). Then commit `ascii/mozz/assets/scrollfile.txt`, and ask the user to confirm
 before deploying:
 
 ```

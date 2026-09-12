@@ -11,7 +11,7 @@
 # Commands:
 #   diff                     Compare the legacy scrollfile against the art
 #                            posts on the new site and the last-synced
-#                            snapshot (ascii/mozz/static/mozz/scrollfile.txt), listing entries
+#                            snapshot (ascii/mozz/assets/scrollfile.txt), listing entries
 #                            to publish, republish, or sync.
 #   publish <slug>           Publish one entry as a new art post, uploading
 #                            the pre-rendered .txt and a freshly rendered
@@ -20,7 +20,7 @@
 #   republish <slug>         Re-upload the .txt and re-rendered PNG for an
 #                            existing art post after the artwork was tweaked.
 #   sync-scrollfile          Copy the legacy ascii-art.txt to
-#                            ascii/mozz/static/mozz/scrollfile.txt, which is served at
+#                            ascii/mozz/assets/scrollfile.txt, which is served at
 #                            /mozz/scroll/scrollfile.txt once deployed.
 
 import argparse
@@ -37,7 +37,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 DEFAULT_LEGACY_ROOT = Path(__file__).resolve().parent.parent.parent / "mozz"
 SNAPSHOT_FILE = (
-    Path(__file__).resolve().parent.parent / "ascii" / "mozz" / "static" / "mozz" / "scrollfile.txt"
+    Path(__file__).resolve().parent.parent / "ascii" / "mozz" / "assets" / "scrollfile.txt"
 )
 
 # Calibrated to match the retina area screenshots on the older text posts,
@@ -174,7 +174,7 @@ def cmd_diff(args, session: requests.Session) -> None:
         print(f"Published entries missing from the scrollfile ({len(unsynced)}):")
         for entry in unsynced:
             print(format_entry(args, entry))
-        print("Run sync-scrollfile to update ascii/mozz/static/mozz/scrollfile.txt.")
+        print("Run sync-scrollfile to update ascii/mozz/assets/scrollfile.txt.")
 
 
 def load_entry_files(args, slug: str) -> tuple[dict, bytes, bytes]:
@@ -312,7 +312,7 @@ def main() -> None:
     republish_parser.add_argument("slug", help="Slug of the art post to republish")
 
     subparsers.add_parser(
-        "sync-scrollfile", help="Update ascii/mozz/static/mozz/scrollfile.txt from the legacy site"
+        "sync-scrollfile", help="Update ascii/mozz/assets/scrollfile.txt from the legacy site"
     )
 
     args = parser.parse_args()
