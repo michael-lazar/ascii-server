@@ -12,10 +12,6 @@ BASE_DIR = os.path.dirname(__file__)
 
 DATA_ROOT = env.str("DATA_ROOT", os.path.normpath(os.path.join(BASE_DIR, "..", "data")))
 
-# The public ascii art scrollfile is a plain text file tracked in the git
-# repo (unlike DATA_ROOT, which can be relocated outside the checkout).
-SCROLLFILE_PATH = os.path.normpath(os.path.join(BASE_DIR, "..", "data", "scrollfile.txt"))
-
 IS_RUNNING_TESTS = ("test" in sys.argv) or "PYTEST_VERSION" in os.environ
 
 # SECURITY WARNING: don't run with debug turned on in production!

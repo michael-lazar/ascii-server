@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from django.conf import settings
-from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.views.generic.base import TemplateView, View
+from django.views.generic.base import TemplateView
 
 from ascii.mozz.forms import MozzGalleryFilterForm
 from ascii.mozz.models import ArtPost
@@ -49,10 +47,3 @@ class MozzArtPostView(TemplateView):
             "prev": post.get_prev(),
             "next": post.get_next(),
         }
-
-
-class MozzScrollFileView(View):
-    def get(self, *args, **kwargs) -> HttpResponse:
-        with open(settings.SCROLLFILE_PATH) as fp:
-            text = fp.read()
-        return HttpResponse(text, content_type="text/plain")
