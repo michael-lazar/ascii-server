@@ -1,0 +1,231 @@
+#!/usr/bin/env -S uv run --script
+#
+# /// script
+# requires-python = ">=3.12"
+# dependencies = ["requests"]
+# ///
+#
+# Cross-publish plaintext ASCII art from the legacy static site
+# (../mozz) to the ascii.mozz.us art gallery.
+#
+# Commands:
+#   diff                     List entries in the legacy scrollfile that do
+#                            not exist as art posts on the new site.
+#   publish <slug>           Publish one entry as a new art post, uploading
+#                            the pre-rendered .txt and .png from the legacy
+#                            build. Repeatable --reference <path> uploads
+#                            local reference images as attachments.
+#   sync-scrolls             Push the legacy ascii-art.txt to the scrollfile
+#                            API endpoint.
+
+import argparse
+import os
+import re
+import sys
+from pathlib import Path
+from urllib.parse import urljoin
+
+import requests
+
+DEFAULT_LEGACY_ROOT = Path(__file__).resolve().parent.parent.parent / "mozz"
+
+
+def build_session(token: str) -> requests.Session:
+    session = requests.Session()
+    session.headers["Authorization"] = f"Bearer {token}"
+    return session
+
+
+def parse_scroll_entries(data: str) -> list[dict]:
+    """
+    Parse a scrollfile into entries, newest first.
+
+    Sections are separated by "%" lines; the first section is the page
+    header. Each entry ends with a date line followed by the title, which
+    may wrap onto multiple lines. This mirrors parse_art_meta() in the
+    legacy build_art_gallery script.
+    """
+    data = data.replace("\r\n", "\n")
+
+    entries = []
+    for section in data.split("\n%\n")[1:]:
+        lines = section.rstrip().splitlines(keepends=False)
+        offset = -2
+        date_str, title = lines[offset:]
+        while not date_str.startswith("20"):
+            offset -= 1
+            title = f"{date_str} {title}"
+            date_str = lines[offset]
+
+        title = title.rstrip(".")
+        slug = re.sub(r"[\W_]+", "-", title.replace("'", "")).lower().strip("-")
+        entries.append({"slug": slug, "date": date_str, "title": title})
+
+    return entries
+
+
+def load_legacy_entries(legacy_root: Path) -> list[dict]:
+    scrollfile = legacy_root / "public" / "ascii-art.txt"
+    if not scrollfile.exists():
+        sys.exit(f"Error: legacy scrollfile not found at {scrollfile}")
+    return parse_scroll_entries(scrollfile.read_text())
+
+
+def fetch_post_slugs(session: requests.Session, base_url: str) -> set[str]:
+    slugs = set()
+    url = urljoin(base_url, "/api/v1/mozz-art-posts/")
+    while url:
+        resp = session.get(url)
+        resp.raise_for_status()
+        data = resp.json()
+        slugs.update(post["slug"] for post in data["results"])
+        url = data["next"]
+    return slugs
+
+
+def cmd_diff(args, session: requests.Session) -> None:
+    legacy_entries = load_legacy_entries(args.legacy_root)
+    post_slugs = fetch_post_slugs(session, args.base_url)
+
+    new_entries = [e for e in legacy_entries if e["slug"] not in post_slugs]
+    if not new_entries:
+        print("No new entries, every legacy entry exists as an art post.")
+        return
+
+    print(f"Found {len(new_entries)} new entries (newest first):")
+    for entry in new_entries:
+        txt_file = (
+            args.legacy_root / "public" / "ascii-art" / entry["date"] / f"{entry['slug']}.txt"
+        )
+        png_file = txt_file.with_suffix(".png")
+        status = []
+        if not txt_file.exists():
+            status.append("MISSING TXT")
+        if not png_file.exists():
+            status.append("MISSING PNG")
+        flags = f"  [{', '.join(status)}]" if status else ""
+        print(f"  {entry['date']}  {entry['slug']:<30} {entry['title']}{flags}")
+
+
+def cmd_publish(args, session: requests.Session) -> None:
+    entries = {entry["slug"]: entry for entry in load_legacy_entries(args.legacy_root)}
+    entry = entries.get(args.slug)
+    if entry is None:
+        sys.exit(f"Error: slug '{args.slug}' not found in the legacy scrollfile")
+
+    art_dir = args.legacy_root / "public" / "ascii-art" / entry["date"]
+    txt_file = art_dir / f"{entry['slug']}.txt"
+    png_file = art_dir / f"{entry['slug']}.png"
+    if not txt_file.exists():
+        sys.exit(f"Error: {txt_file} not found (run the legacy publish-art first)")
+    if not png_file.exists():
+        sys.exit(f"Error: {png_file} not found (run the legacy publish-art first)")
+
+    reference_paths = [Path(p).expanduser() for p in args.reference]
+    for path in reference_paths:
+        if not path.exists():
+            sys.exit(f"Error: reference image not found at {path}")
+
+    detail_url = urljoin(args.base_url, f"/api/v1/mozz-art-posts/{entry['slug']}/")
+    resp = session.get(detail_url)
+    if resp.status_code == 200:
+        sys.exit(f"Error: an art post with slug '{entry['slug']}' already exists")
+
+    print(f"Publishing '{entry['title']}' ({entry['date']})...")
+    with open(txt_file, "rb") as txt_fp, open(png_file, "rb") as png_fp:
+        resp = session.post(
+            urljoin(args.base_url, "/api/v1/mozz-art-posts/"),
+            data={
+                "slug": entry["slug"],
+                "date": entry["date"],
+                "title": entry["title"],
+                "file_type": "text",
+                "font_name": "menlo",
+            },
+            files={
+                "file": (txt_file.name, txt_fp),
+                "image_x1": (png_file.name, png_fp),
+            },
+        )
+    if resp.status_code != 201:
+        sys.exit(f"Error: create failed with {resp.status_code}: {resp.text}")
+
+    post = resp.json()
+
+    for number, path in enumerate(reference_paths, start=1):
+        print(f"Uploading attachment {path.name}...")
+        with open(path, "rb") as fp:
+            resp = session.post(
+                urljoin(args.base_url, "/api/v1/mozz-art-post-attachments/"),
+                data={"post": entry["slug"], "name": f"Reference #{number}"},
+                files={"file": (path.name, fp)},
+            )
+        if resp.status_code != 201:
+            sys.exit(f"Error: attachment upload failed with {resp.status_code}: {resp.text}")
+
+    public_url = urljoin(args.base_url, f"/mozz/posts/{entry['date']}/{entry['slug']}/")
+    print(f"Published: {public_url}")
+    print(f"File: {post['file']}")
+    print(f"Image: {post['image_x1']}")
+
+
+def sync_scroll(session: requests.Session, base_url: str, slug: str, text: str) -> None:
+    detail_url = urljoin(base_url, f"/api/v1/mozz-scroll-files/{slug}/")
+    resp = session.patch(detail_url, data={"text": text})
+    if resp.status_code == 404:
+        resp = session.post(
+            urljoin(base_url, "/api/v1/mozz-scroll-files/"),
+            data={"slug": slug, "text": text},
+        )
+    resp.raise_for_status()
+    print(f"Synced {slug}.txt ({len(text)} bytes)")
+
+
+def cmd_sync_scrolls(args, session: requests.Session) -> None:
+    scrollfile = args.legacy_root / "public" / "ascii-art.txt"
+    sync_scroll(session, args.base_url, "scrollfile", scrollfile.read_text())
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--legacy-root",
+        type=Path,
+        default=DEFAULT_LEGACY_ROOT,
+        help=f"Path to the legacy mozz project (default: {DEFAULT_LEGACY_ROOT})",
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    subparsers.add_parser("diff", help="List entries missing from the live scrollfile")
+
+    publish_parser = subparsers.add_parser("publish", help="Publish one entry as an art post")
+    publish_parser.add_argument("slug", help="Slug of the legacy entry to publish")
+    publish_parser.add_argument(
+        "--reference",
+        action="append",
+        default=[],
+        metavar="PATH",
+        help="Local path to a reference image (repeatable)",
+    )
+
+    subparsers.add_parser("sync-scrolls", help="Push the scrollfile text")
+
+    args = parser.parse_args()
+
+    token = os.environ.get("ASCII_SERVER_API_TOKEN")
+    if not token:
+        sys.exit("Error: ASCII_SERVER_API_TOKEN environment variable not set")
+
+    args.base_url = os.environ.get("ASCII_SERVER_BASE_URL", "http://localhost:8000")
+    session = build_session(token)
+
+    commands = {
+        "diff": cmd_diff,
+        "publish": cmd_publish,
+        "sync-scrolls": cmd_sync_scrolls,
+    }
+    commands[args.command](args, session)
+
+
+if __name__ == "__main__":
+    main()

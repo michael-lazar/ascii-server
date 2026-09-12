@@ -14,7 +14,11 @@ from ascii.fudan.views import (
     FudanBBSMenuView,
     FudanScratchFileView,
 )
-from ascii.mozz.api import MozzArtPostModelViewSet
+from ascii.mozz.api import (
+    MozzArtPostAttachmentModelViewSet,
+    MozzArtPostModelViewSet,
+    MozzScrollFileModelViewSet,
+)
 from ascii.mozz.views import MozzArtPostView, MozzIndexView, MozzScrollFileView
 from ascii.textmode.views import (
     TextModeArtCollectionListView,
@@ -38,7 +42,21 @@ register_converter(DateConverter, "date")
 
 
 router = routers.DefaultRouter()
-router.register("mozz-art-posts", MozzArtPostModelViewSet, basename="mozz-art-post")
+router.register(
+    "mozz-art-posts",
+    MozzArtPostModelViewSet,
+    basename="mozz-art-post",
+)
+router.register(
+    "mozz-art-post-attachments",
+    MozzArtPostAttachmentModelViewSet,
+    basename="mozz-art-post-attachment",
+)
+router.register(
+    "mozz-scroll-files",
+    MozzScrollFileModelViewSet,
+    basename="mozz-scroll-file",
+)
 
 
 urlpatterns = [
