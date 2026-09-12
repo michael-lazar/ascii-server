@@ -14,11 +14,7 @@ from ascii.fudan.views import (
     FudanBBSMenuView,
     FudanScratchFileView,
 )
-from ascii.mozz.api import (
-    MozzArtPostAttachmentModelViewSet,
-    MozzArtPostModelViewSet,
-    MozzScrollFileModelViewSet,
-)
+from ascii.mozz.api import MozzArtPostAttachmentModelViewSet, MozzArtPostModelViewSet
 from ascii.mozz.views import MozzArtPostView, MozzIndexView, MozzScrollFileView
 from ascii.textmode.views import (
     TextModeArtCollectionListView,
@@ -51,11 +47,6 @@ router.register(
     "mozz-art-post-attachments",
     MozzArtPostAttachmentModelViewSet,
     basename="mozz-art-post-attachment",
-)
-router.register(
-    "mozz-scroll-files",
-    MozzScrollFileModelViewSet,
-    basename="mozz-scroll-file",
 )
 
 
@@ -176,7 +167,7 @@ urlpatterns = [
         name="mozz-art-post",
     ),
     path(
-        "mozz/scroll/<slug:slug>.txt",
+        "mozz/scroll/scrollfile.txt",
         MozzScrollFileView.as_view(),
         name="mozz-scroll-file",
     ),

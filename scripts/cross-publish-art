@@ -2,23 +2,30 @@
 #
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["requests"]
+# dependencies = ["requests", "pillow"]
 # ///
 #
 # Cross-publish plaintext ASCII art from the legacy static site
 # (../mozz) to the ascii.mozz.us art gallery.
 #
 # Commands:
-#   diff                     List entries in the legacy scrollfile that do
-#                            not exist as art posts on the new site.
+#   diff                     Compare the legacy scrollfile against the art
+#                            posts on the new site and the last-synced
+#                            snapshot (data/scrollfile.txt), listing entries
+#                            to publish, republish, or sync.
 #   publish <slug>           Publish one entry as a new art post, uploading
-#                            the pre-rendered .txt and .png from the legacy
-#                            build. Repeatable --reference <path> uploads
+#                            the pre-rendered .txt and a freshly rendered
+#                            PNG image. Repeatable --reference <path> uploads
 #                            local reference images as attachments.
-#   sync-scrolls             Push the legacy ascii-art.txt to the scrollfile
-#                            API endpoint.
+#   republish <slug>         Re-upload the .txt and re-rendered PNG for an
+#                            existing art post after the artwork was tweaked.
+#   sync-scrollfile          Copy the legacy ascii-art.txt to
+#                            data/scrollfile.txt, which is served at
+#                            /mozz/scroll/scrollfile.txt once deployed.
 
 import argparse
+import io
+import math
 import os
 import re
 import sys
@@ -26,8 +33,37 @@ from pathlib import Path
 from urllib.parse import urljoin
 
 import requests
+from PIL import Image, ImageDraw, ImageFont
 
 DEFAULT_LEGACY_ROOT = Path(__file__).resolve().parent.parent.parent / "mozz"
+SNAPSHOT_FILE = Path(__file__).resolve().parent.parent / "data" / "scrollfile.txt"
+
+# Calibrated to match the retina area screenshots on the older text posts,
+# which were captured from TextEdit displaying Menlo 12pt (~14.2px per
+# character cell, ~27.3px per line at 2x scale).
+FONT_PATH = "/System/Library/Fonts/Menlo.ttc"
+FONT_SIZE = 24
+LINE_HEIGHT = 28
+
+
+def render_text_image(text: str) -> bytes:
+    """
+    Rasterize plaintext ASCII art at 2x scale, black Menlo on white.
+    """
+    font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
+    lines = text.splitlines()
+    cols = max(len(line) for line in lines)
+    width = math.ceil(cols * font.getlength("M"))
+    height = len(lines) * LINE_HEIGHT
+
+    image = Image.new("RGB", (width, height), "white")
+    draw = ImageDraw.Draw(image)
+    for i, line in enumerate(lines):
+        draw.text((0, i * LINE_HEIGHT), line, font=font, fill="black")
+
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG", dpi=(144, 144))
+    return buffer.getvalue()
 
 
 def build_session(token: str) -> requests.Session:
@@ -59,7 +95,7 @@ def parse_scroll_entries(data: str) -> list[dict]:
 
         title = title.rstrip(".")
         slug = re.sub(r"[\W_]+", "-", title.replace("'", "")).lower().strip("-")
-        entries.append({"slug": slug, "date": date_str, "title": title})
+        entries.append({"slug": slug, "date": date_str, "title": title, "text": "\n".join(lines)})
 
     return entries
 
@@ -83,43 +119,71 @@ def fetch_post_slugs(session: requests.Session, base_url: str) -> set[str]:
     return slugs
 
 
+def format_entry(args, entry: dict) -> str:
+    txt_file = args.legacy_root / "public" / "ascii-art" / entry["date"] / f"{entry['slug']}.txt"
+    flags = "" if txt_file.exists() else "  [MISSING TXT]"
+    return f"  {entry['date']}  {entry['slug']:<30} {entry['title']}{flags}"
+
+
 def cmd_diff(args, session: requests.Session) -> None:
     legacy_entries = load_legacy_entries(args.legacy_root)
     post_slugs = fetch_post_slugs(session, args.base_url)
 
+    snapshot = {}
+    if SNAPSHOT_FILE.exists():
+        snapshot = {e["slug"]: e for e in parse_scroll_entries(SNAPSHOT_FILE.read_text())}
+
     new_entries = [e for e in legacy_entries if e["slug"] not in post_slugs]
-    if not new_entries:
-        print("No new entries, every legacy entry exists as an art post.")
+    modified = [
+        e
+        for e in legacy_entries
+        if e["slug"] in post_slugs
+        and e["slug"] in snapshot
+        and e["text"] != snapshot[e["slug"]]["text"]
+    ]
+    unsynced = [e for e in legacy_entries if e["slug"] in post_slugs and e["slug"] not in snapshot]
+
+    if not any([new_entries, modified, unsynced]):
+        print("Everything is in sync.")
         return
 
-    print(f"Found {len(new_entries)} new entries (newest first):")
-    for entry in new_entries:
-        txt_file = (
-            args.legacy_root / "public" / "ascii-art" / entry["date"] / f"{entry['slug']}.txt"
-        )
-        png_file = txt_file.with_suffix(".png")
-        status = []
-        if not txt_file.exists():
-            status.append("MISSING TXT")
-        if not png_file.exists():
-            status.append("MISSING PNG")
-        flags = f"  [{', '.join(status)}]" if status else ""
-        print(f"  {entry['date']}  {entry['slug']:<30} {entry['title']}{flags}")
+    if new_entries:
+        print(f"New entries to publish ({len(new_entries)}, newest first):")
+        for entry in new_entries:
+            print(format_entry(args, entry))
+
+    if modified:
+        print(f"Modified entries to republish ({len(modified)}):")
+        for entry in modified:
+            print(format_entry(args, entry))
+
+    if unsynced:
+        print(f"Published entries missing from the scrollfile ({len(unsynced)}):")
+        for entry in unsynced:
+            print(format_entry(args, entry))
+        print("Run sync-scrollfile to update data/scrollfile.txt.")
+
+
+def load_entry_files(args, slug: str) -> tuple[dict, bytes, bytes]:
+    """
+    Return the legacy entry with the raw .txt bytes and rendered PNG bytes.
+    """
+    entries = {entry["slug"]: entry for entry in load_legacy_entries(args.legacy_root)}
+    entry = entries.get(slug)
+    if entry is None:
+        sys.exit(f"Error: slug '{slug}' not found in the legacy scrollfile")
+
+    txt_file = args.legacy_root / "public" / "ascii-art" / entry["date"] / f"{slug}.txt"
+    if not txt_file.exists():
+        sys.exit(f"Error: {txt_file} not found (run the legacy publish-art first)")
+
+    txt_bytes = txt_file.read_bytes()
+    png_bytes = render_text_image(txt_bytes.decode("utf-8"))
+    return entry, txt_bytes, png_bytes
 
 
 def cmd_publish(args, session: requests.Session) -> None:
-    entries = {entry["slug"]: entry for entry in load_legacy_entries(args.legacy_root)}
-    entry = entries.get(args.slug)
-    if entry is None:
-        sys.exit(f"Error: slug '{args.slug}' not found in the legacy scrollfile")
-
-    art_dir = args.legacy_root / "public" / "ascii-art" / entry["date"]
-    txt_file = art_dir / f"{entry['slug']}.txt"
-    png_file = art_dir / f"{entry['slug']}.png"
-    if not txt_file.exists():
-        sys.exit(f"Error: {txt_file} not found (run the legacy publish-art first)")
-    if not png_file.exists():
-        sys.exit(f"Error: {png_file} not found (run the legacy publish-art first)")
+    entry, txt_bytes, png_bytes = load_entry_files(args, args.slug)
 
     reference_paths = [Path(p).expanduser() for p in args.reference]
     for path in reference_paths:
@@ -132,21 +196,23 @@ def cmd_publish(args, session: requests.Session) -> None:
         sys.exit(f"Error: an art post with slug '{entry['slug']}' already exists")
 
     print(f"Publishing '{entry['title']}' ({entry['date']})...")
-    with open(txt_file, "rb") as txt_fp, open(png_file, "rb") as png_fp:
-        resp = session.post(
-            urljoin(args.base_url, "/api/v1/mozz-art-posts/"),
-            data={
-                "slug": entry["slug"],
-                "date": entry["date"],
-                "title": entry["title"],
-                "file_type": "text",
-                "font_name": "menlo",
-            },
-            files={
-                "file": (txt_file.name, txt_fp),
-                "image_x1": (png_file.name, png_fp),
-            },
-        )
+    resp = session.post(
+        urljoin(args.base_url, "/api/v1/mozz-art-posts/"),
+        data={
+            "slug": entry["slug"],
+            "date": entry["date"],
+            "title": entry["title"],
+            "file_type": "text",
+            "font_name": "menlo",
+            # DRF treats a boolean missing from multipart form data as an
+            # unchecked checkbox (False), ignoring the model default
+            "visible": "true",
+        },
+        files={
+            "file": (f"{entry['slug']}.txt", txt_bytes),
+            "image_x1": (f"{entry['slug']}.png", png_bytes),
+        },
+    )
     if resp.status_code != 201:
         sys.exit(f"Error: create failed with {resp.status_code}: {resp.text}")
 
@@ -169,21 +235,40 @@ def cmd_publish(args, session: requests.Session) -> None:
     print(f"Image: {post['image_x1']}")
 
 
-def sync_scroll(session: requests.Session, base_url: str, slug: str, text: str) -> None:
-    detail_url = urljoin(base_url, f"/api/v1/mozz-scroll-files/{slug}/")
-    resp = session.patch(detail_url, data={"text": text})
+def cmd_republish(args, session: requests.Session) -> None:
+    entry, txt_bytes, png_bytes = load_entry_files(args, args.slug)
+
+    detail_url = urljoin(args.base_url, f"/api/v1/mozz-art-posts/{entry['slug']}/")
+    resp = session.get(detail_url)
     if resp.status_code == 404:
-        resp = session.post(
-            urljoin(base_url, "/api/v1/mozz-scroll-files/"),
-            data={"slug": slug, "text": text},
-        )
+        sys.exit(f"Error: no art post with slug '{entry['slug']}' exists, use publish instead")
     resp.raise_for_status()
-    print(f"Synced {slug}.txt ({len(text)} bytes)")
+
+    print(f"Republishing '{entry['title']}' ({entry['date']})...")
+    resp = session.patch(
+        detail_url,
+        files={
+            "file": (f"{entry['slug']}.txt", txt_bytes),
+            "image_x1": (f"{entry['slug']}.png", png_bytes),
+        },
+    )
+    if resp.status_code != 200:
+        sys.exit(f"Error: update failed with {resp.status_code}: {resp.text}")
+
+    post = resp.json()
+
+    public_url = urljoin(args.base_url, f"/mozz/posts/{entry['date']}/{entry['slug']}/")
+    print(f"Republished: {public_url}")
+    print(f"File: {post['file']}")
+    print(f"Image: {post['image_x1']}")
 
 
-def cmd_sync_scrolls(args, session: requests.Session) -> None:
+def cmd_sync_scrollfile(args, session: requests.Session) -> None:
     scrollfile = args.legacy_root / "public" / "ascii-art.txt"
-    sync_scroll(session, args.base_url, "scrollfile", scrollfile.read_text())
+    text = scrollfile.read_text()
+    SNAPSHOT_FILE.write_text(text)
+    print(f"Updated {SNAPSHOT_FILE} ({len(text)} bytes)")
+    print("Commit and push the change, then run: app-deploy ascii-server")
 
 
 def main() -> None:
@@ -196,7 +281,7 @@ def main() -> None:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    subparsers.add_parser("diff", help="List entries missing from the live scrollfile")
+    subparsers.add_parser("diff", help="List entries to publish, republish, or sync")
 
     publish_parser = subparsers.add_parser("publish", help="Publish one entry as an art post")
     publish_parser.add_argument("slug", help="Slug of the legacy entry to publish")
@@ -208,7 +293,12 @@ def main() -> None:
         help="Local path to a reference image (repeatable)",
     )
 
-    subparsers.add_parser("sync-scrolls", help="Push the scrollfile text")
+    republish_parser = subparsers.add_parser(
+        "republish", help="Re-upload the file and image for an existing art post"
+    )
+    republish_parser.add_argument("slug", help="Slug of the art post to republish")
+
+    subparsers.add_parser("sync-scrollfile", help="Update data/scrollfile.txt from the legacy site")
 
     args = parser.parse_args()
 
@@ -222,7 +312,8 @@ def main() -> None:
     commands = {
         "diff": cmd_diff,
         "publish": cmd_publish,
-        "sync-scrolls": cmd_sync_scrolls,
+        "republish": cmd_republish,
+        "sync-scrollfile": cmd_sync_scrollfile,
     }
     commands[args.command](args, session)
 

@@ -3,8 +3,8 @@ name: cross-publish-art
 description: >
   Cross-publish plaintext ASCII art from the legacy static gallery
   (../mozz) to the ascii.mozz.us art gallery. Use when the user wants to
-  cross-publish, sync, or mirror new ASCII art entries from the legacy
-  site to the new site.
+  cross-publish, sync, mirror, or republish ASCII art entries from the
+  legacy site to the new site.
 ---
 
 # Cross-publish ASCII art
@@ -13,8 +13,11 @@ Mirror new plaintext art entries from the legacy static site
 (`../mozz/public/ascii-art/`) to the ascii.mozz.us gallery. The heavy
 lifting is done by `scripts/cross-publish-art` (run it from the repo
 root). The user publishes on the legacy site first with its
-`tools/publish-art` script, so the pre-rendered `.txt` and `.png` files
-already exist; this flow only uploads them.
+`tools/publish-art` script, so the pre-rendered `.txt` files already
+exist; this flow uploads the `.txt` and renders a fresh PNG display
+image from it (Menlo, 2x retina, black on white — the legacy site's own
+`.png` screenshots are NOT used because they contain TextEdit window
+chrome).
 
 Requires `ASCII_SERVER_BASE_URL` and `ASCII_SERVER_API_TOKEN` in the
 environment (already set in the user's shell). The legacy project is
@@ -30,14 +33,21 @@ scripts/cross-publish-art diff
 ```
 
 This parses the legacy scrollfile (`../mozz/public/ascii-art.txt`) and
-lists the entries that do not yet exist as art posts on the new site,
-newest first. If an entry is flagged `MISSING TXT` or `MISSING PNG`,
-the legacy build is stale — stop and tell the user to run the legacy
-`tools/publish-art` first.
+reports up to three groups:
 
-If there are no new entries, report that and stop.
+- **New entries to publish** — no art post exists on the new site yet.
+- **Modified entries to republish** — the post exists but the entry's
+  text changed since the last sync (compared against the snapshot in
+  `data/scrollfile.txt`).
+- **Published entries missing from the scrollfile** — the post exists
+  but `data/scrollfile.txt` hasn't been synced since it was published;
+  fixed by sync-scrollfile in step 3.
 
-### 2. Publish each entry (oldest first)
+If an entry is flagged `MISSING TXT`, the legacy build is stale — stop
+and tell the user to run the legacy `tools/publish-art` first. If
+everything is in sync, report that and stop.
+
+### 2. Publish and republish (oldest first)
 
 Work through the new entries oldest → newest so the gallery ordering
 matches the legacy site. For each entry, use AskUserQuestion (one call,
@@ -47,7 +57,10 @@ two questions):
   or skip it.
 - **Reference image** — ask whether they have a local reference image.
   Offer "No reference image" as an option; they can supply one or more
-  local paths via "Other".
+  local paths via "Other". The easiest way for the user to hand over a
+  file is to drag it from Finder into the terminal (which inserts the
+  path). A pasted image is NOT usable — the upload needs a real file
+  on disk.
 
 Then, for entries the user approved:
 
@@ -55,33 +68,55 @@ Then, for entries the user approved:
 scripts/cross-publish-art publish <slug> [--reference <path> ...]
 ```
 
-This creates the art post (file type `text`, font `menlo`) with the
-pre-rendered `.txt` as the file and `.png` as the display image, then
-uploads each reference image as an attachment named "Reference #N". It
-refuses to overwrite a post whose slug already exists — if that
-happens, surface the conflict to the user instead of working around it.
+This creates the art post (file type `text`, font `menlo`, visible)
+with the pre-rendered `.txt` as the file and a freshly rendered PNG as
+the display image, then uploads each reference image as an attachment
+named "Reference #N". It refuses to overwrite a post whose slug already
+exists — if that happens, surface the conflict to the user instead of
+working around it.
 
-Relay the printed public URL after each publish so the user can spot
-check the post in their browser.
+For modified entries (or whenever the user tweaked an existing post's
+artwork and wants it re-uploaded):
+
+```
+scripts/cross-publish-art republish <slug>
+```
+
+This re-uploads the `.txt` and a re-rendered PNG to the existing post,
+leaving all other fields and attachments untouched.
+
+Relay the printed public URL after each publish/republish so the user
+can spot check the post in their browser.
 
 ### 3. Sync the scrollfile
 
 After all approved entries are published (even if some were skipped):
 
 ```
-scripts/cross-publish-art sync-scrolls
+scripts/cross-publish-art sync-scrollfile
 ```
 
-This pushes the full text of the legacy `ascii-art.txt` to the
-`scrollfile` scroll-file API endpoint, keeping
-https://ascii.mozz.us/mozz/scroll/scrollfile.txt in step with the
-legacy site.
+This copies the legacy `ascii-art.txt` to `data/scrollfile.txt`, the
+git-tracked file that is served at
+https://ascii.mozz.us/mozz/scroll/scrollfile.txt and that the diff uses
+to detect modified entries.
 
-### 4. Verify
+### 4. Verify, commit, and deploy
 
-Run `scripts/cross-publish-art diff` again — it should report no new
-entries. Give the user a short summary: what was published (with public
-URLs), what was skipped, and that the scroll files were synced.
+Run `scripts/cross-publish-art diff` again — pending work should be
+gone (skipped entries and the two renamed slugs below will still be
+listed). Then commit `data/scrollfile.txt`, and ask the user to confirm
+before deploying:
+
+```
+git push
+app-deploy ascii-server
+```
+
+The art posts themselves go live immediately via the API; only the
+scrollfile waits for the deploy. Give the user a short summary: what
+was published or republished (with public URLs), what was skipped, and
+that the scrollfile was synced and deployed.
 
 ## Notes
 
@@ -97,5 +132,7 @@ URLs), what was skipped, and that the scroll files were synced.
 - Post metadata (title, date, slug) is derived from the legacy
   scrollfile the same way the legacy site derives it, so the two sites
   always agree on slugs.
-- To fix a bad upload, delete the post in the Django admin (or via
-  `DELETE /api/v1/mozz-art-posts/<slug>/`) and publish again.
+- To fix a bad upload, `republish <slug>` replaces the file and image;
+  deleting the post (Django admin or
+  `DELETE /api/v1/mozz-art-posts/<slug>/`) and publishing again is the
+  fallback for bad metadata.

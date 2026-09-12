@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ascii.mozz.models import ArtPost, ArtPostAttachment, ScrollFile
+from ascii.mozz.models import ArtPost, ArtPostAttachment
 
 
 class MozzArtPostAttachmentSerializer(serializers.ModelSerializer):
@@ -15,12 +15,6 @@ class MozzArtPostAttachmentUploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArtPostAttachment
         fields = ["id", "name", "post", "file"]
-
-
-class MozzScrollFileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ScrollFile
-        fields = ["id", "slug", "text"]
 
 
 class MozzArtPostSerializer(serializers.ModelSerializer):

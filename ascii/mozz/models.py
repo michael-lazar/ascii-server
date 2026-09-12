@@ -212,18 +212,3 @@ class ArtPostAttachment(BaseModel):
     def file_extension(self) -> str:
         _, ext = os.path.splitext(self.file.name or "")
         return ext.lower() if ext else "unknown"
-
-
-class ScrollFile(BaseModel):
-    slug = models.SlugField(unique=True)
-    text = models.TextField(blank=True)
-
-    class Meta:
-        ordering = ["id"]
-
-    def __str__(self) -> str:
-        return f"{self.slug}.txt"
-
-    @property
-    def public_url(self) -> str:
-        return reverse("mozz-scroll-file", args=[self.slug])

@@ -6,7 +6,7 @@ from imagekit.admin import AdminThumbnail
 
 from ascii.core.admin import linkify
 from ascii.core.widgets import FormattedJSONWidget
-from ascii.mozz.models import ArtPost, ArtPostAttachment, ScrollFile
+from ascii.mozz.models import ArtPost, ArtPostAttachment
 
 
 class ArtPostAttachmentAdminInline(admin.TabularInline):
@@ -15,18 +15,6 @@ class ArtPostAttachmentAdminInline(admin.TabularInline):
     autocomplete_fields = ["post"]
     extra = 0
     show_change_link = False
-
-
-@admin.register(ScrollFile)
-class ScrollFileAdmin(admin.ModelAdmin):
-    list_display = ["slug", "get_public_link"]
-    readonly_fields = ["get_public_link"]
-
-    @admin.display(description="View")
-    def get_public_link(self, obj: ScrollFile) -> str:
-        if not obj.id:
-            return "-"
-        return format_html("<a href={} >{}</a>", obj.public_url, obj.public_url)
 
 
 @admin.register(ArtPostAttachment)

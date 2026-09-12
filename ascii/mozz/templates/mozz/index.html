@@ -20,7 +20,6 @@
 {% endblock %}
 
 {% block headerlinks %}
-  <a href="{% url 'mozz-scroll-file' 'scratchpad' %}">scratchpad</a>
   {% if user.is_staff %}
     <div><a href="{% url 'admin:mozz_artpost_changelist' %}">edit</a></div>
   {% endif %}
@@ -38,7 +37,7 @@
         non-commercial purposes, but please keep the artist signature intact. </p>
       <p>
         Alternatively, here's my scroll file for the pure text experience:
-        <a href="{% url 'mozz-scroll-file' 'scrollfile' %}">./scrollfile.txt</a>
+        <a href="{% url 'mozz-scroll-file' %}">./scrollfile.txt</a>
       </p>
       <p>—mozz</p>
     </div>
