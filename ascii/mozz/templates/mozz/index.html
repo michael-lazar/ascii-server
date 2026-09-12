@@ -20,6 +20,7 @@
 {% endblock %}
 
 {% block headerlinks %}
+  <a href="{% static 'mozz/scrollfile.txt' %}">scrollfile</a>
   {% if user.is_staff %}
     <div><a href="{% url 'admin:mozz_artpost_changelist' %}">edit</a></div>
   {% endif %}

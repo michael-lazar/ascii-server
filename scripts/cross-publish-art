@@ -47,21 +47,32 @@ FONT_PATH = "/System/Library/Fonts/Menlo.ttc"
 FONT_SIZE = 24
 LINE_HEIGHT = 28
 
+# Supersampling and gamma darkening compensate for freetype's thin grayscale
+# antialiasing, approximating the stem-darkened text rendering on macOS.
+SUPERSAMPLE = 2
+GAMMA = 1.8
+
 
 def render_text_image(text: str) -> bytes:
     """
     Rasterize plaintext ASCII art at 2x scale, black Menlo on white.
     """
-    font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
+    font = ImageFont.truetype(FONT_PATH, FONT_SIZE * SUPERSAMPLE)
     lines = text.splitlines()
     cols = max(len(line) for line in lines)
     width = math.ceil(cols * font.getlength("M"))
-    height = len(lines) * LINE_HEIGHT
+    height = len(lines) * LINE_HEIGHT * SUPERSAMPLE
 
-    image = Image.new("RGB", (width, height), "white")
+    image = Image.new("L", (width, height), "white")
     draw = ImageDraw.Draw(image)
     for i, line in enumerate(lines):
-        draw.text((0, i * LINE_HEIGHT), line, font=font, fill="black")
+        draw.text((0, i * LINE_HEIGHT * SUPERSAMPLE), line, font=font, fill="black")
+
+    image = image.resize(
+        (math.ceil(width / SUPERSAMPLE), math.ceil(height / SUPERSAMPLE)),
+        Image.LANCZOS,
+    )
+    image = image.point([round(255 * (v / 255) ** GAMMA) for v in range(256)])
 
     buffer = io.BytesIO()
     image.save(buffer, format="PNG", dpi=(144, 144))
