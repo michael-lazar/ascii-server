@@ -62,7 +62,7 @@ class ArtPost(DirtyFieldsMixin, BaseModel):
     )
     image_tn = ImageSpecField(
         source="image_x1",
-        processors=[ResizeToFit(height=300, width=400)],
+        processors=[ResizeToFit(height=600, width=500)],
         format="PNG",
         cachefile_storage=storages["overwrite"],
     )
@@ -119,7 +119,7 @@ class ArtPost(DirtyFieldsMixin, BaseModel):
 
     @property
     def thumb_width(self) -> int:
-        return 164
+        return 246
 
     @property
     def thumb_height(self) -> int:

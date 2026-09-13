@@ -55,7 +55,7 @@ a {
 .content {
     margin: auto;
     padding: 20px;
-    max-width: 1000px;
+    max-width: 1140px;
 }
 
 .masthead {
@@ -99,11 +99,18 @@ hr.short-rule {
 
 .artgrid-item {
     box-sizing: border-box;
-    width: 182px;
+    width: 264px;
     margin-bottom: 12px;
     border: 1px solid #ddd;
     background: white;
     padding: 8px;
+}
+
+/* Single fluid column on small screens, see artgrid_masonry.js */
+@media (max-width: 600px) {
+    .artgrid-item {
+        width: 100%;
+    }
 }
 
 .artgrid-item:hover {
