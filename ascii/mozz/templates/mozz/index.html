@@ -1,18 +1,5 @@
 {% extends 'mozz/base.html' %}
 
-{% load static %}
-
-{% block extrastyle %}
-  <style>
-      @font-face {
-          font-family: 'Kalam';
-          src: url({% static 'core/fonts/Kalam-Bold.woff2' %}) format('woff2');
-          font-weight: bold;
-          font-style: normal;
-      }
-  </style>
-{% endblock %}
-
 {% block extrahead %}{{ block.super }}
   <script>
     {% include "mozz/fragments/artgrid_filter.js" %}
@@ -20,47 +7,38 @@
 {% endblock %}
 
 {% block headerlinks %}
-  <a href="{% url 'mozz-scroll-file' %}">scroll file</a>
+  <a href="{% url 'mozz-about' %}">about</a>
   {% if user.is_staff %}
     <div><a href="{% url 'admin:mozz_artpost_changelist' %}">edit</a></div>
   {% endif %}
 {% endblock %}
 
 {% block content %}
-  <div class="preamble">
-    <h1>Mozz's ASCII Art Gallery</h1>
-    <div>
-      <p>
-        Welcome to my personal ASCII art page! I'm an aspiring student of textmode artwork, following
-        in the footsteps of countless others who came before me.
-      <p>
-        All works here are my own unless otherwise noted. You may share or remix this artwork for
-        non-commercial purposes, but please keep the artist signature intact. </p>
-      <p>
-        Alternatively, here's my scroll file for the pure text experience:
-        <a href="{% url 'mozz-scroll-file' %}">./scrollfile.txt</a>
-      </p>
-      <p>—mozz</p>
-    </div>
-  </div>
+  <h1 class="masthead">Mozz's ASCII Art</h1>
+  <p class="subtitle">
+    A collection of my original plaintext and textmode artwork
+    (<a href="{% url 'mozz-about' %}">about</a>).
+  </p>
+  <hr class="short-rule">
   <form method="get" class="artgrid-filter" id="artgridFilterForm">
     {{ form.filetype }}
     {{ form.category }}
-    {% if is_filtered %}<a href="{% url 'mozz-index' %}">[show all]</a>{% endif %}
   </form>
   <div class="artgrid">
     {% for post in posts %}
       <div class="artgrid-item">
-        <a class="artgrid-item-image" href="{{ post.public_url }}">
+        <a href="{{ post.public_url }}">
           {% if post.image_tn %}
             <img loading="lazy" src="{{ post.image_tn.url }}" alt="{{ post.title }}">
           {% else %}
             <img src="" alt="{{ post.title }}">
           {% endif %}
         </a>
-        <div>
-          <a class="artgrid-item-title" href="{{ post.public_url }}">{{ post.title }}</a>
-          {% if post.favorite %}<span>🎉</span>{% endif %}
+        <div class="artgrid-caption">
+          <span>
+            <a href="{{ post.public_url }}">{{ post.title }}</a>
+          </span>
+          <span class="artgrid-date">{{ post.date|date:"Y-m-d" }}</span>
         </div>
       </div>
     {% endfor %}

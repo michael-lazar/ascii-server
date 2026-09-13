@@ -15,7 +15,7 @@ from ascii.fudan.views import (
     FudanScratchFileView,
 )
 from ascii.mozz.api import MozzArtPostAttachmentModelViewSet, MozzArtPostModelViewSet
-from ascii.mozz.views import MozzArtPostView, MozzIndexView, MozzScrollFileView
+from ascii.mozz.views import MozzAboutView, MozzArtPostView, MozzIndexView, MozzScrollFileView
 from ascii.textmode.views import (
     TextModeArtCollectionListView,
     TextModeArtCollectionView,
@@ -160,6 +160,11 @@ urlpatterns = [
         "mozz/",
         MozzIndexView.as_view(),
         name="mozz-index",
+    ),
+    path(
+        "mozz/about/",
+        MozzAboutView.as_view(),
+        name="mozz-about",
     ),
     path(
         "mozz/posts/<date:date>/<slug:slug>/",

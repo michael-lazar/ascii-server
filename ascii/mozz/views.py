@@ -28,13 +28,14 @@ class MozzIndexView(TemplateView):
                     case "favorite":
                         posts = posts.filter(favorite=True)
 
-        is_filtered = any(form.cleaned_data.values())
-
         return {
             "posts": posts,
             "form": form,
-            "is_filtered": is_filtered,
         }
+
+
+class MozzAboutView(TemplateView):
+    template_name = "mozz/about.html"
 
 
 class MozzArtPostView(TemplateView):
