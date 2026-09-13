@@ -1,8 +1,12 @@
 {% extends 'mozz/base.html' %}
 
+{% load static %}
+
 {% block extrahead %}{{ block.super }}
+  <script src='{% static "vendor/masonry/masonry.pkgd.min.js" %}'></script>
   <script>
     {% include "mozz/fragments/artgrid_filter.js" %}
+    {% include "mozz/fragments/artgrid_masonry.js" %}
   </script>
 {% endblock %}
 
@@ -29,7 +33,8 @@
       <div class="artgrid-item">
         <a href="{{ post.public_url }}">
           {% if post.image_tn %}
-            <img loading="lazy" src="{{ post.image_tn.url }}" alt="{{ post.title }}">
+            <img loading="lazy" src="{{ post.image_tn.url }}" alt="{{ post.title }}"
+                 width="{{ post.thumb_width }}" height="{{ post.thumb_height }}">
           {% else %}
             <img src="" alt="{{ post.title }}">
           {% endif %}

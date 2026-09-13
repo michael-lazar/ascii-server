@@ -101,12 +101,15 @@ hr.short-rule {
 }
 
 .artgrid {
-    columns: 5 170px;
-    column-gap: 20px;
+    margin: 0 auto;
+    min-height: 20px;
+    /* Hide until initialized by masonry.js */
+    visibility: hidden;
 }
 
 .artgrid-item {
-    break-inside: avoid;
+    box-sizing: border-box;
+    width: 176px;
     margin-bottom: 20px;
     border: 1px solid #ddd;
     background: white;

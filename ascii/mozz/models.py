@@ -102,6 +102,14 @@ class ArtPost(DirtyFieldsMixin, BaseModel):
         return ext.lower() if ext else "unknown"
 
     @property
+    def thumb_width(self) -> int:
+        return 150
+
+    @property
+    def thumb_height(self) -> int:
+        return min(int(self.thumb_width * (self.image_tn.height / self.image_tn.width)), 800)
+
+    @property
     def image_extension(self) -> str:
         if not self.image_x1:
             return ""
