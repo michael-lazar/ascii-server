@@ -24,7 +24,8 @@
       <div class="artpost-image">
         {% if post.image_x1 %}
           <a href="{{ post.image_x1.url }}">
-            <img src="{{ post.image_x1.url }}" alt="{{ post.title }}">
+            <img src="{{ post.image_x1.url }}" alt="{{ post.title }}"
+                 width="{{ post.image_x1.width }}" height="{{ post.image_x1.height }}">
           </a>
         {% else %}
           <img alt="{{ post.title }}">
