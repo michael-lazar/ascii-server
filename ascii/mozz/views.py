@@ -7,7 +7,7 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateView, View
 
-from ascii.mozz.forms import MozzGalleryFilterForm
+from ascii.mozz.choices import ArtPostFileType
 from ascii.mozz.models import ArtPost
 
 SCROLLFILE_PATH = os.path.join(os.path.dirname(__file__), "assets", "scrollfile.txt")
@@ -19,18 +19,24 @@ class MozzIndexView(TemplateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         posts = ArtPost.objects.visible()
 
-        form = MozzGalleryFilterForm(data=self.request.GET)
-        if form.is_valid():
-            if filetype := form.cleaned_data["filetype"]:
-                posts = posts.filter(file_type=filetype)
-            if category := form.cleaned_data["category"]:
-                match category:
-                    case "favorite":
-                        posts = posts.filter(favorite=True)
+        filetype = self.request.GET.get("filetype", "")
+        match filetype:
+            case "plaintext":
+                posts = posts.filter(file_type=ArtPostFileType.TEXT)
+            case "textmode":
+                posts = posts.filter(
+                    file_type__in=[
+                        ArtPostFileType.ANS,
+                        ArtPostFileType.ASC,
+                        ArtPostFileType.XBIN,
+                    ]
+                )
+            case _:
+                filetype = ""
 
         return {
             "posts": posts,
-            "form": form,
+            "filetype": filetype,
         }
 
 

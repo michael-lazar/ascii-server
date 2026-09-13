@@ -8,15 +8,6 @@ body {
     background-blend-mode: lighten;
 }
 
-select {
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    padding: 4px;
-    background: white;
-    color: black;
-    line-height: 1.2em;
-}
-
 a {
     color: #205493;
 }
@@ -88,16 +79,15 @@ hr.short-rule {
 }
 
 .artgrid-filter {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center;
+    max-width: 420px;
     margin: 20px auto;
 }
 
-.artgrid-filter select {
-    padding: 2px;
+.artgrid-filter span {
+    font-weight: bold;
 }
 
 .artgrid {
