@@ -90,6 +90,10 @@ hr.short-rule {
     font-weight: bold;
 }
 
+.eof {
+    text-align: center;
+}
+
 .artgrid {
     min-height: 20px;
     /* Hide until initialized by masonry.js */
