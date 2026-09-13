@@ -17,10 +17,6 @@
   <div class="artpost-wrapper">
     {% include 'mozz/fragments/artpost_paginator.html' %}
     <div class="artpost">
-      <div class="artpost-header">
-        <h1>{{ post.title }}</h1>
-        <div>{{ post.date }}</div>
-      </div>
       <div class="artpost-image">
         {% if post.image_x1 %}
           <a href="{{ post.image_x1.url }}">
@@ -31,17 +27,21 @@
           <img alt="{{ post.title }}">
         {% endif %}
       </div>
+      <div class="artpost-header">
+        <h1>{{ post.title }}</h1>
+        <div>{{ post.date }}</div>
+      </div>
       <div class="artpost-details">
-        <span>Format: {{ post.get_file_type_display }}</span>
-        {% if post.font_name %}
-          <span>Font: {{ post.get_font_name_display }}</span>
-        {% endif %}
+        <span>
+          {{ post.format_label }}{% if post.font_name %} · {{ post.get_font_name_display|lower }}{% endif %}
+        </span>
       </div>
       {% if post.description %}
         <div class="artpost-description">{{ post.description | safe }}
         </div>
       {% endif %}
       <hr class="short-rule">
+      <i>Downloads</i>
       <div class="artpost-links">
         {% if post.image_x1 %}
           <a href="{{ post.image_x1.url }}">image ({{ post.image_extension }})</a>

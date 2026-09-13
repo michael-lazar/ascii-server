@@ -7,7 +7,7 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateView, View
 
-from ascii.mozz.choices import ArtPostFileType
+from ascii.mozz.choices import PLAINTEXT_FILETYPES, TEXTMODE_FILETYPES
 from ascii.mozz.models import ArtPost
 
 SCROLLFILE_PATH = os.path.join(os.path.dirname(__file__), "assets", "scrollfile.txt")
@@ -22,15 +22,9 @@ class MozzIndexView(TemplateView):
         filetype = self.request.GET.get("filetype", "")
         match filetype:
             case "plaintext":
-                posts = posts.filter(file_type=ArtPostFileType.TEXT)
+                posts = posts.filter(file_type__in=PLAINTEXT_FILETYPES)
             case "textmode":
-                posts = posts.filter(
-                    file_type__in=[
-                        ArtPostFileType.ANS,
-                        ArtPostFileType.ASC,
-                        ArtPostFileType.XBIN,
-                    ]
-                )
+                posts = posts.filter(file_type__in=TEXTMODE_FILETYPES)
             case _:
                 filetype = ""
 

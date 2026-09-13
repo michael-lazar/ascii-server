@@ -178,6 +178,7 @@ hr.short-rule {
     gap: 10px;
     max-width: 40em;
     justify-content: center;
+    margin-bottom: 30px;
 }
 
 .artpost-links a {
@@ -201,6 +202,10 @@ hr.short-rule {
     height: auto;
     width: auto;
     max-width: 100%;
+    /* Keep the whole piece visible in the viewport, accounting for the
+       header and paginator above it; the image links to the full
+       resolution file. */
+    max-height: calc(100vh - 180px);
 }
 
 .pagination {

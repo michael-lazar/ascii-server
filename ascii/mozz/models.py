@@ -13,7 +13,12 @@ from imagekit.processors import ResizeToFit
 
 from ascii.core.models import BaseModel, DirtyFieldsMixin
 from ascii.core.sauce import get_sauce_data, write_sauce_data
-from ascii.mozz.choices import ArtPostFileType, ArtPostFontName
+from ascii.mozz.choices import (
+    PLAINTEXT_FILETYPES,
+    TEXTMODE_FILETYPES,
+    ArtPostFileType,
+    ArtPostFontName,
+)
 from ascii.textmode.models import ArtFile
 from ascii.textmode.sauce import Sauce
 
@@ -100,6 +105,17 @@ class ArtPost(DirtyFieldsMixin, BaseModel):
     def file_extension(self) -> str:
         _, ext = os.path.splitext(self.file.name or "")
         return ext.lower() if ext else "unknown"
+
+    @property
+    def format_label(self) -> str:
+        """
+        The file type expressed in the public gallery vocabulary.
+        """
+        if self.file_type in PLAINTEXT_FILETYPES:
+            return "plaintext"
+        if self.file_type in TEXTMODE_FILETYPES:
+            return "textmode"
+        return "other"
 
     @property
     def thumb_width(self) -> int:
