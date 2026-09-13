@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
   var msnry = new Masonry(".artgrid", {
-    columnWidth: 176,
+    columnWidth: 182,
     itemSelector: ".artgrid-item",
     transitionDuration: 200,
-    gutter: 20,
+    gutter: 12,
     // Size the container to the columns that fit, so the grid can be
     // centered with margin: auto instead of leaving a gap on the right.
     fitWidth: true,

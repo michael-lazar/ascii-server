@@ -99,11 +99,11 @@ hr.short-rule {
 
 .artgrid-item {
     box-sizing: border-box;
-    width: 176px;
-    margin-bottom: 20px;
+    width: 182px;
+    margin-bottom: 12px;
     border: 1px solid #ddd;
     background: white;
-    padding: 12px;
+    padding: 8px;
 }
 
 .artgrid-item:hover {

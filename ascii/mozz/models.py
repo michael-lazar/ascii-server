@@ -103,7 +103,7 @@ class ArtPost(DirtyFieldsMixin, BaseModel):
 
     @property
     def thumb_width(self) -> int:
-        return 150
+        return 164
 
     @property
     def thumb_height(self) -> int:
