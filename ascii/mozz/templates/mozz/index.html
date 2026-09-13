@@ -29,6 +29,8 @@
     {% if filetype == "textmode" %}<span>textmode</span>{% else %}<a href="?filetype=textmode">textmode</a>{% endif %}
   </nav>
   <div class="artgrid">
+    <div class="artgrid-sizer"></div>
+    <div class="artgrid-gutter"></div>
     {% for post in posts %}
       <div class="artgrid-item">
         <a href="{{ post.public_url }}">
