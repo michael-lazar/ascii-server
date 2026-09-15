@@ -8,8 +8,12 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
+      # The scrollfile is a byte-for-byte mirror of the legacy site's
+      # ascii-art.txt; reformatting it breaks the cross-publish diff.
       - id: trailing-whitespace
+        exclude: "^ascii/mozz/assets/scrollfile\\.txt$"
       - id: end-of-file-fixer
+        exclude: "^ascii/mozz/assets/scrollfile\\.txt$"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.0
