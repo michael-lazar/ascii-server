@@ -104,8 +104,7 @@ to detect modified entries.
 ### 4. Verify, commit, and deploy
 
 Run `scripts/cross-publish-art diff` again — pending work should be
-gone (skipped entries and the two renamed slugs below will still be
-listed). Then commit `ascii/mozz/assets/scrollfile.txt`, and ask the user to confirm
+gone (skipped entries will still be listed). Then commit `ascii/mozz/assets/scrollfile.txt`, and ask the user to confirm
 before deploying:
 
 ```
@@ -123,12 +122,9 @@ that the scrollfile was synced and deployed.
 - Skipped entries keep showing up in the diff on later runs (the diff
   checks which art posts exist, not the scrollfile text), so skipping
   just defers a post until next time.
-- Two legacy entries were imported under manually shortened slugs and
-  will always appear in the diff — always skip them, never republish:
-  `mushroom-hut-for-fungi-neocities-org` (exists as
-  `mushroom-hut-neocities`) and
-  `a-sunday-afternoon-on-the-island-of-la-grande-jatte-1884` (exists as
-  `a-sunday-afternoon-on-the-island-of-la-grande`).
+- Two legacy entries were imported under manually shortened slugs; the
+  script's `SLUG_ALIASES` map resolves them to the existing posts so
+  the diff skips them and `publish` refuses their legacy slugs.
 - Post metadata (title, date, slug) is derived from the legacy
   scrollfile the same way the legacy site derives it, so the two sites
   always agree on slugs.

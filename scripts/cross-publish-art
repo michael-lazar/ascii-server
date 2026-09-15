@@ -40,6 +40,15 @@ SNAPSHOT_FILE = (
     Path(__file__).resolve().parent.parent / "ascii" / "mozz" / "assets" / "scrollfile.txt"
 )
 
+# Two legacy entries were imported under manually shortened slugs; the diff
+# resolves them to the existing posts so they don't show up as new entries.
+SLUG_ALIASES = {
+    "mushroom-hut-for-fungi-neocities-org": "mushroom-hut-neocities",
+    "a-sunday-afternoon-on-the-island-of-la-grande-jatte-1884": (
+        "a-sunday-afternoon-on-the-island-of-la-grande"
+    ),
+}
+
 # Calibrated to match the retina area screenshots on the older text posts,
 # which were captured from TextEdit displaying Menlo 12pt (~14.2px per
 # character cell, ~27.3px per line at 2x scale).
@@ -146,15 +155,18 @@ def cmd_diff(args, session: requests.Session) -> None:
     if SNAPSHOT_FILE.exists():
         snapshot = {e["slug"]: e for e in parse_scroll_entries(SNAPSHOT_FILE.read_text())}
 
-    new_entries = [e for e in legacy_entries if e["slug"] not in post_slugs]
+    def is_published(entry: dict) -> bool:
+        return SLUG_ALIASES.get(entry["slug"], entry["slug"]) in post_slugs
+
+    new_entries = [e for e in legacy_entries if not is_published(e)]
     modified = [
         e
         for e in legacy_entries
-        if e["slug"] in post_slugs
+        if is_published(e)
         and e["slug"] in snapshot
         and e["text"] != snapshot[e["slug"]]["text"]
     ]
-    unsynced = [e for e in legacy_entries if e["slug"] in post_slugs and e["slug"] not in snapshot]
+    unsynced = [e for e in legacy_entries if is_published(e) and e["slug"] not in snapshot]
 
     if not any([new_entries, modified, unsynced]):
         print("Everything is in sync.")
@@ -196,6 +208,9 @@ def load_entry_files(args, slug: str) -> tuple[dict, bytes, bytes]:
 
 
 def cmd_publish(args, session: requests.Session) -> None:
+    if args.slug in SLUG_ALIASES:
+        sys.exit(f"Error: '{args.slug}' already exists as '{SLUG_ALIASES[args.slug]}'")
+
     entry, txt_bytes, png_bytes = load_entry_files(args, args.slug)
 
     reference_paths = [Path(p).expanduser() for p in args.reference]
