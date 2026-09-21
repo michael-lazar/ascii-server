@@ -50,17 +50,35 @@ everything is in sync, report that and stop.
 ### 2. Publish and republish (oldest first)
 
 Work through the new entries oldest → newest so the gallery ordering
-matches the legacy site. For each entry, use AskUserQuestion (one call,
-two questions):
+matches the legacy site. Before prompting, look for likely reference
+images on the user's Desktop — reference images usually live there,
+named after the entry:
+
+```
+ls -lt ~/Desktop/*.png ~/Desktop/*.jpg ~/Desktop/*.jpeg 2>/dev/null
+```
+
+Match candidates to entries by filename: the slug or title words
+(`giraffe.png` for "Giraffe"), or an abbreviation of them (`p1.png` for
+"Pose 1"). Recent modification times are a good tiebreaker — reference
+images are typically saved around the legacy publish date.
+
+Then, for each entry, use AskUserQuestion (one call, two questions):
 
 - **Publish?** — show the date and title, ask whether to publish it now
   or skip it.
-- **Reference image** — ask whether they have a local reference image.
-  Offer "No reference image" as an option; they can supply one or more
-  local paths via "Other". The easiest way for the user to hand over a
-  file is to drag it from Finder into the terminal (which inserts the
-  path). A pasted image is NOT usable — the upload needs a real file
-  on disk.
+- **Reference image** — if a likely Desktop candidate was found, present
+  it as the first option (label it with the filename and mark it
+  "(Recommended)"), alongside "No reference image". If no candidate was
+  found, just offer "No reference image". Either way the user can supply
+  one or more other local paths via "Other" by typing or pasting the
+  path. Dragging the file onto the terminal window does NOT work — it
+  sends the raw file contents rather than the path, and a pasted image
+  is equally unusable: the upload needs a real file path on disk. Note
+  AskUserQuestion requires at least two options per question.
+
+If the user answers with a bare filename (e.g. `p3.png`), check
+`~/Desktop/` for it before giving up on the path.
 
 Then, for entries the user approved:
 
