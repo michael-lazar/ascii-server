@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from typing import Any
 
 from django.http.response import HttpResponse
@@ -8,9 +7,9 @@ from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateView, View
 
 from ascii.mozz.choices import PLAINTEXT_FILETYPES, TEXTMODE_FILETYPES
-from ascii.mozz.models import ArtPost
+from ascii.mozz.models import ArtPost, ScrollFile
 
-SCROLLFILE_PATH = os.path.join(os.path.dirname(__file__), "assets", "scrollfile.txt")
+SCROLLFILE_SLUG = "scrollfile"
 
 
 class MozzIndexView(TemplateView):
@@ -56,6 +55,5 @@ class MozzArtPostView(TemplateView):
 
 class MozzScrollFileView(View):
     def get(self, *args, **kwargs) -> HttpResponse:
-        with open(SCROLLFILE_PATH) as fp:
-            text = fp.read()
-        return HttpResponse(text, content_type="text/plain")
+        scrollfile = get_object_or_404(ScrollFile, slug=SCROLLFILE_SLUG)
+        return HttpResponse(scrollfile.text, content_type="text/plain")

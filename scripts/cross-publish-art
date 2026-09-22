@@ -10,18 +10,17 @@
 #
 # Commands:
 #   diff                     Compare the legacy scrollfile against the art
-#                            posts on the new site and the last-synced
-#                            snapshot (ascii/mozz/assets/scrollfile.txt), listing entries
-#                            to publish, republish, or sync.
+#                            posts on the new site and the live scrollfile
+#                            (served at /mozz/scroll/scrollfile.txt), listing
+#                            entries to publish, republish, or sync.
 #   publish <slug>           Publish one entry as a new art post, uploading
 #                            the pre-rendered .txt and a freshly rendered
 #                            PNG image. Repeatable --reference <path> uploads
 #                            local reference images as attachments.
 #   republish <slug>         Re-upload the .txt and re-rendered PNG for an
 #                            existing art post after the artwork was tweaked.
-#   sync-scrollfile          Copy the legacy ascii-art.txt to
-#                            ascii/mozz/assets/scrollfile.txt, which is served at
-#                            /mozz/scroll/scrollfile.txt once deployed.
+#   sync-scrollfile          Upload the legacy ascii-art.txt to the server,
+#                            where it is served at /mozz/scroll/scrollfile.txt.
 
 import argparse
 import io
@@ -36,9 +35,11 @@ import requests
 from PIL import Image, ImageDraw, ImageFont
 
 DEFAULT_LEGACY_ROOT = Path(__file__).resolve().parent.parent.parent / "mozz"
-SNAPSHOT_FILE = (
-    Path(__file__).resolve().parent.parent / "ascii" / "mozz" / "assets" / "scrollfile.txt"
-)
+
+# The scrollfile is stored server-side in a ScrollFile row with this slug;
+# sync-scrollfile updates it through the API and the public site serves it
+# at /mozz/scroll/scrollfile.txt.
+SCROLLFILE_SLUG = "scrollfile"
 
 # Two legacy entries were imported under manually shortened slugs; the diff
 # resolves them to the existing posts so they don't show up as new entries.
@@ -147,13 +148,24 @@ def format_entry(args, entry: dict) -> str:
     return f"  {entry['date']}  {entry['slug']:<30} {entry['title']}{flags}"
 
 
+def fetch_live_scrollfile(session: requests.Session, base_url: str) -> str:
+    """
+    Fetch the scrollfile currently served by the new site, or "" if it
+    hasn't been created yet.
+    """
+    resp = session.get(urljoin(base_url, "/mozz/scroll/scrollfile.txt"))
+    if resp.status_code == 404:
+        return ""
+    resp.raise_for_status()
+    return resp.text
+
+
 def cmd_diff(args, session: requests.Session) -> None:
     legacy_entries = load_legacy_entries(args.legacy_root)
     post_slugs = fetch_post_slugs(session, args.base_url)
 
-    snapshot = {}
-    if SNAPSHOT_FILE.exists():
-        snapshot = {e["slug"]: e for e in parse_scroll_entries(SNAPSHOT_FILE.read_text())}
+    live_text = fetch_live_scrollfile(session, args.base_url)
+    snapshot = {e["slug"]: e for e in parse_scroll_entries(live_text)}
 
     def is_published(entry: dict) -> bool:
         return SLUG_ALIASES.get(entry["slug"], entry["slug"]) in post_slugs
@@ -183,10 +195,10 @@ def cmd_diff(args, session: requests.Session) -> None:
             print(format_entry(args, entry))
 
     if unsynced:
-        print(f"Published entries missing from the scrollfile ({len(unsynced)}):")
+        print(f"Published entries missing from the live scrollfile ({len(unsynced)}):")
         for entry in unsynced:
             print(format_entry(args, entry))
-        print("Run sync-scrollfile to update ascii/mozz/assets/scrollfile.txt.")
+        print("Run sync-scrollfile to upload the latest scrollfile.")
 
 
 def load_entry_files(args, slug: str) -> tuple[dict, bytes, bytes]:
@@ -294,9 +306,19 @@ def cmd_republish(args, session: requests.Session) -> None:
 def cmd_sync_scrollfile(args, session: requests.Session) -> None:
     scrollfile = args.legacy_root / "public" / "ascii-art.txt"
     text = scrollfile.read_text()
-    SNAPSHOT_FILE.write_text(text)
-    print(f"Updated {SNAPSHOT_FILE} ({len(text)} bytes)")
-    print("Commit and push the change, then run: app-deploy ascii-server")
+
+    detail_url = urljoin(args.base_url, f"/api/v1/mozz-scroll-files/{SCROLLFILE_SLUG}/")
+    resp = session.put(detail_url, data={"slug": SCROLLFILE_SLUG, "text": text})
+    if resp.status_code == 404:
+        resp = session.post(
+            urljoin(args.base_url, "/api/v1/mozz-scroll-files/"),
+            data={"slug": SCROLLFILE_SLUG, "text": text},
+        )
+    if resp.status_code not in (200, 201):
+        sys.exit(f"Error: scrollfile upload failed with {resp.status_code}: {resp.text}")
+
+    public_url = urljoin(args.base_url, "/mozz/scroll/scrollfile.txt")
+    print(f"Uploaded scrollfile ({len(text)} bytes), live at {public_url}")
 
 
 def main() -> None:
@@ -327,7 +349,7 @@ def main() -> None:
     republish_parser.add_argument("slug", help="Slug of the art post to republish")
 
     subparsers.add_parser(
-        "sync-scrollfile", help="Update ascii/mozz/assets/scrollfile.txt from the legacy site"
+        "sync-scrollfile", help="Upload the legacy scrollfile to the server"
     )
 
     args = parser.parse_args()

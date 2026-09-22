@@ -3,8 +3,12 @@ from django.urls import reverse
 
 from ascii.core.tests.utils import APITestCase
 from ascii.mozz.choices import ArtPostFileType
-from ascii.mozz.models import ArtPost, ArtPostAttachment
-from ascii.mozz.tests.factories import ArtPostAttachmentFactory, ArtPostFactory
+from ascii.mozz.models import ArtPost, ArtPostAttachment, ScrollFile
+from ascii.mozz.tests.factories import (
+    ArtPostAttachmentFactory,
+    ArtPostFactory,
+    ScrollFileFactory,
+)
 
 
 class TestMozzArtPostViewSet(APITestCase):
@@ -122,3 +126,29 @@ class TestMozzArtPostAttachmentViewSet(APITestCase):
         assert resp.status_code == 204
 
         assert not ArtPostAttachment.objects.filter(pk=attachment.pk).exists()
+
+
+class TestMozzScrollFileViewSet(APITestCase):
+    def test_create(self):
+        """Should be able to create the scrollfile."""
+        resp = self.auth_client.post(
+            reverse("api:mozz-scroll-file-list"),
+            data={"slug": "scrollfile", "text": "initial scroll\n"},
+        )
+        assert resp.status_code == 201
+
+        scrollfile = ScrollFile.objects.get(slug="scrollfile")
+        assert scrollfile.text == "initial scroll\n"
+
+    def test_update(self):
+        """Should be able to replace the scrollfile text with a PUT."""
+        scrollfile = ScrollFileFactory.create(slug="scrollfile", text="old text\n")
+
+        resp = self.auth_client.put(
+            reverse("api:mozz-scroll-file-detail", args=[scrollfile.slug]),
+            data={"slug": "scrollfile", "text": "new text\n"},
+        )
+        assert resp.status_code == 200
+
+        scrollfile.refresh_from_db()
+        assert scrollfile.text == "new text\n"

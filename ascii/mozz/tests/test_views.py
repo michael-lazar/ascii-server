@@ -1,20 +1,24 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from ascii.mozz.tests.factories import ArtPostFactory
-from ascii.mozz.views import SCROLLFILE_PATH
+from ascii.mozz.tests.factories import ArtPostFactory, ScrollFileFactory
+from ascii.mozz.views import SCROLLFILE_SLUG
 
 
 class TestMozzScrollFileView(TestCase):
     def test_get(self):
-        """Should serve the scrollfile tracked in the git repo as plain text."""
-        with open(SCROLLFILE_PATH) as fp:
-            text = fp.read()
+        """Should serve the scrollfile stored in the database as plain text."""
+        scrollfile = ScrollFileFactory.create(slug=SCROLLFILE_SLUG, text="hello scroll\n")
 
         resp = self.client.get(reverse("mozz-scroll-file"))
         assert resp.status_code == 200
         assert resp["Content-Type"] == "text/plain"
-        assert resp.content.decode("utf-8") == text
+        assert resp.content.decode("utf-8") == scrollfile.text
+
+    def test_get_missing(self):
+        """Should return a 404 when the scrollfile hasn't been uploaded yet."""
+        resp = self.client.get(reverse("mozz-scroll-file"))
+        assert resp.status_code == 404
 
 
 class TestMozzIndexView(TestCase):

@@ -6,7 +6,7 @@ from imagekit.admin import AdminThumbnail
 
 from ascii.core.admin import linkify
 from ascii.core.widgets import FormattedJSONWidget
-from ascii.mozz.models import ArtPost, ArtPostAttachment
+from ascii.mozz.models import ArtPost, ArtPostAttachment, ScrollFile
 
 
 class ArtPostAttachmentAdminInline(admin.TabularInline):
@@ -27,6 +27,13 @@ class ArtPostAttachmentAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         qs = qs.select_related("post")
         return qs
+
+
+@admin.register(ScrollFile)
+class ScrollFileAdmin(admin.ModelAdmin):
+    list_display = ["slug", "updated_at"]
+    readonly_fields = ["updated_at"]
+    fields = ["slug", "updated_at", "text"]
 
 
 @admin.register(ArtPost)

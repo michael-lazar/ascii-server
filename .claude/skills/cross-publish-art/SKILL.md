@@ -37,11 +37,11 @@ reports up to three groups:
 
 - **New entries to publish** — no art post exists on the new site yet.
 - **Modified entries to republish** — the post exists but the entry's
-  text changed since the last sync (compared against the snapshot in
-  `ascii/mozz/assets/scrollfile.txt`).
-- **Published entries missing from the scrollfile** — the post exists
-  but `ascii/mozz/assets/scrollfile.txt` hasn't been synced since it was published;
-  fixed by sync-scrollfile in step 3.
+  text changed since the last sync (compared against the live
+  scrollfile served at /mozz/scroll/scrollfile.txt).
+- **Published entries missing from the live scrollfile** — the post
+  exists but the server's scrollfile hasn't been synced since it was
+  published; fixed by sync-scrollfile in step 3.
 
 If an entry is flagged `MISSING TXT`, the legacy build is stale — stop
 and tell the user to run the legacy `tools/publish-art` first. If
@@ -114,26 +114,18 @@ After all approved entries are published (even if some were skipped):
 scripts/cross-publish-art sync-scrollfile
 ```
 
-This copies the legacy `ascii-art.txt` to `ascii/mozz/assets/scrollfile.txt`, the
-git-tracked file that is served at
-https://ascii.mozz.us/mozz/scroll/scrollfile.txt and that the diff uses
-to detect modified entries.
+This uploads the legacy `ascii-art.txt` to the server through the API
+(a `ScrollFile` row in the database). It goes live immediately at
+https://ascii.mozz.us/mozz/scroll/scrollfile.txt — no commit or deploy
+is needed. The diff compares against this live copy to detect modified
+entries.
 
-### 4. Verify, commit, and deploy
+### 4. Verify
 
 Run `scripts/cross-publish-art diff` again — pending work should be
-gone (skipped entries will still be listed). Then commit `ascii/mozz/assets/scrollfile.txt`, and ask the user to confirm
-before deploying:
-
-```
-git push
-app-deploy ascii-server
-```
-
-The art posts themselves go live immediately via the API; only the
-scrollfile waits for the deploy. Give the user a short summary: what
-was published or republished (with public URLs), what was skipped, and
-that the scrollfile was synced and deployed.
+gone (skipped entries will still be listed). Give the user a short
+summary: what was published or republished (with public URLs), what
+was skipped, and that the scrollfile was synced.
 
 ## Notes
 

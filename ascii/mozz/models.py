@@ -217,6 +217,18 @@ def upload_attachment_to(instance: ArtPostAttachment, filename: str) -> str:
     return f"mozz/{instance.post.date.year}/{instance.post.slug}/attachments/{filename}"
 
 
+class ScrollFile(BaseModel):
+    slug = models.SlugField(unique=True)
+    text = models.TextField(blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self) -> str:
+        return self.slug
+
+
 class ArtPostAttachment(BaseModel):
     name = models.CharField(max_length=128)
     post = models.ForeignKey(
