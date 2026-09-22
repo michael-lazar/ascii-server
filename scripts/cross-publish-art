@@ -150,14 +150,15 @@ def format_entry(args, entry: dict) -> str:
 
 def fetch_live_scrollfile(session: requests.Session, base_url: str) -> str:
     """
-    Fetch the scrollfile currently served by the new site, or "" if it
-    hasn't been created yet.
+    Fetch the scrollfile currently stored on the new site, or "" if it
+    hasn't been created yet. Goes through the API rather than the public
+    /mozz/scroll/scrollfile.txt URL, which sits behind the bot challenge.
     """
-    resp = session.get(urljoin(base_url, "/mozz/scroll/scrollfile.txt"))
+    resp = session.get(urljoin(base_url, f"/api/v1/mozz-scroll-files/{SCROLLFILE_SLUG}/"))
     if resp.status_code == 404:
         return ""
     resp.raise_for_status()
-    return resp.text
+    return resp.json()["text"]
 
 
 def cmd_diff(args, session: requests.Session) -> None:
@@ -307,13 +308,17 @@ def cmd_sync_scrollfile(args, session: requests.Session) -> None:
     scrollfile = args.legacy_root / "public" / "ascii-art.txt"
     text = scrollfile.read_text()
 
+    # Check existence with a bodyless GET before uploading: gunicorn answers
+    # a 404 without draining the large request body, which apache surfaces
+    # as a 502 instead of the 404.
+    payload = {"slug": SCROLLFILE_SLUG, "text": text}
     detail_url = urljoin(args.base_url, f"/api/v1/mozz-scroll-files/{SCROLLFILE_SLUG}/")
-    resp = session.put(detail_url, data={"slug": SCROLLFILE_SLUG, "text": text})
+    resp = session.get(detail_url)
     if resp.status_code == 404:
-        resp = session.post(
-            urljoin(args.base_url, "/api/v1/mozz-scroll-files/"),
-            data={"slug": SCROLLFILE_SLUG, "text": text},
-        )
+        resp = session.post(urljoin(args.base_url, "/api/v1/mozz-scroll-files/"), json=payload)
+    else:
+        resp.raise_for_status()
+        resp = session.put(detail_url, json=payload)
     if resp.status_code not in (200, 201):
         sys.exit(f"Error: scrollfile upload failed with {resp.status_code}: {resp.text}")
 
