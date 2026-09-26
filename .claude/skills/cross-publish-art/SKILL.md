@@ -55,7 +55,7 @@ images on the user's Desktop — reference images usually live there,
 named after the entry:
 
 ```
-ls -lt ~/Desktop/*.png ~/Desktop/*.jpg ~/Desktop/*.jpeg 2>/dev/null
+ls -lt ~/Desktop/*.png 2>/dev/null
 ```
 
 Match candidates to entries by filename: the slug or title words
