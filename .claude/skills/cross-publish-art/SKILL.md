@@ -63,19 +63,24 @@ Match candidates to entries by filename: the slug or title words
 "Pose 1"). Recent modification times are a good tiebreaker — reference
 images are typically saved around the legacy publish date.
 
-Then, for each entry, use AskUserQuestion (one call, two questions):
+Then confirm the whole batch with a single AskUserQuestion call
+containing ONE question. First print the plan as a list in your text
+output — one line per entry with its date, title, and the matched
+reference image path (or "no reference") — then ask whether to proceed:
 
-- **Publish?** — show the date and title, ask whether to publish it now
-  or skip it.
-- **Reference image** — if a likely Desktop candidate was found, present
-  it as the first option (label it with the filename and mark it
-  "(Recommended)"), alongside "No reference image". If no candidate was
-  found, just offer "No reference image". Either way the user can supply
-  one or more other local paths via "Other" by typing or pasting the
-  path. Dragging the file onto the terminal window does NOT work — it
-  sends the raw file contents rather than the path, and a pasted image
-  is equally unusable: the upload needs a real file path on disk. Note
-  AskUserQuestion requires at least two options per question.
+- **"Publish all (Recommended)"** — publish every entry as planned.
+- **"Skip all"** — publish nothing this run.
+
+Most of the time the user confirms the whole batch; if one entry needs
+a different reference image, should be skipped, or is otherwise wrong,
+they'll say so via "Other" — apply the correction they describe and
+publish the rest as planned. If the correction is ambiguous, ask a
+follow-up question about just that entry.
+
+A reference path supplied via "Other" must be a real file path on disk.
+Dragging the file onto the terminal window does NOT work — it sends the
+raw file contents rather than the path, and a pasted image is equally
+unusable.
 
 If the user answers with a bare filename (e.g. `p3.png`), check
 `~/Desktop/` for it before giving up on the path.
